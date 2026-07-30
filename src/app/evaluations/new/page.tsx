@@ -133,7 +133,7 @@ export default function NewEvaluationPage() {
       percentage: calculatedScore,
       grade: gradeInfo.grade,
       gradeLabel: gradeInfo.label,
-      comments: data.comments,
+      comments: data.comments || "",
       status: "Completed",
       parameterScores: data.parameterScores as ParameterScoreInput[],
       createdAt: new Date().toISOString(),
