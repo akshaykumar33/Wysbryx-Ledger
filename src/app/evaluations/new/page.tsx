@@ -2,112 +2,109 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "sonner";
-import { MOCK_ENGINEERS } from "@/lib/mockData";
-import { EVALUATION_PARAMETERS } from "@/lib/constants";
-import { getGradeInfo } from "@/lib/utils";
-import { useAppStore } from "@/lib/store";
-import { Evaluation, ParameterScoreInput } from "@/lib/types";
 import {
-  Sparkles,
+  ShieldCheck,
   Save,
-  CheckCircle2,
-  AlertCircle,
+  Send,
   User,
-  Sliders,
-  Paperclip,
-  Clock,
-  Command,
+  Sparkles,
+  Link2,
   ChevronDown,
   ChevronUp,
-  FileText,
-  ShieldCheck,
+  Clock,
+  Lock,
 } from "lucide-react";
+import { useAppStore } from "@/lib/store";
+import { MOCK_ENGINEERS } from "@/lib/mockData";
+import { EVALUATION_PARAMETERS, calculateEvaluationGrade } from "@/lib/constants";
+import { ParameterScoreInput, Evaluation } from "@/lib/types";
+import { CustomSelect } from "@/components/ui/CustomSelect";
+import { DatePicker } from "@/components/ui/DatePicker";
+import { Badge } from "@/components/ui/Badge";
 
-const evaluationFormSchema = z.object({
-  engineerId: z.string().min(1, "Please select an engineer"),
-  evaluationDate: z.string().min(1, "Evaluation date is required"),
+const evaluationSchema = z.object({
+  engineerId: z.string().min(1, "Engineer selection is required"),
   quarter: z.enum(["Q1", "Q2", "Q3", "Q4"]),
   year: z.number().min(2020).max(2030),
-  comments: z.string().min(10, "Executive qualitative summary must be at least 10 characters"),
+  evaluationDate: z.string().min(1, "Date is required"),
+  comments: z.string().optional(),
   parameterScores: z.array(
     z.object({
-      parameterId: z.string(),
-      categoryId: z.string(),
       parameterKey: z.string(),
-      parameterName: z.string(),
       rating: z.number().min(1).max(5),
       weight: z.number(),
-      evidence: z.string().min(10, "Concrete technical evidence is mandatory"),
-      strength: z.string().optional(),
-      improvementSuggestion: z.string().min(5, "Improvement suggestion required"),
-      notes: z.string().optional(),
+      comments: z.string().optional(),
+      evidenceUrl: z.string().optional(),
     })
   ),
 });
 
-type FormValues = z.infer<typeof evaluationFormSchema>;
+type FormValues = z.infer<typeof evaluationSchema>;
 
 export default function NewEvaluationPage() {
   const router = useRouter();
-  const { currentUser, addEvaluation } = useAppStore();
+  const { addEvaluation, currentUser } = useAppStore();
+
   const [collapsedSections, setCollapsedSections] = React.useState<Record<string, boolean>>({});
-  const [lastSaved, setLastSaved] = React.useState<string>("Just now");
+  const [lastSaved, setLastSaved] = React.useState<string | null>(null);
 
   const defaultParameters = EVALUATION_PARAMETERS.map((p) => ({
-    parameterId: p.id,
-    categoryId: p.category,
     parameterKey: p.key,
-    parameterName: p.name,
     rating: 4,
     weight: p.weight,
-    evidence: "",
-    strength: "",
-    improvementSuggestion: "",
-    notes: "",
+    comments: "",
+    evidenceUrl: "",
   }));
 
   const {
     register,
+    control,
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<FormValues>({
-    resolver: zodResolver(evaluationFormSchema),
+    resolver: zodResolver(evaluationSchema),
     defaultValues: {
-      engineerId: MOCK_ENGINEERS[0]?.id || "",
-      evaluationDate: new Date().toISOString().split("T")[0],
+      engineerId: MOCK_ENGINEERS[0]?.id || "eng_1",
       quarter: "Q3",
       year: 2026,
+      evaluationDate: new Date().toISOString().split("T")[0],
       comments: "",
-      parameterScores: defaultParameters as any,
+      parameterScores: defaultParameters,
     },
+  });
+
+  const { fields } = useFieldArray({
+    control,
+    name: "parameterScores",
   });
 
   const watchedScores = watch("parameterScores");
   const selectedEngineerId = watch("engineerId");
+
   const selectedEngineer = MOCK_ENGINEERS.find((e) => e.id === selectedEngineerId);
 
-  // Real-time score calculation
+  // Calculate live weighted score sum: sum((rating / 5) * weight * 100)
   const calculatedScore = React.useMemo(() => {
-    if (!watchedScores || watchedScores.length === 0) return 0;
-    let totalScore = 0;
+    if (!watchedScores) return 0;
+    let sum = 0;
     watchedScores.forEach((ps) => {
-      totalScore += (ps.rating / 5.0) * (ps.weight || 0);
+      sum += (ps.rating / 5.0) * (ps.weight || 0);
     });
-    return totalScore;
+    return Math.min(100, Math.max(0, sum));
   }, [watchedScores]);
 
-  const gradeInfo = getGradeInfo(calculatedScore);
+  const gradeInfo = calculateEvaluationGrade(calculatedScore);
 
-  // Autosave simulation timer
+  // Auto-save draft timestamp trigger
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setLastSaved(`Autosaved at ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+      setLastSaved(`Autosaved at ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`);
     }, 15000);
     return () => clearInterval(interval);
   }, []);
@@ -151,23 +148,36 @@ export default function NewEvaluationPage() {
     router.push("/evaluations");
   };
 
+  const engineerOptions = MOCK_ENGINEERS.map((eng) => ({
+    value: eng.id,
+    label: `${eng.fullName} — ${eng.designation}`,
+    sublabel: eng.departmentName,
+  }));
+
+  const quarterOptions = [
+    { value: "Q1", label: "Q1 Cycle" },
+    { value: "Q2", label: "Q2 Cycle" },
+    { value: "Q3", label: "Q3 Active Cycle" },
+    { value: "Q4", label: "Q4 Cycle" },
+  ];
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Notion-Stripe Sticky Top Navigation Bar */}
       <div className="sticky top-16 z-30 p-4 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400">
+          <div className="p-2 rounded-xl bg-primary/10 text-primary">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold uppercase text-purple-400">ADMIN GOVERNANCE</span>
+              <span className="text-[10px] font-mono font-bold uppercase text-primary">ADMIN GOVERNANCE</span>
               <span className="text-[10px] font-mono text-neutral-400 flex items-center gap-1">
-                <Clock className="w-2.5 h-2.5" /> {lastSaved}
+                <Clock className="w-2.5 h-2.5" /> {lastSaved || "Draft Ready"}
               </span>
             </div>
             <h1 className="text-lg font-bold text-neutral-900 dark:text-white">
-              Notion-Stripe Evaluation Workspace
+              Evaluation Workspace & Score Calculator
             </h1>
           </div>
         </div>
@@ -175,14 +185,14 @@ export default function NewEvaluationPage() {
         {/* Live Score Floating Badge */}
         <div className="flex items-center gap-4">
           <div className="text-right">
-            <div className="text-[10px] font-mono uppercase text-neutral-400 font-bold">LIVE SCORE MATRIX</div>
+            <div className="text-[10px] font-mono uppercase text-neutral-400 font-bold">LIVE WEIGHTED MATRIX</div>
             <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white">
               {calculatedScore.toFixed(1)} <span className="text-xs text-neutral-400">/ 100</span>
             </div>
           </div>
-          <div className={`px-3 py-1 rounded-xl text-xs font-mono font-bold ${gradeInfo.bg} ${gradeInfo.color} border ${gradeInfo.border}`}>
+          <Badge variant="brand" className="text-xs py-1 px-3">
             {gradeInfo.grade} ({gradeInfo.label})
-          </div>
+          </Badge>
         </div>
       </div>
 
@@ -190,23 +200,26 @@ export default function NewEvaluationPage() {
         {/* CARD 1: TARGET ENGINEER SELECTOR */}
         <div className="p-6 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 shadow-sm space-y-6">
           <div className="flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-800 pb-3">
-            <User className="w-4 h-4 text-indigo-500" />
+            <User className="w-4 h-4 text-primary" />
             <h2 className="text-base font-bold text-neutral-900 dark:text-white">1. Select Target Engineer & Evaluation Cycle</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Select Engineer *</label>
-              <select
-                {...register("engineerId")}
-                className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/80 text-xs text-neutral-900 dark:text-white focus:outline-none"
-              >
-                {MOCK_ENGINEERS.map((eng) => (
-                  <option key={eng.id} value={eng.id}>
-                    {eng.fullName} — {eng.designation} ({eng.departmentName})
-                  </option>
-                ))}
-              </select>
+              <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Target Engineer *</label>
+              <Controller
+                control={control}
+                name="engineerId"
+                render={({ field }) => (
+                  <CustomSelect
+                    options={engineerOptions}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Search & select engineer..."
+                  />
+                )}
+              />
+
               {selectedEngineer && (
                 <div className="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 flex items-center gap-3 border border-neutral-200/50 dark:border-neutral-700/50 mt-2">
                   <img src={selectedEngineer.photoUrl} alt={selectedEngineer.fullName} className="w-9 h-9 rounded-full object-cover" />
@@ -221,15 +234,17 @@ export default function NewEvaluationPage() {
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Quarter</label>
-                <select
-                  {...register("quarter")}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/80 text-xs text-neutral-900 dark:text-white focus:outline-none"
-                >
-                  <option value="Q1">Q1</option>
-                  <option value="Q2">Q2</option>
-                  <option value="Q3">Q3</option>
-                  <option value="Q4">Q4</option>
-                </select>
+                <Controller
+                  control={control}
+                  name="quarter"
+                  render={({ field }) => (
+                    <CustomSelect
+                      options={quarterOptions}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
               </div>
 
               <div className="space-y-2">
@@ -237,16 +252,18 @@ export default function NewEvaluationPage() {
                 <input
                   type="number"
                   {...register("year", { valueAsNumber: true })}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/80 text-xs text-neutral-900 dark:text-white focus:outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-xs font-mono font-bold text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Date</label>
-                <input
-                  type="date"
-                  {...register("evaluationDate")}
-                  className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/80 text-xs text-neutral-900 dark:text-white focus:outline-none"
+                <Controller
+                  control={control}
+                  name="evaluationDate"
+                  render={({ field }) => (
+                    <DatePicker value={field.value} onChange={field.onChange} />
+                  )}
                 />
               </div>
             </div>
@@ -258,104 +275,87 @@ export default function NewEvaluationPage() {
           <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
             <div>
               <h2 className="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-indigo-500" />
-                <span>2. Standardized Category Evaluation Cards</span>
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span>2. Parameter Score & Evidence Ratings (8 Metrics)</span>
               </h2>
               <p className="text-xs text-neutral-500 mt-0.5">
-                Collapsible evaluation dimensions with rating sliders and technical evidence.
+                Every rating requires supporting evidence links (PRs, doc URLs, benchmarks).
               </p>
             </div>
           </div>
 
           <div className="space-y-4">
-            {EVALUATION_PARAMETERS.map((param, index) => {
-              const isCollapsed = collapsedSections[param.id];
-              const currentRating = watchedScores?.[index]?.rating || 4;
+            {fields.map((field, index) => {
+              const spec = EVALUATION_PARAMETERS.find((p) => p.key === field.parameterKey);
+              const isCollapsed = collapsedSections[field.parameterKey];
+              const currentRating = watch(`parameterScores.${index}.rating`);
 
               return (
                 <div
-                  key={param.id}
-                  className="rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden transition-all"
+                  key={field.id}
+                  className="p-5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 shadow-xs space-y-4 transition-all"
                 >
-                  {/* Card Header Bar */}
-                  <div
-                    onClick={() => toggleSection(param.id)}
-                    className="p-5 flex items-center justify-between cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors select-none"
-                  >
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="font-mono text-xs font-bold text-neutral-400">0{index + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => toggleSection(field.parameterKey)}
+                        className="p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-400"
+                      >
+                        {isCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+                      </button>
                       <div>
-                        <h3 className="text-sm font-bold text-neutral-900 dark:text-white">{param.name}</h3>
-                        <p className="text-xs text-neutral-500">{param.description}</p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-neutral-900 dark:text-white">{spec?.name}</span>
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-primary/10 text-primary">
+                            {spec?.weight}% Weight
+                          </span>
+                        </div>
+                        <p className="text-xs text-neutral-500 mt-0.5">{spec?.description}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                      <span className="text-xs font-mono font-bold px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">
-                        {param.weight}% Weight
-                      </span>
-                      <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-neutral-900 text-white dark:bg-white dark:text-neutral-950">
-                        {currentRating} / 5
-                      </span>
-                      {isCollapsed ? <ChevronDown className="w-4 h-4 text-neutral-400" /> : <ChevronUp className="w-4 h-4 text-neutral-400" />}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-neutral-400 font-mono">Rating:</span>
+                      <span className="text-base font-bold font-mono text-primary">{currentRating} / 5</span>
                     </div>
                   </div>
 
-                  {/* Card Body (Collapsible) */}
                   {!isCollapsed && (
-                    <div className="p-5 pt-0 border-t border-neutral-100 dark:border-neutral-800/80 space-y-4">
-                      {/* Rating Selector */}
-                      <div className="pt-3 flex items-center justify-between">
-                        <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Rating Scale (1-5):</span>
-                        <div className="flex items-center gap-1.5 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl">
+                    <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800/60 grid grid-cols-1 md:grid-cols-12 gap-6 animate-fade">
+                      {/* Rating Buttons */}
+                      <div className="md:col-span-4 space-y-2">
+                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Rating Scale (1 to 5)</label>
+                        <div className="grid grid-cols-5 gap-1.5">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <button
-                              type="button"
                               key={star}
+                              type="button"
                               onClick={() => setValue(`parameterScores.${index}.rating`, star)}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all ${
+                              className={`py-2 rounded-xl text-xs font-mono font-bold transition-all ${
                                 currentRating === star
-                                  ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 shadow-xs"
-                                  : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+                                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-105"
+                                  : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700"
                               }`}
                             >
-                              {star}
+                              {star} ★
                             </button>
                           ))}
                         </div>
                       </div>
 
-                      {/* Technical Evidence & Recommendations */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center justify-between">
-                            <span>Technical Evidence & Artifact Links *</span>
-                            <span className="text-[10px] text-indigo-400 font-mono">Mandatory</span>
-                          </label>
-                          <textarea
-                            rows={3}
-                            {...register(`parameterScores.${index}.evidence`)}
-                            placeholder="e.g., Authored PR #104 reducing bundle size by 30%. Built security wrapper in Rust..."
-                            className="w-full p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/80 text-xs text-neutral-900 dark:text-white placeholder:text-neutral-500 focus:outline-none font-mono"
-                          />
-                          {errors.parameterScores?.[index]?.evidence && (
-                            <p className="text-[10px] text-rose-500 font-mono">
-                              {errors.parameterScores[index]?.evidence?.message}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
-                            Improvement & Growth Suggestion *
-                          </label>
-                          <textarea
-                            rows={3}
-                            {...register(`parameterScores.${index}.improvementSuggestion`)}
-                            placeholder="e.g., Lead an internal tech talk on Web Workers and share prompt templates..."
-                            className="w-full p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/80 text-xs text-neutral-900 dark:text-white placeholder:text-neutral-500 focus:outline-none"
-                          />
-                        </div>
+                      {/* Evidence PR Link */}
+                      <div className="md:col-span-8 space-y-2">
+                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
+                          <Link2 className="w-3.5 h-3.5 text-primary" />
+                          <span>Evidence URL / PR Link (Mandatory Proof)</span>
+                        </label>
+                        <input
+                          type="url"
+                          placeholder="https://github.com/org/repo/pull/123 or architecture spec link"
+                          {...register(`parameterScores.${index}.evidenceUrl`)}
+                          className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-xs font-mono text-neutral-900 dark:text-white placeholder:text-neutral-500 focus:ring-2 focus:ring-primary/50 focus:outline-none"
+                        />
                       </div>
                     </div>
                   )}
@@ -365,38 +365,41 @@ export default function NewEvaluationPage() {
           </div>
         </div>
 
-        {/* CARD 3: EXECUTIVE SUMMARY & SUBMIT */}
+        {/* Executive Feedback & Submit Bar */}
         <div className="p-6 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 shadow-sm space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-neutral-900 dark:text-white">
-              3. Administrative Qualitative Summary *
-            </label>
-            <textarea
-              rows={4}
-              {...register("comments")}
-              placeholder="Provide a final executive summary highlighting key achievements, leadership potential, and roadmap..."
-              className="w-full p-3 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/80 text-xs text-neutral-900 dark:text-white placeholder:text-neutral-500 focus:outline-none"
-            />
-            {errors.comments && <p className="text-[10px] text-rose-500 font-mono">{errors.comments.message}</p>}
-          </div>
+          <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
+            Executive Feedback & Actionable Growth Objectives
+          </label>
+          <textarea
+            rows={4}
+            placeholder="Synthesize overall engineering impact, mentorship contributions, and targeted upskilling objectives for Q4..."
+            {...register("comments")}
+            className="w-full p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-xs font-sans text-neutral-900 dark:text-white placeholder:text-neutral-500 focus:ring-2 focus:ring-primary/50 focus:outline-none"
+          />
 
-          <div className="flex items-center justify-between pt-4 border-t border-neutral-100 dark:border-neutral-800">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors"
-            >
-              Cancel
-            </button>
+          <div className="pt-2 flex items-center justify-between border-t border-neutral-100 dark:border-neutral-800">
+            <div className="flex items-center gap-2 text-[11px] font-mono text-neutral-400">
+              <Lock className="w-3.5 h-3.5 text-primary" />
+              <span>SINGLE ADMIN AUDIT TRAIL LOGGED</span>
+            </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 font-bold text-xs hover:opacity-90 transition-all shadow-xl"
-            >
-              <Save className="w-4 h-4" />
-              <span>Submit Evaluation</span>
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => router.push("/evaluations")}
+                className="px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-800 text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs shadow-lg shadow-primary/25 hover:opacity-90 transition-all"
+              >
+                <Send className="w-4 h-4" />
+                <span>Submit Evaluation</span>
+              </button>
+            </div>
           </div>
         </div>
       </form>

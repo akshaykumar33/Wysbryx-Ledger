@@ -19,6 +19,11 @@ export const DEFAULT_SETTINGS: SystemSettings = {
   ],
 };
 
+export function calculateEvaluationGrade(score: number) {
+  const boundary = DEFAULT_SETTINGS.gradeBoundaries.find((b) => score >= b.minScore) || DEFAULT_SETTINGS.gradeBoundaries[DEFAULT_SETTINGS.gradeBoundaries.length - 1];
+  return boundary;
+}
+
 export const EVALUATION_PARAMETERS: EvaluationParameter[] = [
   {
     id: "param_1",
@@ -48,74 +53,73 @@ export const EVALUATION_PARAMETERS: EvaluationParameter[] = [
       "Adherence to coding standards",
       "Clean, readable & modular code",
       "Design patterns application",
-      "Debugging & root-cause analysis",
-      "Scalability & high performance"
+      "Tech stack proficiency",
+      "Refactoring skills"
     ],
   },
   {
     id: "param_3",
     key: "subject_expertise",
     name: "Subject Expertise",
-    description: "Domain mastery, complex problem solving, and autonomous technical decision making.",
+    description: "Domain knowledge, system internals, and deep problem-solving skills.",
     weight: 15,
     category: "Technical",
     submetrics: [
-      "Domain & stack mastery",
-      "End-to-end component ownership",
-      "Complex problem solving",
-      "Industry best practices",
-      "Data-driven technical decisions"
+      "Domain & vertical knowledge",
+      "Debugging complex bugs",
+      "Performance profiling",
+      "Database tuning & queries",
+      "Security best practices"
     ],
   },
   {
     id: "param_4",
-    key: "communication",
-    name: "Communication",
-    description: "Clarity in written docs, tech specs, async communication, and presentations.",
-    weight: 10,
+    key: "team_player",
+    name: "Team Player & Mentorship",
+    description: "Collaboration, peer code reviews, helping teammates, and uplifting engineering culture.",
+    weight: 15,
     category: "Behavioral",
     submetrics: [
-      "Technical documentation & specs",
-      "Effective meeting participation",
-      "Proactive knowledge sharing",
-      "Clear written & async communication",
-      "Presentation & demo clarity"
+      "Thorough code reviews",
+      "Mentoring junior engineers",
+      "Knowledge sharing & tech talks",
+      "Cross-functional collaboration",
+      "Empathy & team communication"
     ],
   },
   {
     id: "param_5",
-    key: "team_player",
-    name: "Team Player & Mentorship",
-    description: "Cross-team collaboration, peer support, positive team culture, and mentoring.",
-    weight: 15,
+    key: "communication",
+    name: "Communication & Transparency",
+    description: "Written specs, Slack updates, escalation clarity, and active listening.",
+    weight: 10,
     category: "Behavioral",
     submetrics: [
-      "Assisting team members in blocker resolution",
-      "Active mentoring & onboarding",
-      "Cross-functional collaboration",
-      "Accountability & ownership",
-      "Positive attitude & constructive feedback"
+      "Clear technical documentation",
+      "Proactive status updates",
+      "Effective issue escalation",
+      "Active listening in syncs"
     ],
   },
   {
     id: "param_6",
-    key: "innovation",
-    name: "Innovation & Automation",
-    description: "Driving proactive improvements, workflow automation, and innovative ideas.",
+    key: "ownership",
+    name: "Ownership & Initiative",
+    description: "Taking full responsibility for features, driving tasks to done, and proactive fixes.",
     weight: 10,
-    category: "Growth",
+    category: "Execution",
     submetrics: [
-      "Process & tooling improvement ideas",
-      "DevOps & test automation initiatives",
-      "Performance optimization spikes",
-      "Proactive developer experience enhancement"
+      "End-to-end feature ownership",
+      "Proactive technical debt fixes",
+      "Accountability when bugs occur",
+      "Driving unblockers independently"
     ],
   },
   {
     id: "param_7",
-    key: "delivery",
-    name: "Delivery & Execution",
-    description: "Reliability in meeting sprint commitments, code quality, and on-time execution.",
+    key: "sprint_delivery",
+    name: "Sprint Delivery & Velocity",
+    description: "Meeting sprint commitments, predictable velocity, and low post-release bugs.",
     weight: 10,
     category: "Execution",
     submetrics: [
