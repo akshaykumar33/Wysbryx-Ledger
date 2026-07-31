@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { MOCK_EVALUATIONS } from "@/lib/mockData";
+import { useAppStore } from "@/lib/store";
 import { getGradeInfo } from "@/lib/utils";
 import { printPDFReport, exportToCSV } from "@/lib/export";
 import {
@@ -17,15 +17,16 @@ import {
   ShieldCheck,
   Sparkles,
   Layers,
-  HelpCircle,
+  Edit3,
 } from "lucide-react";
 
 export default function EvaluationDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { evaluations } = useAppStore();
 
   const evalId = params.id as string;
-  const evaluation = MOCK_EVALUATIONS.find((e) => e.id === evalId) || MOCK_EVALUATIONS[0];
+  const evaluation = evaluations.find((e) => e.id === evalId) || evaluations[0];
 
   if (!evaluation) {
     return (
@@ -45,14 +46,22 @@ export default function EvaluationDetailPage() {
       {/* Non-printable action bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6 print:hidden">
         <button
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+          onClick={() => router.push("/evaluations")}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-neutral-900 dark:hover:text-white cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Evaluations</span>
         </button>
 
         <div className="flex items-center gap-3">
+          <Link
+            href={`/evaluations/${evaluation.id}/edit`}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 border border-amber-500/20 text-xs font-semibold transition-all shadow-xs"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+            <span>Edit Evaluation</span>
+          </Link>
+
           <button
             onClick={() => exportToCSV([evaluation], `evaluation_${evaluation.id}.csv`)}
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-medium text-neutral-800 dark:text-neutral-200 transition-all shadow-xs"
@@ -110,8 +119,8 @@ export default function EvaluationDetailPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-200/60 dark:border-neutral-800/60 text-xs">
           <div>
             <div className="font-mono text-neutral-400 text-[10px]">REVIEWER</div>
-            <div className="font-bold text-neutral-900 dark:text-white mt-0.5">{evaluation.reviewerName}</div>
-            <div className="text-[10px] text-neutral-500">{evaluation.reviewerRole}</div>
+            <div className="font-bold text-neutral-900 dark:text-white mt-0.5">{evaluation.reviewerName || evaluation.adminName}</div>
+            <div className="text-[10px] text-neutral-500">{evaluation.reviewerRole || "Executive Administrator"}</div>
           </div>
 
           <div>
@@ -142,7 +151,7 @@ export default function EvaluationDetailPage() {
           </h2>
 
           <div className="space-y-4">
-            {evaluation.parameterScores.map((ps, idx) => (
+            {(evaluation.parameterScores || []).map((ps, idx) => (
               <div
                 key={idx}
                 className="p-5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 space-y-3"
@@ -150,7 +159,7 @@ export default function EvaluationDetailPage() {
                 <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-2">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-xs font-bold text-neutral-400">0{idx + 1}</span>
-                    <h3 className="font-bold text-xs text-neutral-900 dark:text-white">{ps.parameterName}</h3>
+                    <h3 className="font-bold text-xs text-neutral-900 dark:text-white">{ps.parameterName || ps.parameterKey}</h3>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-[10px] font-mono text-neutral-400">Weight: {ps.weight}%</span>
@@ -166,7 +175,7 @@ export default function EvaluationDetailPage() {
                       TECHNICAL EVIDENCE & ARTIFACTS
                     </div>
                     <p className="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 text-neutral-700 dark:text-neutral-300 font-mono text-[11px] leading-relaxed border border-neutral-200/40 dark:border-neutral-700/40">
-                      {ps.evidence}
+                      {ps.evidenceUrl || ps.evidence || "N/A"}
                     </p>
                   </div>
 
@@ -175,7 +184,7 @@ export default function EvaluationDetailPage() {
                       IMPROVEMENT & RECOMMENDATIONS
                     </div>
                     <p className="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 text-neutral-700 dark:text-neutral-300 text-[11px] leading-relaxed border border-neutral-200/40 dark:border-neutral-700/40">
-                      {ps.improvementSuggestion}
+                      {ps.improvementSuggestion || ps.comments || "Continuous improvement advised."}
                     </p>
                   </div>
                 </div>

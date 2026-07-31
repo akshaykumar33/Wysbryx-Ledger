@@ -2,13 +2,15 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { MOCK_EVALUATIONS } from "@/lib/mockData";
+import { useAppStore } from "@/lib/store";
 import { getGradeInfo } from "@/lib/utils";
 import { CustomSelect } from "@/components/ui/CustomSelect";
-import { PlusCircle, Search, Download, ExternalLink, CheckCircle2 } from "lucide-react";
+import { PlusCircle, Search, Download, ExternalLink, CheckCircle2, Edit3, Trash2 } from "lucide-react";
 import { exportToCSV } from "@/lib/export";
+import { toast } from "sonner";
 
 export default function EvaluationsListPage() {
+  const { evaluations, deleteEvaluation } = useAppStore();
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("ALL");
 
@@ -20,7 +22,7 @@ export default function EvaluationsListPage() {
   ];
 
   const filteredEvals = React.useMemo(() => {
-    return MOCK_EVALUATIONS.filter((item) => {
+    return evaluations.filter((item) => {
       const q = search.toLowerCase();
       const matchesSearch =
         item.engineerName?.toLowerCase().includes(q) ||
@@ -29,7 +31,14 @@ export default function EvaluationsListPage() {
       const matchesStatus = statusFilter === "ALL" || item.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
-  }, [search, statusFilter]);
+  }, [evaluations, search, statusFilter]);
+
+  const handleDelete = (id: string, name: string) => {
+    if (confirm(`Are you sure you want to delete evaluation for ${name}?`)) {
+      deleteEvaluation(id);
+      toast.success(`Deleted evaluation for ${name}`);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -43,7 +52,7 @@ export default function EvaluationsListPage() {
             Quarterly Performance Reviews
           </h1>
           <p className="text-xs sm:text-sm text-neutral-500 mt-1">
-            Access, review, and issue objective engineering evaluations across cycles.
+            Access, review, modify, and issue objective engineering evaluations across cycles.
           </p>
         </div>
 
@@ -67,7 +76,7 @@ export default function EvaluationsListPage() {
       </div>
 
       {/* Filter bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xs">
         <div className="flex items-center gap-2 w-full sm:w-80">
           <Search className="w-4 h-4 text-neutral-400" />
           <input
@@ -89,7 +98,7 @@ export default function EvaluationsListPage() {
       </div>
 
       {/* Evaluations Table */}
-      <div className="p-5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 shadow-sm overflow-x-auto">
+      <div className="p-5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 shadow-xs overflow-x-auto">
         <table className="w-full text-left text-xs border-collapse">
           <thead>
             <tr className="border-b border-neutral-200 dark:border-neutral-800 font-mono text-[11px] text-neutral-400">
@@ -99,7 +108,7 @@ export default function EvaluationsListPage() {
               <th className="py-3 px-3 text-right">OVERALL SCORE</th>
               <th className="py-3 px-3 text-center">GRADE</th>
               <th className="py-3 px-3 text-center">STATUS</th>
-              <th className="py-3 px-3 text-right">REPORT</th>
+              <th className="py-3 px-3 text-right">ACTIONS</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/60">
@@ -139,13 +148,33 @@ export default function EvaluationsListPage() {
                     </span>
                   </td>
                   <td className="py-3.5 px-3 text-right">
-                    <Link
-                      href={`/evaluations/${item.id}`}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-indigo-500 hover:text-indigo-400"
-                    >
-                      <span>View</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </Link>
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        href={`/evaluations/${item.id}/edit`}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-amber-500 hover:text-amber-400 p-1 rounded-lg hover:bg-amber-500/10 transition-colors"
+                        title="Edit Evaluation"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        <span>Edit</span>
+                      </Link>
+
+                      <Link
+                        href={`/evaluations/${item.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-indigo-500 hover:text-indigo-400 p-1 rounded-lg hover:bg-indigo-500/10 transition-colors"
+                        title="View Report"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>View</span>
+                      </Link>
+
+                      <button
+                        onClick={() => handleDelete(item.id, item.engineerName)}
+                        className="p-1 rounded-lg text-neutral-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                        title="Delete Evaluation"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );

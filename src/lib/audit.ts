@@ -1,6 +1,6 @@
 import { AuditLog } from "./types";
 
-let memoryLogs: AuditLog[] = [
+export const INITIAL_AUDIT_LOGS: AuditLog[] = [
   {
     id: "log_101",
     adminId: "admin_1",
@@ -39,8 +39,23 @@ let memoryLogs: AuditLog[] = [
   },
 ];
 
+let memoryLogs: AuditLog[] = [...INITIAL_AUDIT_LOGS];
+
 export function getAuditLogs(): AuditLog[] {
   return memoryLogs;
+}
+
+export function deleteAuditLog(id: string): AuditLog[] {
+  memoryLogs = memoryLogs.filter((log) => log.id !== id);
+  return memoryLogs;
+}
+
+export function clearAuditLogs(): void {
+  memoryLogs = [];
+}
+
+export function setAuditLogs(logs: AuditLog[]): void {
+  memoryLogs = logs;
 }
 
 export function logAuditEvent(
@@ -52,7 +67,7 @@ export function logAuditEvent(
   adminName: string = "Executive Administrator"
 ): AuditLog {
   const newLog: AuditLog = {
-    id: `log_${Date.now()}`,
+    id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
     adminId: "admin_1",
     adminName,
     action,

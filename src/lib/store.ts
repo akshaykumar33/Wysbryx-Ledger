@@ -2,10 +2,10 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Engineer, Evaluation, AdminUser, SystemSettings } from "./types";
+import { Engineer, Evaluation, AdminUser, SystemSettings, AuditLog } from "./types";
 import { MOCK_ENGINEERS, MOCK_EVALUATIONS } from "./mockData";
 import { DEFAULT_SETTINGS } from "./constants";
-import { recordAuditEvent } from "./audit";
+import { recordAuditEvent, INITIAL_AUDIT_LOGS, setAuditLogs } from "./audit";
 
 export type ThemeAccent = "wysbryx" | "violet" | "emerald" | "cyan" | "rose";
 
@@ -26,6 +26,7 @@ interface AppState {
   engineers: Engineer[];
   evaluations: Evaluation[];
   settings: SystemSettings;
+  auditLogs: AuditLog[];
 
   // Search & Filters
   searchQuery: string;
@@ -45,6 +46,11 @@ interface AppState {
   // Actions - Evaluations
   addEvaluation: (evaluation: Evaluation) => void;
   updateEvaluation: (evaluation: Evaluation) => void;
+  deleteEvaluation: (id: string) => void;
+
+  // Actions - Audit Logs
+  deleteAuditLog: (id: string) => void;
+  clearAuditLogs: () => void;
 
   // Actions - Settings
   updateSettings: (newSettings: Partial<SystemSettings>) => void;
@@ -85,6 +91,7 @@ export const useAppStore = create<AppState>()(
       engineers: MOCK_ENGINEERS,
       evaluations: MOCK_EVALUATIONS,
       settings: DEFAULT_SETTINGS,
+      auditLogs: INITIAL_AUDIT_LOGS,
 
       searchQuery: "",
       setSearchQuery: (query) => set({ searchQuery: query }),
@@ -95,7 +102,7 @@ export const useAppStore = create<AppState>()(
 
       addEngineer: (eng) => {
         set((state) => ({ engineers: [eng, ...state.engineers] }));
-        recordAuditEvent({
+        const log = recordAuditEvent({
           adminId: get().currentUser.id,
           adminName: get().currentUser.name,
           action: "CREATE",
@@ -103,13 +110,14 @@ export const useAppStore = create<AppState>()(
           entityId: eng.id,
           newValues: JSON.stringify(eng),
         });
+        set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
       },
 
       updateEngineer: (eng) => {
         set((state) => ({
           engineers: state.engineers.map((e) => (e.id === eng.id ? eng : e)),
         }));
-        recordAuditEvent({
+        const log = recordAuditEvent({
           adminId: get().currentUser.id,
           adminName: get().currentUser.name,
           action: "UPDATE",
@@ -117,6 +125,7 @@ export const useAppStore = create<AppState>()(
           entityId: eng.id,
           newValues: JSON.stringify(eng),
         });
+        set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
       },
 
       softDeleteEngineer: (id) => {
@@ -126,7 +135,7 @@ export const useAppStore = create<AppState>()(
             e.id === id ? { ...e, deletedAt } : e
           ),
         }));
-        recordAuditEvent({
+        const log = recordAuditEvent({
           adminId: get().currentUser.id,
           adminName: get().currentUser.name,
           action: "SOFT_DELETE",
@@ -134,6 +143,7 @@ export const useAppStore = create<AppState>()(
           entityId: id,
           newValues: JSON.stringify({ deletedAt }),
         });
+        set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
       },
 
       restoreEngineer: (id) => {
@@ -142,7 +152,7 @@ export const useAppStore = create<AppState>()(
             e.id === id ? { ...e, deletedAt: null } : e
           ),
         }));
-        recordAuditEvent({
+        const log = recordAuditEvent({
           adminId: get().currentUser.id,
           adminName: get().currentUser.name,
           action: "RESTORE",
@@ -150,6 +160,7 @@ export const useAppStore = create<AppState>()(
           entityId: id,
           newValues: JSON.stringify({ deletedAt: null }),
         });
+        set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
       },
 
       bulkDeleteEngineers: (ids) => {
@@ -159,7 +170,7 @@ export const useAppStore = create<AppState>()(
             ids.includes(e.id) ? { ...e, deletedAt } : e
           ),
         }));
-        recordAuditEvent({
+        const log = recordAuditEvent({
           adminId: get().currentUser.id,
           adminName: get().currentUser.name,
           action: "BULK_DELETE",
@@ -167,11 +178,12 @@ export const useAppStore = create<AppState>()(
           entityId: ids.join(","),
           newValues: JSON.stringify({ count: ids.length, ids }),
         });
+        set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
       },
 
       addEvaluation: (evalItem) => {
         set((state) => ({ evaluations: [evalItem, ...state.evaluations] }));
-        recordAuditEvent({
+        const log = recordAuditEvent({
           adminId: get().currentUser.id,
           adminName: get().currentUser.name,
           action: "CREATE",
@@ -179,6 +191,7 @@ export const useAppStore = create<AppState>()(
           entityId: evalItem.id,
           newValues: JSON.stringify(evalItem),
         });
+        set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
       },
 
       updateEvaluation: (evalItem) => {
@@ -187,7 +200,7 @@ export const useAppStore = create<AppState>()(
             ev.id === evalItem.id ? evalItem : ev
           ),
         }));
-        recordAuditEvent({
+        const log = recordAuditEvent({
           adminId: get().currentUser.id,
           adminName: get().currentUser.name,
           action: "UPDATE",
@@ -195,11 +208,39 @@ export const useAppStore = create<AppState>()(
           entityId: evalItem.id,
           newValues: JSON.stringify(evalItem),
         });
+        set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
+      },
+
+      deleteEvaluation: (id) => {
+        set((state) => ({
+          evaluations: state.evaluations.filter((ev) => ev.id !== id),
+        }));
+        const log = recordAuditEvent({
+          adminId: get().currentUser.id,
+          adminName: get().currentUser.name,
+          action: "SOFT_DELETE",
+          entityType: "Evaluation",
+          entityId: id,
+        });
+        set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
+      },
+
+      deleteAuditLog: (id) => {
+        set((state) => {
+          const newLogs = state.auditLogs.filter((log) => log.id !== id);
+          setAuditLogs(newLogs);
+          return { auditLogs: newLogs };
+        });
+      },
+
+      clearAuditLogs: () => {
+        setAuditLogs([]);
+        set({ auditLogs: [] });
       },
 
       updateSettings: (newSettings) => {
         set((state) => ({ settings: { ...state.settings, ...newSettings } }));
-        recordAuditEvent({
+        const log = recordAuditEvent({
           adminId: get().currentUser.id,
           adminName: get().currentUser.name,
           action: "SETTINGS_CHANGE",
@@ -207,17 +248,19 @@ export const useAppStore = create<AppState>()(
           entityId: "system_settings",
           newValues: JSON.stringify(newSettings),
         });
+        set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
       },
 
       cmdOpen: false,
       setCmdOpen: (open) => set({ cmdOpen: open }),
     }),
     {
-      name: "wysbryx_intel_store_v2",
+      name: "wysbryx_intel_store_v3",
       partialize: (state) => ({
         themeAccent: state.themeAccent,
         engineers: state.engineers,
         evaluations: state.evaluations,
+        auditLogs: state.auditLogs,
         settings: state.settings,
         selectedQuarter: state.selectedQuarter,
         selectedYear: state.selectedYear,

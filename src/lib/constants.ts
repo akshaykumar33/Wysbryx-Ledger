@@ -160,3 +160,11 @@ export const TEAMS = [
   { id: "team_4", name: "Kubernetes & Infrastructure", departmentId: "dept_5", captainId: "user_cap_4", captainName: "David Miller" },
   { id: "team_5", name: "Data Lake & Analytics Engine", departmentId: "dept_1", captainId: "user_cap_1", captainName: "Elena Rostova" },
 ];
+
+export const DESIGNATIONS = [
+  { id: "desig_1", title: "Junior Software Engineer", level: "IC1" },
+  { id: "desig_2", title: "Software Engineer", level: "IC2" },
+  { id: "desig_3", title: "Senior Software Engineer", level: "Senior" },
+  { id: "desig_4", title: "Staff Engineer / Architect", level: "Staff" },
+  { id: "desig_5", title: "Principal AI Researcher", level: "Principal" },
+];

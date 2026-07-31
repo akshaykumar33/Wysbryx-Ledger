@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { MOCK_ENGINEERS, MOCK_EVALUATIONS } from "@/lib/mockData";
+import { useAppStore } from "@/lib/store";
 import { EVALUATION_PARAMETERS } from "@/lib/constants";
 import { getGradeInfo } from "@/lib/utils";
 import { ParameterRadarChart } from "@/components/dashboard/ParameterRadarChart";
@@ -24,18 +24,31 @@ import {
 export default function EngineerProfilePage() {
   const params = useParams();
   const router = useRouter();
+  const { engineers, evaluations } = useAppStore();
 
   const engId = params.id as string;
-  const engineer = MOCK_ENGINEERS.find((e) => e.id === engId) || MOCK_ENGINEERS[0];
-  const engineerEvals = MOCK_EVALUATIONS.filter((e) => e.engineerId === engineer.id);
-  const latestEval = engineerEvals[0] || MOCK_EVALUATIONS[0];
+  const engineer = (engineers || []).find((e) => e.id === engId) || engineers[0];
+
+  if (!engineer) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
+        <h2 className="text-xl font-bold text-neutral-900 dark:text-white">Engineer Profile Not Found</h2>
+        <button onClick={() => router.push("/engineers")} className="mt-4 text-xs text-indigo-500 font-mono">
+          ← Return to Engineers Directory
+        </button>
+      </div>
+    );
+  }
+
+  const engineerEvals = (evaluations || []).filter((e) => e.engineerId === engineer.id);
+  const latestEval = engineerEvals[0] || evaluations[0];
 
   const gradeInfo = getGradeInfo(engineer.avgScore || 0);
 
   // Parameter Radar Data for this specific engineer
   const radarData = React.useMemo(() => {
     return EVALUATION_PARAMETERS.map((p) => {
-      const ps = latestEval?.parameterScores?.find((x) => x.parameterKey === p.key);
+      const ps = latestEval?.parameterScores?.find((x) => x.parameterKey === p.key || x.parameterId === p.key);
       const rating = ps ? ps.rating : 4;
       return {
         parameter: p.name.split(" ")[0],
@@ -65,8 +78,8 @@ export default function EngineerProfilePage() {
       {/* Back link */}
       <div>
         <button
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+          onClick={() => router.push("/engineers")}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-neutral-900 dark:hover:text-white cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Engineers Directory</span>
@@ -95,7 +108,7 @@ export default function EngineerProfilePage() {
               {engineer.designation} • {engineer.departmentName}
             </p>
             <div className="flex flex-wrap items-center gap-3 pt-2 text-xs text-neutral-600 dark:text-neutral-400">
-              <span className="flex items-center gap-1"><UserCheck className="w-3.5 h-3.5 text-indigo-400" /> Captain: {engineer.captainName}</span>
+              <span className="flex items-center gap-1"><UserCheck className="w-3.5 h-3.5 text-indigo-400" /> Manager: {engineer.managerName || (engineer as any).captainName || "Executive Administrator"}</span>
               <span>•</span>
               <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-purple-400" /> Joined {engineer.joiningDate}</span>
               <span>•</span>
@@ -133,15 +146,19 @@ export default function EngineerProfilePage() {
                 <span>TOP STRENGTHS</span>
               </div>
               <div className="space-y-2">
-                {strengths.map((s, idx) => (
-                  <div key={idx} className="p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-emerald-500/20 text-xs">
-                    <div className="font-semibold text-neutral-900 dark:text-white flex items-center justify-between">
-                      <span>{s.parameterName}</span>
-                      <span className="font-mono text-emerald-500 font-bold">{s.rating} / 5</span>
+                {strengths.length === 0 ? (
+                  <div className="text-xs text-neutral-400 font-mono py-2">No evaluation evidence recorded yet.</div>
+                ) : (
+                  strengths.map((s, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-emerald-500/20 text-xs">
+                      <div className="font-semibold text-neutral-900 dark:text-white flex items-center justify-between">
+                        <span>{s.parameterName || s.parameterKey}</span>
+                        <span className="font-mono text-emerald-500 font-bold">{s.rating} / 5</span>
+                      </div>
+                      <p className="text-[11px] text-neutral-500 mt-1 line-clamp-2 font-mono">{s.evidenceUrl || s.evidence || "Verified deliverable impact."}</p>
                     </div>
-                    <p className="text-[11px] text-neutral-500 mt-1 line-clamp-2 font-mono">{s.evidence}</p>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
 
@@ -152,15 +169,19 @@ export default function EngineerProfilePage() {
                 <span>GROWTH OPPORTUNITIES</span>
               </div>
               <div className="space-y-2">
-                {weaknesses.map((w, idx) => (
-                  <div key={idx} className="p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-orange-500/20 text-xs">
-                    <div className="font-semibold text-neutral-900 dark:text-white flex items-center justify-between">
-                      <span>{w.parameterName}</span>
-                      <span className="font-mono text-orange-500 font-bold">{w.rating} / 5</span>
+                {weaknesses.length === 0 ? (
+                  <div className="text-xs text-neutral-400 font-mono py-2">No evaluation feedback recorded yet.</div>
+                ) : (
+                  weaknesses.map((w, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-orange-500/20 text-xs">
+                      <div className="font-semibold text-neutral-900 dark:text-white flex items-center justify-between">
+                        <span>{w.parameterName || w.parameterKey}</span>
+                        <span className="font-mono text-orange-500 font-bold">{w.rating} / 5</span>
+                      </div>
+                      <p className="text-[11px] text-neutral-500 mt-1 line-clamp-2">{w.improvementSuggestion || w.comments || "Continuous improvement advised."}</p>
                     </div>
-                    <p className="text-[11px] text-neutral-500 mt-1 line-clamp-2">{w.improvementSuggestion}</p>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           </div>
@@ -175,7 +196,7 @@ export default function EngineerProfilePage() {
             <div className="space-y-2">
               <div className="text-[10px] font-mono uppercase text-neutral-400 font-semibold">PRIMARY SKILLS</div>
               <div className="flex flex-wrap gap-1.5">
-                {engineer.primarySkills.map((sk, idx) => (
+                {(engineer.primarySkills || ["TypeScript"]).map((sk, idx) => (
                   <span
                     key={idx}
                     className="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 font-mono font-medium border border-indigo-500/20"
@@ -189,7 +210,7 @@ export default function EngineerProfilePage() {
             <div className="space-y-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
               <div className="text-[10px] font-mono uppercase text-neutral-400 font-semibold">SECONDARY SKILLS</div>
               <div className="flex flex-wrap gap-1.5">
-                {engineer.secondarySkills.map((sk, idx) => (
+                {(engineer.secondarySkills || ["System Architecture"]).map((sk, idx) => (
                   <span
                     key={idx}
                     className="text-xs px-2.5 py-1 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-mono"
@@ -209,24 +230,28 @@ export default function EngineerProfilePage() {
             </h3>
 
             <div className="space-y-3">
-              {engineerEvals.map((ev) => (
-                <div
-                  key={ev.id}
-                  className="p-3.5 rounded-xl border border-neutral-200/60 dark:border-neutral-800/60 bg-neutral-50/50 dark:bg-neutral-800/40 space-y-2 text-xs"
-                >
-                  <div className="flex items-center justify-between font-mono">
-                    <span className="font-bold text-neutral-900 dark:text-white">{ev.quarter} {ev.year}</span>
-                    <span className="text-indigo-400 font-bold">{ev.overallScore.toFixed(1)} / 100</span>
+              {engineerEvals.length === 0 ? (
+                <div className="text-xs text-neutral-400 font-mono py-2">No historical evaluations found.</div>
+              ) : (
+                engineerEvals.map((ev) => (
+                  <div
+                    key={ev.id}
+                    className="p-3.5 rounded-xl border border-neutral-200/60 dark:border-neutral-800/60 bg-neutral-50/50 dark:bg-neutral-800/40 space-y-2 text-xs"
+                  >
+                    <div className="flex items-center justify-between font-mono">
+                      <span className="font-bold text-neutral-900 dark:text-white">{ev.quarter} {ev.year}</span>
+                      <span className="text-indigo-400 font-bold">{ev.overallScore.toFixed(1)} / 100</span>
+                    </div>
+                    <p className="text-[11px] text-neutral-500 line-clamp-2">"{ev.comments}"</p>
+                    <div className="flex items-center justify-between text-[10px] text-neutral-400 pt-1">
+                      <span>Reviewer: {ev.reviewerName || ev.adminName}</span>
+                      <Link href={`/evaluations/${ev.id}`} className="text-indigo-500 hover:underline flex items-center gap-1 font-mono">
+                        Report <ExternalLink className="w-2.5 h-2.5" />
+                      </Link>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-neutral-500 line-clamp-2">"{ev.comments}"</p>
-                  <div className="flex items-center justify-between text-[10px] text-neutral-400 pt-1">
-                    <span>Reviewer: {ev.reviewerName}</span>
-                    <Link href={`/evaluations/${ev.id}`} className="text-indigo-500 hover:underline flex items-center gap-1 font-mono">
-                      Report <ExternalLink className="w-2.5 h-2.5" />
-                    </Link>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </div>

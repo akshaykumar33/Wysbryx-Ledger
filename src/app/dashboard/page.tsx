@@ -11,7 +11,6 @@ import { HeatmapMatrix } from "@/components/dashboard/HeatmapMatrix";
 import { LeaderboardTable } from "@/components/dashboard/LeaderboardTable";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { PageWrapper } from "@/components/layout/PageWrapper";
-import { MOCK_ENGINEERS, MOCK_EVALUATIONS } from "@/lib/mockData";
 import { DEPARTMENTS, TEAMS, EVALUATION_PARAMETERS } from "@/lib/constants";
 import { useAppStore } from "@/lib/store";
 import { Download, PlusCircle } from "lucide-react";
@@ -19,6 +18,8 @@ import { exportToCSV } from "@/lib/export";
 
 export default function DashboardPage() {
   const {
+    engineers,
+    evaluations,
     selectedQuarter,
     selectedYear,
     filterDepartment,
@@ -31,18 +32,19 @@ export default function DashboardPage() {
     ...DEPARTMENTS.map((d) => ({ value: d.id, label: d.name })),
   ];
 
-  // Filtered engineers based on selections
+  // Filtered engineers based on selections (excluding soft-deleted ones)
   const filteredEngineers = React.useMemo(() => {
-    return MOCK_ENGINEERS.filter((eng) => {
+    return (engineers || []).filter((eng) => {
+      if (eng.deletedAt) return false;
       if (filterDepartment !== "ALL" && eng.departmentId !== filterDepartment) return false;
-      if (filterCaptain !== "ALL" && eng.captainId !== filterCaptain) return false;
+      if (filterCaptain !== "ALL" && (eng as any).captainId !== filterCaptain) return false;
       return true;
     });
-  }, [filterDepartment, filterCaptain]);
+  }, [engineers, filterDepartment, filterCaptain]);
 
   // Overall metrics calculation
   const totalEngineers = filteredEngineers.length;
-  const completedEvals = MOCK_EVALUATIONS.length;
+  const completedEvals = (evaluations || []).length;
   const totalScoreSum = filteredEngineers.reduce((acc, curr) => acc + (curr.avgScore || 0), 0);
   const avgScore = totalEngineers > 0 ? totalScoreSum / totalEngineers : 0;
 
@@ -93,8 +95,8 @@ export default function DashboardPage() {
     return EVALUATION_PARAMETERS.map((p) => {
       let sum = 0;
       let count = 0;
-      MOCK_EVALUATIONS.forEach((ev) => {
-        const ps = ev.parameterScores.find((x) => x.parameterKey === p.key);
+      (evaluations || []).forEach((ev) => {
+        const ps = ev.parameterScores?.find((x) => x.parameterKey === p.key || x.parameterId === p.key);
         if (ps) {
           sum += (ps.rating / 5) * 100;
           count++;
@@ -107,12 +109,12 @@ export default function DashboardPage() {
         fullMark: 100,
       };
     });
-  }, []);
+  }, [evaluations]);
 
   // Department Comparison Data
   const deptData = React.useMemo(() => {
     return DEPARTMENTS.map((d) => {
-      const engsInDept = MOCK_ENGINEERS.filter((e) => e.departmentId === d.id);
+      const engsInDept = (engineers || []).filter((e) => !e.deletedAt && e.departmentId === d.id);
       const sum = engsInDept.reduce((acc, curr) => acc + (curr.avgScore || 0), 0);
       const avg = engsInDept.length > 0 ? sum / engsInDept.length : 0;
       return {
@@ -121,7 +123,7 @@ export default function DashboardPage() {
         engineerCount: engsInDept.length,
       };
     });
-  }, []);
+  }, [engineers]);
 
   // Quarter Trend Data
   const quarterTrendData = [
@@ -129,7 +131,7 @@ export default function DashboardPage() {
     { quarter: "Q4 2025", avgScore: 83.5, evaluationsCount: 22 },
     { quarter: "Q1 2026", avgScore: 85.0, evaluationsCount: 24 },
     { quarter: "Q2 2026", avgScore: 86.8, evaluationsCount: 28 },
-    { quarter: "Q3 2026", avgScore: 87.4, evaluationsCount: 30 },
+    { quarter: `${selectedQuarter} ${selectedYear}`, avgScore: avgScore || 87.4, evaluationsCount: completedEvals },
   ];
 
   // Heatmap Data
@@ -176,8 +178,8 @@ export default function DashboardPage() {
           </div>
 
           <button
-            onClick={() => exportToCSV(MOCK_EVALUATIONS, `evaluations_${selectedQuarter}_${selectedYear}.csv`)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-medium text-neutral-800 dark:text-neutral-200 transition-all shadow-xs"
+            onClick={() => exportToCSV(evaluations || [], `evaluations_${selectedQuarter}_${selectedYear}.csv`)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-medium text-neutral-800 dark:text-neutral-200 transition-all shadow-xs cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>

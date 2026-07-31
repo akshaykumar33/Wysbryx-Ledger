@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,7 +17,7 @@ import {
   ChevronUp,
   Clock,
   Lock,
-  UserPlus,
+  ArrowLeft,
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { EVALUATION_PARAMETERS, calculateEvaluationGrade } from "@/lib/constants";
@@ -25,7 +25,6 @@ import { ParameterScoreInput, Evaluation } from "@/lib/types";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { Badge } from "@/components/ui/Badge";
-import { AddEngineerModal } from "@/components/ui/AddEngineerModal";
 
 const evaluationSchema = z.object({
   engineerId: z.string().min(1, "Engineer selection is required"),
@@ -46,21 +45,40 @@ const evaluationSchema = z.object({
 
 type FormValues = z.infer<typeof evaluationSchema>;
 
-export default function NewEvaluationPage() {
+export default function EditEvaluationPage() {
+  const params = useParams();
   const router = useRouter();
-  const { addEvaluation, currentUser, engineers } = useAppStore();
+  const evalId = params.id as string;
+
+  const { evaluations, updateEvaluation, engineers, currentUser } = useAppStore();
+  const existingEval = evaluations.find((e) => e.id === evalId);
 
   const [collapsedSections, setCollapsedSections] = React.useState<Record<string, boolean>>({});
-  const [lastSaved, setLastSaved] = React.useState<string | null>(null);
-  const [addModalOpen, setAddModalOpen] = React.useState(false);
 
-  const defaultParameters = EVALUATION_PARAMETERS.map((p) => ({
-    parameterKey: p.key,
-    rating: 4,
-    weight: p.weight,
-    comments: "",
-    evidenceUrl: "",
-  }));
+  const defaultParameters = React.useMemo(() => {
+    if (!existingEval) {
+      return EVALUATION_PARAMETERS.map((p) => ({
+        parameterKey: p.key,
+        rating: 4,
+        weight: p.weight,
+        comments: "",
+        evidenceUrl: "",
+      }));
+    }
+
+    return EVALUATION_PARAMETERS.map((p) => {
+      const found = existingEval.parameterScores?.find(
+        (ps) => ps.parameterKey === p.key || ps.parameterId === p.key
+      );
+      return {
+        parameterKey: p.key,
+        rating: found ? found.rating : 4,
+        weight: p.weight,
+        comments: found?.comments || "",
+        evidenceUrl: found?.evidenceUrl || found?.evidence || "",
+      };
+    });
+  }, [existingEval]);
 
   const {
     register,
@@ -72,11 +90,11 @@ export default function NewEvaluationPage() {
   } = useForm<FormValues>({
     resolver: zodResolver(evaluationSchema),
     defaultValues: {
-      engineerId: engineers[0]?.id || "eng_1",
-      quarter: "Q3",
-      year: 2026,
-      evaluationDate: new Date().toISOString().split("T")[0],
-      comments: "",
+      engineerId: existingEval?.engineerId || engineers[0]?.id || "eng_1",
+      quarter: existingEval?.quarter || "Q3",
+      year: existingEval?.year || 2026,
+      evaluationDate: existingEval?.evaluationDate || new Date().toISOString().split("T")[0],
+      comments: existingEval?.comments || "",
       parameterScores: defaultParameters,
     },
   });
@@ -88,10 +106,8 @@ export default function NewEvaluationPage() {
 
   const watchedScores = watch("parameterScores");
   const selectedEngineerId = watch("engineerId");
-
   const selectedEngineer = engineers.find((e) => e.id === selectedEngineerId);
 
-  // Calculate live weighted score sum: sum((rating / 5) * weight * 100)
   const calculatedScore = React.useMemo(() => {
     if (!watchedScores) return 0;
     let sum = 0;
@@ -103,51 +119,48 @@ export default function NewEvaluationPage() {
 
   const gradeInfo = calculateEvaluationGrade(calculatedScore);
 
-  // Auto-save draft timestamp trigger
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      setLastSaved(`Autosaved at ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`);
-    }, 15000);
-    return () => clearInterval(interval);
-  }, []);
+  if (!existingEval) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
+        <h2 className="text-xl font-bold text-neutral-900 dark:text-white">Evaluation Not Found</h2>
+        <button onClick={() => router.push("/evaluations")} className="mt-4 text-xs text-indigo-500 font-mono">
+          ← Return to Evaluations
+        </button>
+      </div>
+    );
+  }
 
   const toggleSection = (id: string) => {
     setCollapsedSections((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const onSubmit = (data: FormValues) => {
-    const newEval: Evaluation = {
-      id: `eval_${Date.now()}`,
-      cycleTitle: `${data.quarter} ${data.year} Performance Intelligence Review`,
-      engineerId: data.engineerId,
-      engineerName: selectedEngineer?.fullName || "Engineer",
-      engineerEmail: selectedEngineer?.email || "",
-      engineerDesignation: selectedEngineer?.designation || "",
-      engineerDepartment: selectedEngineer?.departmentName || "",
-      engineerPhoto: selectedEngineer?.photoUrl || "",
-      adminId: currentUser.id,
-      adminName: currentUser.name,
-      adminEmail: currentUser.email,
-      evaluationDate: data.evaluationDate,
+    const updatedEval: Evaluation = {
+      ...existingEval,
       quarter: data.quarter,
       year: data.year,
+      evaluationDate: data.evaluationDate,
+      engineerId: data.engineerId,
+      engineerName: selectedEngineer?.fullName || existingEval.engineerName,
+      engineerEmail: selectedEngineer?.email || existingEval.engineerEmail,
+      engineerDesignation: selectedEngineer?.designation || existingEval.engineerDesignation,
+      engineerDepartment: selectedEngineer?.departmentName || existingEval.engineerDepartment,
+      engineerPhoto: selectedEngineer?.photoUrl || existingEval.engineerPhoto,
       overallScore: calculatedScore,
       percentage: calculatedScore,
       grade: gradeInfo.grade,
       gradeLabel: gradeInfo.label,
       comments: data.comments || "",
-      status: "Completed",
       parameterScores: data.parameterScores as ParameterScoreInput[],
-      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
-    addEvaluation(newEval);
-    toast.success("Evaluation submitted successfully & logged in Audit Trail!", {
-      description: `Overall Score: ${calculatedScore.toFixed(1)} (${gradeInfo.grade} - ${gradeInfo.label})`,
+    updateEvaluation(updatedEval);
+    toast.success("Evaluation modified & updated in Audit Trail!", {
+      description: `New Score: ${calculatedScore.toFixed(1)} (${gradeInfo.grade} - ${gradeInfo.label})`,
     });
 
-    router.push("/evaluations");
+    router.push(`/evaluations/${existingEval.id}`);
   };
 
   const engineerOptions = engineers.map((eng) => ({
@@ -165,36 +178,29 @@ export default function NewEvaluationPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Modal to add new engineer on the fly */}
-      <AddEngineerModal
-        open={addModalOpen}
-        onOpenChange={setAddModalOpen}
-        onSuccess={(eng) => setValue("engineerId", eng.id)}
-      />
-
-      {/* Notion-Stripe Sticky Top Navigation Bar */}
+      {/* Sticky Bar */}
       <div className="sticky top-16 z-30 p-4 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-primary/10 text-primary">
-            <ShieldCheck className="w-5 h-5" />
-          </div>
+          <button
+            onClick={() => router.back()}
+            className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-300 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-bold uppercase text-primary">ADMIN GOVERNANCE</span>
-              <span className="text-[10px] font-mono text-neutral-400 flex items-center gap-1">
-                <Clock className="w-2.5 h-2.5" /> {lastSaved || "Draft Ready"}
-              </span>
+              <span className="text-[10px] font-mono font-bold uppercase text-amber-500">EDITING EVALUATION</span>
+              <span className="text-[10px] font-mono text-neutral-400">ID: {existingEval.id}</span>
             </div>
             <h1 className="text-lg font-bold text-neutral-900 dark:text-white">
-              Evaluation Workspace & Score Calculator
+              Modify Evaluation: {existingEval.engineerName}
             </h1>
           </div>
         </div>
 
-        {/* Live Score Floating Badge */}
         <div className="flex items-center gap-4">
           <div className="text-right">
-            <div className="text-[10px] font-mono uppercase text-neutral-400 font-bold">LIVE WEIGHTED MATRIX</div>
+            <div className="text-[10px] font-mono uppercase text-neutral-400 font-bold">RECALCULATED SCORE</div>
             <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white">
               {calculatedScore.toFixed(1)} <span className="text-xs text-neutral-400">/ 100</span>
             </div>
@@ -210,23 +216,12 @@ export default function NewEvaluationPage() {
         <div className="p-6 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 shadow-sm space-y-6">
           <div className="flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-800 pb-3">
             <User className="w-4 h-4 text-primary" />
-            <h2 className="text-base font-bold text-neutral-900 dark:text-white">1. Select Target Engineer & Evaluation Cycle</h2>
+            <h2 className="text-base font-bold text-neutral-900 dark:text-white">Target Engineer & Cycle Metadata</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Target Engineer *</label>
-                <button
-                  type="button"
-                  onClick={() => setAddModalOpen(true)}
-                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-500 hover:text-indigo-400 cursor-pointer"
-                >
-                  <UserPlus className="w-3.5 h-3.5" />
-                  <span>+ Add User</span>
-                </button>
-              </div>
-
+              <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Target Engineer</label>
               <Controller
                 control={control}
                 name="engineerId"
@@ -235,7 +230,6 @@ export default function NewEvaluationPage() {
                     options={engineerOptions}
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder="Search & select engineer..."
                   />
                 )}
               />
@@ -290,17 +284,14 @@ export default function NewEvaluationPage() {
           </div>
         </div>
 
-        {/* CARD 2: COLLAPSIBLE PARAMETER CARDS */}
+        {/* CARD 2: PARAMETER CARDS */}
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
             <div>
               <h2 className="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-primary" />
-                <span>2. Parameter Score & Evidence Ratings (8 Metrics)</span>
+                <span>Modify Parameter Ratings & Evidence</span>
               </h2>
-              <p className="text-xs text-neutral-500 mt-0.5">
-                Every rating requires supporting evidence links (PRs, doc URLs, benchmarks).
-              </p>
             </div>
           </div>
 
@@ -343,7 +334,6 @@ export default function NewEvaluationPage() {
 
                   {!isCollapsed && (
                     <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800/60 grid grid-cols-1 md:grid-cols-12 gap-6 animate-fade">
-                      {/* Rating Buttons */}
                       <div className="md:col-span-4 space-y-2">
                         <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Rating Scale (1 to 5)</label>
                         <div className="grid grid-cols-5 gap-1.5">
@@ -364,15 +354,14 @@ export default function NewEvaluationPage() {
                         </div>
                       </div>
 
-                      {/* Evidence PR Link */}
                       <div className="md:col-span-8 space-y-2">
                         <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
                           <Link2 className="w-3.5 h-3.5 text-primary" />
-                          <span>Evidence URL / PR Link (Mandatory Proof)</span>
+                          <span>Evidence URL / PR Link</span>
                         </label>
                         <input
                           type="url"
-                          placeholder="https://github.com/org/repo/pull/123 or architecture spec link"
+                          placeholder="https://github.com/org/repo/pull/123"
                           {...register(`parameterScores.${index}.evidenceUrl`)}
                           className="w-full px-3.5 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-xs font-mono text-neutral-900 dark:text-white placeholder:text-neutral-500 focus:ring-2 focus:ring-primary/50 focus:outline-none"
                         />
@@ -392,9 +381,8 @@ export default function NewEvaluationPage() {
           </label>
           <textarea
             rows={4}
-            placeholder="Synthesize overall engineering impact, mentorship contributions, and targeted upskilling objectives for Q4..."
             {...register("comments")}
-            className="w-full p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-xs font-sans text-neutral-900 dark:text-white placeholder:text-neutral-500 focus:ring-2 focus:ring-primary/50 focus:outline-none"
+            className="w-full p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-xs font-sans text-neutral-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:outline-none"
           />
 
           <div className="pt-2 flex items-center justify-between border-t border-neutral-100 dark:border-neutral-800">
@@ -406,7 +394,7 @@ export default function NewEvaluationPage() {
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => router.push("/evaluations")}
+                onClick={() => router.push(`/evaluations/${existingEval.id}`)}
                 className="px-4 py-2.5 rounded-xl border border-neutral-300 dark:border-neutral-800 text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
               >
                 Cancel
@@ -414,10 +402,10 @@ export default function NewEvaluationPage() {
 
               <button
                 type="submit"
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs shadow-lg shadow-primary/25 hover:opacity-90 transition-all cursor-pointer"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow-lg shadow-amber-500/25 transition-all cursor-pointer"
               >
-                <Send className="w-4 h-4" />
-                <span>Submit Evaluation</span>
+                <Save className="w-4 h-4" />
+                <span>Save Changes</span>
               </button>
             </div>
           </div>

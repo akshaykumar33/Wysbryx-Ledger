@@ -84,15 +84,17 @@ export interface EvaluationParameter {
 }
 
 export interface ParameterScoreInput {
-  parameterId: string;
+  parameterId?: string;
   categoryId?: string;
   parameterKey: string;
-  parameterName: string;
+  parameterName?: string;
   rating: number; // 1 to 5
   weight: number;
-  evidence: string;
+  evidence?: string;
+  evidenceUrl?: string;
   strength?: string;
-  improvementSuggestion: string;
+  improvementSuggestion?: string;
+  comments?: string;
   notes?: string;
 }
 

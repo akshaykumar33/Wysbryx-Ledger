@@ -7,6 +7,7 @@ import { DEPARTMENTS } from "@/lib/constants";
 import { getGradeInfo } from "@/lib/utils";
 import { exportToCSV } from "@/lib/export";
 import { CustomSelect } from "@/components/ui/CustomSelect";
+import { AddEngineerModal } from "@/components/ui/AddEngineerModal";
 import { toast } from "sonner";
 import {
   Search,
@@ -16,6 +17,7 @@ import {
   Download,
   CheckSquare,
   Square,
+  UserPlus,
 } from "lucide-react";
 
 export default function EngineersDirectoryPage() {
@@ -24,6 +26,7 @@ export default function EngineersDirectoryPage() {
   const [deptFilter, setDeptFilter] = React.useState("ALL");
   const [showArchived, setShowArchived] = React.useState(false);
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
+  const [addModalOpen, setAddModalOpen] = React.useState(false);
 
   const deptOptions = [
     { value: "ALL", label: "All Departments" },
@@ -70,6 +73,9 @@ export default function EngineersDirectoryPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Add Engineer Modal */}
+      <AddEngineerModal open={addModalOpen} onOpenChange={setAddModalOpen} />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
         <div>
@@ -102,11 +108,19 @@ export default function EngineersDirectoryPage() {
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
           </button>
+
+          <button
+            onClick={() => setAddModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md transition-all cursor-pointer"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span>Add User / Engineer</span>
+          </button>
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-xs">
         <div className="flex items-center gap-2 w-full sm:w-80">
           <Search className="w-4 h-4 text-neutral-400" />
           <input
@@ -149,7 +163,7 @@ export default function EngineersDirectoryPage() {
           return (
             <div
               key={eng.id}
-              className={`p-6 rounded-2xl border bg-white dark:bg-neutral-900 shadow-sm space-y-4 transition-all relative group ${
+              className={`p-6 rounded-2xl border bg-white dark:bg-neutral-900 shadow-xs space-y-4 transition-all relative group ${
                 isSelected
                   ? "border-indigo-500 ring-1 ring-indigo-500"
                   : "border-neutral-200/80 dark:border-neutral-800/80 hover:border-neutral-400 dark:hover:border-neutral-600"
@@ -157,7 +171,7 @@ export default function EngineersDirectoryPage() {
             >
               {/* Top Bar with Select checkbox & Action */}
               <div className="flex items-center justify-between">
-                <button onClick={() => toggleSelect(eng.id)} className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white">
+                <button onClick={() => toggleSelect(eng.id)} className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white cursor-pointer">
                   {isSelected ? <CheckSquare className="w-4 h-4 text-indigo-500" /> : <Square className="w-4 h-4" />}
                 </button>
 
@@ -172,7 +186,7 @@ export default function EngineersDirectoryPage() {
                         restoreEngineer(eng.id);
                         toast.success(`Restored ${eng.fullName}`);
                       }}
-                      className="p-1.5 rounded-lg text-emerald-500 hover:bg-emerald-500/10"
+                      className="p-1.5 rounded-lg text-emerald-500 hover:bg-emerald-500/10 cursor-pointer"
                       title="Restore"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
@@ -188,7 +202,7 @@ export default function EngineersDirectoryPage() {
                           },
                         });
                       }}
-                      className="p-1.5 rounded-lg text-neutral-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
+                      className="p-1.5 rounded-lg text-neutral-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                       title="Soft delete"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -199,7 +213,7 @@ export default function EngineersDirectoryPage() {
 
               {/* Profile info */}
               <div className="flex items-center gap-3">
-                <img src={eng.photoUrl} alt={eng.fullName} className="w-12 h-12 rounded-full object-cover shadow-sm" />
+                <img src={eng.photoUrl} alt={eng.fullName} className="w-12 h-12 rounded-full object-cover shadow-xs" />
                 <div>
                   <h3 className="text-base font-bold text-neutral-900 dark:text-white">{eng.fullName}</h3>
                   <p className="text-xs text-neutral-500">{eng.designation}</p>

@@ -2,20 +2,22 @@
 
 import * as React from "react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
-import { MOCK_ENGINEERS, MOCK_EVALUATIONS } from "@/lib/mockData";
+import { useAppStore } from "@/lib/store";
 import { EVALUATION_PARAMETERS } from "@/lib/constants";
 import { TrendingUp, AlertCircle, BarChart2 } from "lucide-react";
 import { PageWrapper } from "@/components/layout/PageWrapper";
 import { Badge } from "@/components/ui/Badge";
 
 export default function AnalyticsPage() {
+  const { engineers, evaluations } = useAppStore();
+
   // Parameter Competency Scores
   const parameterAnalytics = React.useMemo(() => {
     return EVALUATION_PARAMETERS.map((p) => {
       let sum = 0;
       let count = 0;
-      MOCK_EVALUATIONS.forEach((ev) => {
-        const ps = ev.parameterScores.find((x) => x.parameterKey === p.key);
+      (evaluations || []).forEach((ev) => {
+        const ps = ev.parameterScores?.find((x) => x.parameterKey === p.key || x.parameterId === p.key);
         if (ps) {
           sum += (ps.rating / 5.0) * 100;
           count++;
@@ -26,21 +28,22 @@ export default function AnalyticsPage() {
         shortName: p.name.split(" ")[0],
         avgScore: count > 0 ? sum / count : 82,
         weight: p.weight,
-        category: p.category || p.categoryId || "Technical",
+        category: p.category || (p as any).categoryId || "Technical",
       };
     }).sort((a, b) => b.avgScore - a.avgScore);
-  }, []);
+  }, [evaluations]);
 
   const topStrengths = parameterAnalytics.slice(0, 3);
   const skillGaps = [...parameterAnalytics].reverse().slice(0, 3);
 
   // Experience level analytics
   const experienceAnalytics = React.useMemo(() => {
-    const junior = MOCK_ENGINEERS.filter((e) => e.experienceYears < 3);
-    const mid = MOCK_ENGINEERS.filter((e) => e.experienceYears >= 3 && e.experienceYears < 7);
-    const senior = MOCK_ENGINEERS.filter((e) => e.experienceYears >= 7);
+    const activeEngs = (engineers || []).filter((e) => !e.deletedAt);
+    const junior = activeEngs.filter((e) => e.experienceYears < 3);
+    const mid = activeEngs.filter((e) => e.experienceYears >= 3 && e.experienceYears < 7);
+    const senior = activeEngs.filter((e) => e.experienceYears >= 7);
 
-    const calcAvg = (arr: typeof MOCK_ENGINEERS) =>
+    const calcAvg = (arr: typeof activeEngs) =>
       arr.length > 0 ? arr.reduce((acc, curr) => acc + (curr.avgScore || 0), 0) / arr.length : 0;
 
     return [
@@ -48,7 +51,7 @@ export default function AnalyticsPage() {
       { tier: "Mid-Level (3-7 yrs)", avgScore: calcAvg(mid), count: mid.length },
       { tier: "Senior / Principal (7+ yrs)", avgScore: calcAvg(senior), count: senior.length },
     ];
-  }, []);
+  }, [engineers]);
 
   return (
     <PageWrapper className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
