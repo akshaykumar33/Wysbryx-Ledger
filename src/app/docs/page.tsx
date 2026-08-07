@@ -199,35 +199,72 @@ export default function PlatformDocumentationPage() {
                 </div>
               </section>
 
-              {/* Section 2: Login & Roll */}
-              <section id="w1-login" className="p-8 rounded-3xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl shadow-sm space-y-4">
+              {/* Section 2: Onboarding & Candidate Roll */}
+              <section id="w1-login" className="p-8 rounded-3xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl shadow-sm space-y-6">
                 <div className="flex items-center gap-2 text-cyan-400 font-bold text-lg border-b border-neutral-100 dark:border-neutral-800 pb-3">
-                  <UserCheck className="w-5 h-5" />
-                  <h2>2. Evaluator Authentication & Candidate Allocation Workflow</h2>
+                  <Dices className="w-5 h-5" />
+                  <h2>2. Onboarding, Evaluator Login & Candidate Roll Workflow</h2>
                 </div>
 
+                <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed font-sans">
+                  The candidate assignment system uses a deterministic single-roll engine to distribute candidates fairly across evaluators. Follow these 4 steps to get started:
+                </p>
+
                 <div className="space-y-4 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
-                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                    <span className="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 font-mono font-bold flex items-center justify-center shrink-0">1</span>
-                    <div>
-                      <strong className="text-neutral-900 dark:text-white block font-bold mb-0.5">Enter Evaluator Name:</strong>
-                      Type your full name on the World 1 main roster page (`/ai-eval`). The system will provide real-time matching feedback. Admin access is automatically granted for designated leadership profiles (Praveen, Krishna).
+                  {/* Step 1 */}
+                  <div className="flex items-start gap-4 p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-950/60 border border-neutral-200/60 dark:border-neutral-800">
+                    <span className="w-8 h-8 rounded-xl bg-cyan-500/15 text-cyan-400 font-mono font-extrabold flex items-center justify-center shrink-0 border border-cyan-500/25">1</span>
+                    <div className="space-y-1">
+                      <strong className="text-neutral-900 dark:text-white font-bold text-sm block">Select World 1 Environment</strong>
+                      <p className="text-xs text-neutral-500 leading-relaxed">
+                        On the root portal hub (`/`), click <strong className="text-cyan-400">Enter World 1</strong> on the Wysbryx AI Evaluation card to enter the specialized candidate evaluation workspace.
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                    <span className="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 font-mono font-bold flex items-center justify-center shrink-0">2</span>
-                    <div>
-                      <strong className="text-neutral-900 dark:text-white block font-bold mb-0.5">Trigger Single-Roll Allocation:</strong>
-                      Click <strong className="text-cyan-400">Roll Assigned Candidates</strong>. The allocation generator distributes candidates across evaluators cleanly. Your allocation state persists permanently.
+                  {/* Step 2 */}
+                  <div className="flex items-start gap-4 p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-950/60 border border-neutral-200/60 dark:border-neutral-800">
+                    <span className="w-8 h-8 rounded-xl bg-cyan-500/15 text-cyan-400 font-mono font-extrabold flex items-center justify-center shrink-0 border border-cyan-500/25">2</span>
+                    <div className="space-y-1.5">
+                      <strong className="text-neutral-900 dark:text-white font-bold text-sm block">Enter Evaluator Name (Real-Time Match & Admin Access)</strong>
+                      <p className="text-xs text-neutral-500 leading-relaxed">
+                        Type your full name in the evaluator login input field. The engine provides instant regex matching feedback:
+                      </p>
+                      <ul className="list-disc list-inside space-y-1 text-xs text-neutral-400 font-mono pt-1">
+                        <li><strong className="text-cyan-400">Real-Time Validation:</strong> Shows live feedback as you type (e.g., <em>"✔ Valid Evaluator Match: Praveen"</em>).</li>
+                        <li><strong className="text-amber-400">Admin Bypass:</strong> Evaluators identified as designated leadership (<em>Praveen</em>, <em>Krishna</em>) automatically unlock an <strong>ADMIN</strong> badge with full organization roster access.</li>
+                      </ul>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200/60 dark:border-neutral-700/60">
-                    <span className="w-6 h-6 rounded-lg bg-cyan-500/20 text-cyan-400 font-mono font-bold flex items-center justify-center shrink-0">3</span>
-                    <div>
-                      <strong className="text-neutral-900 dark:text-white block font-bold mb-0.5">Access Candidate Evaluation Card:</strong>
-                      Your assigned candidate cards will appear on the dashboard. Click <strong className="text-cyan-400">AI Audit</strong> to open the interactive candidate workspace.
+                  {/* Step 3 */}
+                  <div className="flex items-start gap-4 p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-950/60 border border-neutral-200/60 dark:border-neutral-800">
+                    <span className="w-8 h-8 rounded-xl bg-cyan-500/15 text-cyan-400 font-mono font-extrabold flex items-center justify-center shrink-0 border border-cyan-500/25">3</span>
+                    <div className="space-y-1.5">
+                      <strong className="text-neutral-900 dark:text-white font-bold text-sm block">Trigger Candidate Roll Engine (Single-Roll Rule)</strong>
+                      <p className="text-xs text-neutral-500 leading-relaxed">
+                        Click <strong className="text-cyan-400">Roll Assigned Candidates</strong>. The allocation generator initializes an interactive distribution sequence:
+                      </p>
+                      <div className="p-3.5 rounded-xl bg-neutral-900 border border-neutral-800 text-[11px] font-mono text-cyan-300 space-y-1">
+                        <div>[1/4] Initializing Quantum Random Generator...</div>
+                        <div>[2/4] Partitioning Employee Pool across Evaluators...</div>
+                        <div>[3/4] Verifying Equal Workload Distribution...</div>
+                        <div>[4/4] Finalizing Candidate Allocation Commit.</div>
+                      </div>
+                      <p className="text-[11px] text-amber-400/90 font-mono">
+                        ⚡ <strong>Single-Roll Guarantee:</strong> Candidate allocation is permanent per evaluator. Once rolled, your assigned candidates remain assigned to your profile across logins.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Step 4 */}
+                  <div className="flex items-start gap-4 p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-950/60 border border-neutral-200/60 dark:border-neutral-800">
+                    <span className="w-8 h-8 rounded-xl bg-cyan-500/15 text-cyan-400 font-mono font-extrabold flex items-center justify-center shrink-0 border border-cyan-500/25">4</span>
+                    <div className="space-y-1">
+                      <strong className="text-neutral-900 dark:text-white font-bold text-sm block">Access Your Candidate Roster & Open Workspace</strong>
+                      <p className="text-xs text-neutral-500 leading-relaxed">
+                        Your assigned candidate cards (e.g. <em>Akash Upadhyay</em>, <em>Sophia Chen</em>) will render on the main dashboard. Filter by department or evaluation status, then click <strong className="text-cyan-400">AI Audit</strong> to open the candidate's workspace.
+                      </p>
                     </div>
                   </div>
                 </div>
