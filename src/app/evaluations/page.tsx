@@ -168,7 +168,7 @@ export default function EvaluationsListPage() {
                       </Link>
 
                       <button
-                        onClick={() => handleDelete(item.id, item.engineerName)}
+                        onClick={() => handleDelete(item.id, item.engineerName || "Engineer")}
                         className="p-1 rounded-lg text-neutral-400 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                         title="Delete Evaluation"
                       >

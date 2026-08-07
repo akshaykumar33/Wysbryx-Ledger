@@ -14,6 +14,7 @@ import {
   Settings,
   PlusCircle,
   Search,
+  Bot,
 } from "lucide-react";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useAppStore } from "@/lib/store";
@@ -21,6 +22,12 @@ import { useAppStore } from "@/lib/store";
 export function FloatingDock() {
   const pathname = usePathname();
   const { setCmdOpen } = useAppStore();
+
+  // Hide FloatingDock on root portal landing page and World 1 (AI Evaluation) routes
+  if (pathname === "/" || pathname?.startsWith("/ai-eval")) {
+    return null;
+  }
+
 
   const dockItems = [
     { href: "/dashboard", label: "Executive Dashboard", icon: <BarChart3 className="w-4 h-4" /> },
@@ -77,6 +84,17 @@ export function FloatingDock() {
           >
             <Search className="w-4 h-4" />
           </button>
+        </Tooltip>
+
+        {/* Switch to World 1 Button */}
+        <Tooltip content="Switch to World 1 (AI Evaluation Engine)">
+          <Link
+            href="/ai-eval"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20 font-mono font-bold text-xs shadow-xs transition-transform hover:scale-105"
+          >
+            <Bot className="w-4 h-4 text-cyan-400" />
+            <span className="hidden lg:inline">World 1</span>
+          </Link>
         </Tooltip>
 
         {/* Dynamic Brand Accent Action Button */}

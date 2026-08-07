@@ -2,15 +2,24 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Search, Command, ShieldCheck } from "lucide-react";
+import { Search, Command, ShieldCheck, Bot } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { WysbryxLogo } from "@/components/ui/WysbryxLogo";
 import { useAppStore } from "@/lib/store";
 
+import { usePathname } from "next/navigation";
+
 export function Navbar() {
+  const pathname = usePathname();
   const { setCmdOpen, selectedQuarter, selectedYear, setSelectedCycle } = useAppStore();
+
+  // Hide legacy navbar on Root landing and World 1 (AI Evaluation) routes for clean isolation
+  if (pathname === "/" || pathname?.startsWith("/ai-eval")) {
+    return null;
+  }
+
 
   const cycleOptions = [
     { value: "Q3_2026", label: "Q3 2026", sublabel: "Active Evaluation Cycle" },
@@ -59,6 +68,16 @@ export function Navbar() {
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>ADMIN GOVERNANCE</span>
           </div>
+
+          {/* Switch to World 1 Action Button */}
+          <Link
+            href="/ai-eval"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 text-xs font-mono font-bold transition-all shadow-xs"
+            title="Switch to World 1: AI Evaluation Engine"
+          >
+            <Bot className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden sm:inline">Switch to World 1</span>
+          </Link>
 
           <ThemeToggle />
         </div>

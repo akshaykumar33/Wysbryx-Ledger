@@ -4,7 +4,16 @@ import Link from "next/link";
 import { Shield } from "lucide-react";
 import { WysbryxLogo } from "@/components/ui/WysbryxLogo";
 
+import { usePathname } from "next/navigation";
+
 export function Footer() {
+  const pathname = usePathname();
+
+  // Hide legacy footer on Root landing and World 1 (AI Evaluation) routes for clean isolation
+  if (pathname === "/" || pathname?.startsWith("/ai-eval")) {
+    return null;
+  }
+
   return (
     <footer className="w-full border-t border-neutral-200/80 dark:border-neutral-800/80 bg-white/50 dark:bg-neutral-950/60 py-16 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
