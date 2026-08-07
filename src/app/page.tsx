@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Lock,
 } from "lucide-react";
+import { WysbryxLogo } from "@/components/ui/WysbryxLogo";
 
 export default function WorldSelectionLandingPage() {
   return (
@@ -26,19 +27,9 @@ export default function WorldSelectionLandingPage() {
       
       {/* Top Header Navigation */}
       <header className="relative z-20 max-w-7xl mx-auto w-full px-6 py-8 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 p-[1px] shadow-lg shadow-cyan-500/20">
-            <div className="w-full h-full bg-neutral-950 rounded-[11px] flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-cyan-400" />
-            </div>
-          </div>
-          <div>
-            <span className="font-mono text-xs tracking-widest text-cyan-400 font-bold block uppercase">WYSBRYX PLATFORM</span>
-            <span className="text-lg font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-neutral-200 to-neutral-400">
-              Evaluation Engine
-            </span>
-          </div>
-        </div>
+        <Link href="/">
+          <WysbryxLogo height={42} />
+        </Link>
 
         <div className="flex items-center gap-2">
           <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-neutral-900 border border-neutral-800 text-neutral-400">
