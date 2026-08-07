@@ -31,24 +31,13 @@ export async function GET(request: NextRequest) {
       .where(eq(aiEvaluations.evaluatorId, evaluator.id));
 
     // Get all scores for these evaluations
-    const evalIds = evals.map((e) => e.id);
-    const allScores = evalIds.length > 0
-      ? await db.select().from(aiEvaluationScores).where(
-          // SQLite doesn't have ANY/IN with subquery easily, so we filter in JS
-          eq(aiEvaluationScores.evaluationId, evalIds[0]) // Will handle multiple below
-        )
-      : [];
-
-    // For multiple eval IDs, get all scores
-    let scoresByEvalId: Record<string, typeof allScores> = {};
-    if (evalIds.length > 0) {
-      for (const evalId of evalIds) {
-        const scores = await db
-          .select()
-          .from(aiEvaluationScores)
-          .where(eq(aiEvaluationScores.evaluationId, evalId));
-        scoresByEvalId[evalId] = scores;
-      }
+    const scoresByEvalId: Record<string, any[]> = {};
+    for (const ev of evals) {
+      const scores = await db
+        .select()
+        .from(aiEvaluationScores)
+        .where(eq(aiEvaluationScores.evaluationId, ev.id));
+      scoresByEvalId[ev.id] = scores;
     }
 
     // Transform into the shape the Zustand store expects: { [employeeEmail]: EvalRecord }
