@@ -9,8 +9,17 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { WysbryxLogo } from "@/components/ui/WysbryxLogo";
 import { useAppStore } from "@/lib/store";
 
+import { usePathname } from "next/navigation";
+
 export function Navbar() {
+  const pathname = usePathname();
   const { setCmdOpen, selectedQuarter, selectedYear, setSelectedCycle } = useAppStore();
+
+  // Hide legacy navbar on Root landing and World 1 (AI Evaluation) routes for clean isolation
+  if (pathname === "/" || pathname?.startsWith("/ai-eval")) {
+    return null;
+  }
+
 
   const cycleOptions = [
     { value: "Q3_2026", label: "Q3 2026", sublabel: "Active Evaluation Cycle" },

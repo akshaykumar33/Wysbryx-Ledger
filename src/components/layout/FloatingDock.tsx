@@ -22,6 +22,12 @@ export function FloatingDock() {
   const pathname = usePathname();
   const { setCmdOpen } = useAppStore();
 
+  // Hide FloatingDock on root portal landing page and World 1 (AI Evaluation) routes
+  if (pathname === "/" || pathname?.startsWith("/ai-eval")) {
+    return null;
+  }
+
+
   const dockItems = [
     { href: "/dashboard", label: "Executive Dashboard", icon: <BarChart3 className="w-4 h-4" /> },
     { href: "/engineers", label: "Engineers Roster", icon: <Users className="w-4 h-4" /> },
