@@ -9,21 +9,17 @@ import {
   ArrowRight,
   ShieldCheck,
   Zap,
-  ChevronRight,
-  Cpu,
-  BarChart3,
   CheckCircle2,
-  Lock,
 } from "lucide-react";
 import { WysbryxLogo } from "@/components/ui/WysbryxLogo";
 
 export default function WorldSelectionLandingPage() {
   return (
-    <div className="min-h-screen bg-neutral-950 text-white relative overflow-hidden flex flex-col justify-between font-sans selection:bg-cyan-500 selection:text-black">
-      {/* Dynamic Aurora & Grid Backdrop */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.25),rgba(255,255,255,0))] pointer-events-none" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none animate-pulse" />
-      <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[160px] pointer-events-none" />
+    <div className="min-h-screen bg-neutral-950 text-white relative overflow-hidden flex flex-col justify-between font-sans selection:bg-amber-500 selection:text-black">
+      {/* Dynamic Warm Amber Aurora & Grid Backdrop matching Wysbryx Logo */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(245,158,11,0.18),rgba(255,255,255,0))] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none animate-pulse" />
+      <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-orange-500/10 rounded-full blur-[160px] pointer-events-none" />
       
       {/* Top Header Navigation */}
       <header className="relative z-20 max-w-7xl mx-auto w-full px-6 py-8 flex items-center justify-between">
@@ -32,22 +28,22 @@ export default function WorldSelectionLandingPage() {
         </Link>
 
         <div className="flex items-center gap-2">
-          <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-neutral-900 border border-neutral-800 text-neutral-400">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Enterprise Isolation v2.4
+          <span className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono bg-neutral-900 border border-white/[0.08] text-neutral-300">
+            <ShieldCheck className="w-3.5 h-3.5 text-amber-400" /> Enterprise Isolation v2.4
           </span>
         </div>
       </header>
 
       {/* Hero Content Section */}
       <main className="relative z-10 max-w-7xl mx-auto w-full px-6 py-12 flex-1 flex flex-col justify-center items-center text-center">
-        {/* Badge */}
+        {/* Warm Logo Accent Badge */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-950/40 text-cyan-300 text-xs font-mono font-semibold backdrop-blur-xl mb-8 shadow-inner shadow-cyan-500/10"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-950/40 text-amber-300 text-xs font-mono font-semibold backdrop-blur-xl mb-8 shadow-inner shadow-amber-500/10"
         >
-          <Zap className="w-3.5 h-3.5 text-cyan-400 animate-bounce" />
+          <Zap className="w-3.5 h-3.5 text-amber-400 animate-bounce" />
           <span>SELECT EVALUATION ENVIRONMENT</span>
         </motion.div>
 
@@ -59,7 +55,7 @@ export default function WorldSelectionLandingPage() {
           className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1] max-w-5xl"
         >
           Two Worlds. One Enterprise. <br />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300">
             Next-Gen Performance Intelligence
           </span>
         </motion.h1>
@@ -82,23 +78,23 @@ export default function WorldSelectionLandingPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
             whileHover={{ scale: 1.02 }}
-            className="group relative p-8 rounded-3xl bg-neutral-900/80 border border-neutral-800 hover:border-cyan-500/50 backdrop-blur-2xl transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden"
+            className="group relative p-8 rounded-3xl bg-neutral-900/80 border border-white/[0.08] hover:border-amber-500/50 backdrop-blur-2xl transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden"
           >
             {/* Glowing Card Border Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none" />
 
             <div>
               <div className="flex items-center justify-between mb-6">
-                <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-black transition-colors duration-300 shadow-lg shadow-cyan-500/10">
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:bg-amber-500 group-hover:text-black transition-colors duration-300 shadow-lg shadow-amber-500/10">
                   <Bot className="w-7 h-7" />
                 </div>
-                <span className="px-3 py-1 rounded-full text-[11px] font-mono font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase">
+                <span className="px-3 py-1 rounded-full text-[11px] font-mono font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 uppercase">
                   WORLD 1
                 </span>
               </div>
 
-              <h2 className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+              <h2 className="text-2xl font-bold text-white group-hover:text-amber-300 transition-colors">
                 Wysbryx AI Evaluation
               </h2>
 
@@ -108,16 +104,16 @@ export default function WorldSelectionLandingPage() {
 
               <ul className="mt-6 space-y-2.5 text-xs text-neutral-300 font-mono">
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-400" /> Smart Regex Evaluator Matching
+                  <CheckCircle2 className="w-4 h-4 text-amber-400" /> Smart Regex Evaluator Matching
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-400" /> Interactive Single-Roll Distribution Engine
+                  <CheckCircle2 className="w-4 h-4 text-amber-400" /> Interactive Single-Roll Distribution Engine
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-400" /> Notion-Style Rich Question & Rubric Workspace
+                  <CheckCircle2 className="w-4 h-4 text-amber-400" /> Notion-Style Rich Question & Rubric Workspace
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-cyan-400" /> Admin Bypass for Praveen & Krishna
+                  <CheckCircle2 className="w-4 h-4 text-amber-400" /> Admin Bypass for Praveen & Krishna
                 </li>
               </ul>
             </div>
@@ -128,7 +124,7 @@ export default function WorldSelectionLandingPage() {
               </span>
               <Link
                 href="/ai-eval"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 text-black font-semibold text-xs hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 group/btn"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 text-black font-semibold text-xs hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/20 group/btn"
               >
                 <span>Enter World 1</span>
                 <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -142,7 +138,7 @@ export default function WorldSelectionLandingPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
             whileHover={{ scale: 1.02 }}
-            className="group relative p-8 rounded-3xl bg-neutral-900/80 border border-neutral-800 hover:border-purple-500/50 backdrop-blur-2xl transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden"
+            className="group relative p-8 rounded-3xl bg-neutral-900/80 border border-white/[0.08] hover:border-purple-500/50 backdrop-blur-2xl transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden"
           >
             {/* Glowing Card Border Gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
