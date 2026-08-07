@@ -79,7 +79,7 @@ export default function AIEvalLayout({ children }: { children: React.ReactNode }
             )}
 
             <Link
-              href="/dashboard"
+              href="/complete-eval"
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-900 border border-white/[0.06] text-neutral-400 hover:text-purple-300 hover:border-purple-500/30 text-xs font-mono transition-all"
             >
               <Layers className="w-3.5 h-3.5 text-purple-400" /> Switch to World 2
