@@ -196,7 +196,7 @@ export default function WorldSelectionLandingPage() {
                 Legacy Ledger Preserved
               </span>
               <Link
-                href="/dashboard"
+                href="/complete-eval"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 text-white font-semibold text-xs hover:bg-purple-500 transition-all shadow-lg shadow-purple-500/20 group/btn"
               >
                 <span>Enter World 2</span>
