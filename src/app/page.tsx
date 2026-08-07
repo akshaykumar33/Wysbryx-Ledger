@@ -3,213 +3,220 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  ArrowRight,
   Sparkles,
-  BarChart3,
-  Cpu,
-  Code2,
-  BookOpen,
-  Users2,
-  Lightbulb,
+  Bot,
+  Layers,
+  ArrowRight,
+  ShieldCheck,
   Zap,
-  GraduationCap,
-  Award,
-  TrendingUp,
+  ChevronRight,
+  Cpu,
+  BarChart3,
+  CheckCircle2,
   Lock,
 } from "lucide-react";
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/Accordion";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
 
-export default function LandingPage() {
-  const faqs = [
-    {
-      q: "Is this platform intended for tracking daily keystrokes or activity?",
-      a: "No. Ledger Intel is strictly built against employee surveillance. It is designed for executive leadership to conduct periodic, objective, transparent performance evaluations based on measurable deliverables, technical quality, and peer collaboration.",
-    },
-    {
-      q: "How are the overall scores and grades calculated?",
-      a: "Each parameter carries an explicit percentage weight (e.g. 15% for Engineering Knowledge). Scores are calculated via a weighted sum: Score = ∑ ((Rating / 5) * Weight * 100). Grades range from Outstanding (95+) down to Critical (<55).",
-    },
-    {
-      q: "Who can initiate and view evaluations?",
-      a: "Only Executive Admins can create and edit evaluations for centralized accountability. Engineers have transparent access to view their own score radar charts, strengths, and improvement suggestions.",
-    },
-    {
-      q: "How does the AI Usage parameter work?",
-      a: "It evaluates responsible AI adoption: prompt engineering efficiency, output verification, security awareness (no secrets in prompts), and maintaining original architectural thinking.",
-    },
-  ];
-
+export default function WorldSelectionLandingPage() {
   return (
-    <div className="relative overflow-hidden">
-      {/* Background Gradient Blurs */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-primary/10 via-primary/5 to-transparent blur-3xl pointer-events-none -z-10 transition-all duration-500" />
+    <div className="min-h-screen bg-neutral-950 text-white relative overflow-hidden flex flex-col justify-between font-sans selection:bg-cyan-500 selection:text-black">
+      {/* Dynamic Aurora & Grid Backdrop */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.25),rgba(255,255,255,0))] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none animate-pulse" />
+      <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[160px] pointer-events-none" />
+      
+      {/* Top Header Navigation */}
+      <header className="relative z-20 max-w-7xl mx-auto w-full px-6 py-8 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 p-[1px] shadow-lg shadow-cyan-500/20">
+            <div className="w-full h-full bg-neutral-950 rounded-[11px] flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-cyan-400" />
+            </div>
+          </div>
+          <div>
+            <span className="font-mono text-xs tracking-widest text-cyan-400 font-bold block uppercase">WYSBRYX PLATFORM</span>
+            <span className="text-lg font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-neutral-200 to-neutral-400">
+              Evaluation Engine
+            </span>
+          </div>
+        </div>
 
-      {/* HERO SECTION */}
-      <section className="relative pt-16 pb-24 md:pt-28 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-neutral-900 border border-neutral-800 text-neutral-400">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" /> Enterprise Isolation v2.4
+          </span>
+        </div>
+      </header>
+
+      {/* Hero Content Section */}
+      <main className="relative z-10 max-w-7xl mx-auto w-full px-6 py-12 flex-1 flex flex-col justify-center items-center text-center">
+        {/* Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary backdrop-blur-md text-xs font-mono font-semibold shadow-xs mb-6"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-950/40 text-cyan-300 text-xs font-mono font-semibold backdrop-blur-xl mb-8 shadow-inner shadow-cyan-500/10"
         >
-          <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-          <span>NON-SURVEILLANCE • DATA-DRIVEN • TRANSPARENT</span>
+          <Zap className="w-3.5 h-3.5 text-cyan-400 animate-bounce" />
+          <span>SELECT EVALUATION ENVIRONMENT</span>
         </motion.div>
 
+        {/* Hero Title */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-neutral-900 dark:text-white max-w-4xl mx-auto leading-[1.1]"
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1] max-w-5xl"
         >
-          Engineering Performance <br />
-          <span className="gradient-brand-text">
-            Intelligence Platform
+          Two Worlds. One Enterprise. <br />
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400">
+            Next-Gen Performance Intelligence
           </span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-6 text-xl sm:text-2xl font-mono text-neutral-800 dark:text-neutral-200 font-semibold tracking-tight"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-6 text-base sm:text-xl text-neutral-400 max-w-2xl font-normal leading-relaxed"
         >
-          Measure. Evaluate. Improve. Grow.
+          Choose your workspace to begin. Enter the AI-Driven Candidate Evaluation experience or access the Complete Ledger Performance Suite.
         </motion.p>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.25 }}
-          className="mt-4 text-base sm:text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto leading-relaxed font-sans"
-        >
-          An executive-grade evaluation framework designed for leadership to measure talent fairly, eliminate bias, celebrate top performers, and build clear growth roadmaps.
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-4"
-        >
-          <Link
-            href="/evaluations/new"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all shadow-xl shadow-primary/20 group"
+        {/* Two World Cards Container */}
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl text-left">
+          
+          {/* WORLD 1: Wysbryx AI Evaluation */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            whileHover={{ scale: 1.02 }}
+            className="group relative p-8 rounded-3xl bg-neutral-900/80 border border-neutral-800 hover:border-cyan-500/50 backdrop-blur-2xl transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden"
           >
-            <span>Start Evaluation</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-neutral-300 dark:border-neutral-800 bg-white/60 dark:bg-neutral-900/60 backdrop-blur-md text-neutral-800 dark:text-neutral-200 font-medium text-sm hover:bg-neutral-100 dark:hover:bg-neutral-800/80 transition-all"
+            {/* Glowing Card Border Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none" />
+
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-black transition-colors duration-300 shadow-lg shadow-cyan-500/10">
+                  <Bot className="w-7 h-7" />
+                </div>
+                <span className="px-3 py-1 rounded-full text-[11px] font-mono font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase">
+                  WORLD 1
+                </span>
+              </div>
+
+              <h2 className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+                Wysbryx AI Evaluation
+              </h2>
+
+              <p className="mt-3 text-sm text-neutral-400 leading-relaxed font-sans">
+                Dedicated AI evaluation environment with intelligent evaluator matching, single-roll candidate allocation, rich question rubrics, and automated scorecards.
+              </p>
+
+              <ul className="mt-6 space-y-2.5 text-xs text-neutral-300 font-mono">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400" /> Smart Regex Evaluator Matching
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400" /> Interactive Single-Roll Distribution Engine
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400" /> Notion-Style Rich Question & Rubric Workspace
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-cyan-400" /> Admin Bypass for Praveen & Krishna
+                </li>
+              </ul>
+            </div>
+
+            <div className="mt-10 pt-6 border-t border-neutral-800/80 flex items-center justify-between">
+              <span className="text-xs font-mono text-neutral-500 group-hover:text-neutral-300 transition-colors">
+                Isolated State & Routing
+              </span>
+              <Link
+                href="/ai-eval"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 text-black font-semibold text-xs hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 group/btn"
+              >
+                <span>Enter World 1</span>
+                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* WORLD 2: Wysbryx Complete Evaluation */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+            whileHover={{ scale: 1.02 }}
+            className="group relative p-8 rounded-3xl bg-neutral-900/80 border border-neutral-800 hover:border-purple-500/50 backdrop-blur-2xl transition-all duration-500 shadow-2xl flex flex-col justify-between overflow-hidden"
           >
-            <BarChart3 className="w-4 h-4 text-primary" />
-            <span>View Dashboard</span>
-          </Link>
-        </motion.div>
+            {/* Glowing Card Border Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 pointer-events-none" />
 
-        {/* Hero Interactive Metric Cards Preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-3xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/60 dark:bg-neutral-900/60 backdrop-blur-xl shadow-2xl text-left"
-        >
-          <div className="p-5 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/60 dark:border-neutral-800/60 space-y-1">
-            <div className="text-[11px] font-mono text-neutral-400 font-semibold uppercase">TOTAL EVALUATIONS</div>
-            <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white">128 Completed</div>
-            <div className="text-[11px] text-primary font-mono font-bold flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" /> +14% vs Q2
-            </div>
-          </div>
-          <div className="p-5 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/60 dark:border-neutral-800/60 space-y-1">
-            <div className="text-[11px] font-mono text-neutral-400 font-semibold uppercase">ORG AVERAGE SCORE</div>
-            <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white">87.4 / 100</div>
-            <div className="text-[11px] text-primary font-mono font-bold">Grade: Very Good (B+)</div>
-          </div>
-          <div className="p-5 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/60 dark:border-neutral-800/60 space-y-1">
-            <div className="text-[11px] font-mono text-neutral-400 font-semibold uppercase">STANDARDIZED METRICS</div>
-            <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white">8 Parameters</div>
-            <div className="text-[11px] text-primary font-mono font-bold">Weighted Math</div>
-          </div>
-          <div className="p-5 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/60 dark:border-neutral-800/60 space-y-1">
-            <div className="text-[11px] font-mono text-neutral-400 font-semibold uppercase">BIAS PREVENTION</div>
-            <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white">100% Evidence</div>
-            <div className="text-[11px] text-primary font-mono font-bold flex items-center gap-1">
-              <Lock className="w-3 h-3" /> Mandatory proof
-            </div>
-          </div>
-        </motion.div>
-      </section>
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 group-hover:bg-purple-500 group-hover:text-black transition-colors duration-300 shadow-lg shadow-purple-500/10">
+                  <Layers className="w-7 h-7" />
+                </div>
+                <span className="px-3 py-1 rounded-full text-[11px] font-mono font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20 uppercase">
+                  WORLD 2
+                </span>
+              </div>
 
-      {/* METHODOLOGY TABS PREVIEW */}
-      <section className="py-20 border-t border-neutral-200/80 dark:border-neutral-800/80 bg-neutral-100/40 dark:bg-neutral-950/40">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <span className="text-xs font-mono text-primary font-bold uppercase tracking-wider">
-              PLATFORM ARCHITECTURE
-            </span>
-            <h2 className="text-3xl font-bold text-neutral-900 dark:text-white mt-2">
-              Evaluation Methodology Principles
-            </h2>
-          </div>
+              <h2 className="text-2xl font-bold text-white group-hover:text-purple-300 transition-colors">
+                Wysbryx Complete Evaluation
+              </h2>
 
-          <Tabs defaultValue="purpose" className="w-full">
-            <div className="flex justify-center mb-6">
-              <TabsList>
-                <TabsTrigger value="purpose">Core Purpose</TabsTrigger>
-                <TabsTrigger value="evidence">Evidence Based</TabsTrigger>
-                <TabsTrigger value="growth">Continuous Growth</TabsTrigger>
-              </TabsList>
+              <p className="mt-3 text-sm text-neutral-400 leading-relaxed font-sans">
+                The full legacy ledger platform preserved completely intact. Comprehensive executive dashboards, engineering rosters, audit logs, and settings.
+              </p>
+
+              <ul className="mt-6 space-y-2.5 text-xs text-neutral-300 font-mono">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-purple-400" /> Executive Analytics & Multi-Cycle Dashboard
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-purple-400" /> Full Engineering Directory & Designations
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-purple-400" /> Weighted Score Mathematics & Grade Calculators
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-purple-400" /> Complete Audit Logging & Governance Suite
+                </li>
+              </ul>
             </div>
 
-            <TabsContent value="purpose" className="p-8 rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 space-y-3">
-              <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Fair & Transparent Governance</h3>
-              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed font-sans">
-                Ledger Intel eliminates recency bias and subjective scoring by enforcing explicit percentage weights across technical mastery, responsible AI adoption, system architecture, and team mentorship.
-              </p>
-            </TabsContent>
+            <div className="mt-10 pt-6 border-t border-neutral-800/80 flex items-center justify-between">
+              <span className="text-xs font-mono text-neutral-500 group-hover:text-neutral-300 transition-colors">
+                Legacy Ledger Preserved
+              </span>
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 text-white font-semibold text-xs hover:bg-purple-500 transition-all shadow-lg shadow-purple-500/20 group/btn"
+              >
+                <span>Enter World 2</span>
+                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </motion.div>
 
-            <TabsContent value="evidence" className="p-8 rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 space-y-3">
-              <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Mandatory Artifact & PR Links</h3>
-              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed font-sans">
-                No score rating can be submitted without attached pull request links, spec document URLs, or verified benchmark outputs. No arbitrary scoring allowed.
-              </p>
-            </TabsContent>
-
-            <TabsContent value="growth" className="p-8 rounded-3xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 space-y-3">
-              <h3 className="text-lg font-bold text-neutral-900 dark:text-white">Personalized Skill Gap Roadmaps</h3>
-              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed font-sans">
-                The platform automatically extracts top strengths and identifies primary skill gaps, generating actionable growth recommendations for every quarter.
-              </p>
-            </TabsContent>
-          </Tabs>
         </div>
-      </section>
+      </main>
 
-      {/* RADIX UI ACCORDION FAQS SECTION */}
-      <section className="py-20 border-t border-neutral-200/80 dark:border-neutral-800/80">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <span className="text-xs font-mono text-primary font-bold uppercase tracking-wider">
-              FREQUENTLY ASKED QUESTIONS
-            </span>
-            <h2 className="text-3xl font-bold text-neutral-900 dark:text-white mt-2">
-              Platform & Evaluation Guidelines
-            </h2>
-          </div>
-
-          <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, idx) => (
-              <AccordionItem key={idx} value={`item-${idx}`}>
-                <AccordionTrigger>{faq.q}</AccordionTrigger>
-                <AccordionContent>{faq.a}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+      {/* Footer */}
+      <footer className="relative z-10 max-w-7xl mx-auto w-full px-6 py-6 border-t border-neutral-900 flex items-center justify-between text-xs text-neutral-500 font-mono">
+        <div>Wysbryx Intelligence Platform &copy; 2026</div>
+        <div className="flex items-center gap-4">
+          <span>Enterprise Grade</span>
+          <span>•</span>
+          <span>Zero Interference</span>
         </div>
-      </section>
+      </footer>
     </div>
   );
 }
