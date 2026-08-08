@@ -56,7 +56,7 @@ export default function AnalyticsPage() {
   return (
     <PageWrapper className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
       {/* Header */}
-      <div className="border-b border-neutral-200/80 dark:border-neutral-800/80 pb-6">
+      <div data-tour="analytics-overview" className="border-b border-neutral-200/80 dark:border-neutral-800/80 pb-6">
         <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">
           DEEP DIVE ANALYTICS
         </span>

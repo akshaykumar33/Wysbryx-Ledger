@@ -97,6 +97,22 @@ sequenceDiagram
     Editor-->>Evaluator: Render Radar Chart, Bar Chart, Strengths/Risks, & Scorecard
 ```
 
+### Step-by-Step User Role Operating Guidelines
+
+#### 👑 Protocol A: Super Captain Leadership Guide (`Praveen` / `Krishna`)
+1. **Access World 1**: Navigate to `/ai-eval`.
+2. **Authenticate Leadership Identity**: Type `Praveen` or `Krishna` in the Evaluator Name field.
+3. **Verify Match Feedback**: The system displays a `✔ Matched: Praveen` badge with Super Captain indicators.
+4. **Enter Executive Command Center**: Click **Continue to Roll**. The system automatically unlocks the **Super Captain Storyboard** modal and bypasses candidate partition limits.
+5. **Command & Audit 100% Roster**: Access 100% of all organizational candidates across departments. Click **AI Audit** on any candidate card to grade, write evidence, or certify scorecards.
+
+#### 🎲 Protocol B: Standard Evaluator Single-Roll Guide
+1. **Access World 1**: Navigate to `/ai-eval`.
+2. **Enter Evaluator Name**: Type your full name in the login input.
+3. **Review Single-Roll Lock**: Click **Continue to Roll**. Review the single-roll warning (1 permanent roll per session).
+4. **Trigger SplitMix64 PRNG Engine**: Click **Roll Candidate Pool Now**. The avalanche PRNG shuffles and locks a 10-candidate pool for your session.
+5. **Audit Assigned Candidates**: Click **AI Audit** on assigned candidate cards to score 6 AI rubrics, record observed evidence, and save scorecards.
+
 ---
 
 ## 4. Candidate Allocation Engine & SplitMix64 Algorithm Deep-Dive

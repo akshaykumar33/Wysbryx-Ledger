@@ -49,6 +49,7 @@ export default function WorldSelectionLandingPage() {
 
         {/* Hero Title */}
         <motion.h1
+          data-tour="welcome-hero"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
@@ -120,6 +121,7 @@ export default function WorldSelectionLandingPage() {
             <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/[0.06]">
               <Link
                 href="/ai-eval"
+                data-tour="ai-eval-button"
                 className="w-full py-3.5 sm:py-4 rounded-2xl bg-amber-500 text-black font-extrabold text-xs sm:text-sm hover:bg-amber-400 transition-all shadow-xl shadow-amber-500/20 flex items-center justify-center gap-2 group/btn"
               >
                 <span>Enter World 1 Workspace</span>
@@ -175,6 +177,7 @@ export default function WorldSelectionLandingPage() {
             <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/[0.06]">
               <Link
                 href="/complete-eval"
+                data-tour="complete-eval-button"
                 className="w-full py-3.5 sm:py-4 rounded-2xl bg-neutral-800 border border-white/[0.1] hover:bg-neutral-700 text-white font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 group/btn"
               >
                 <span>Enter World 2 Suite</span>

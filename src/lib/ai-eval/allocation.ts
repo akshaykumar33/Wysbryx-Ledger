@@ -122,9 +122,23 @@ export function allocateCandidatesForEvaluator(
     return ALL_CANDIDATES;
   }
 
+  // ── CRITICAL: Exclude the evaluator from their own candidate pool ──
+  // Uses same regex-based matching as the login flow so name variations
+  // (e.g. "Akshay" matching "Akshay Kumar") are correctly handled.
+  const normalizedName = evaluatorName.trim().toLowerCase();
+  const escapedName = normalizedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const selfMatchRegex = new RegExp(escapedName, "i");
+
+  const eligiblePool = ALL_CANDIDATES.filter(
+    (candidate) => !selfMatchRegex.test(candidate.name.toLowerCase())
+  );
+
+  // If somehow the pool is empty after exclusion, fallback to full pool
+  const poolToShuffle = eligiblePool.length > 0 ? eligiblePool : ALL_CANDIDATES;
+
   const seed = generate64BitHash(evaluatorName);
   const nextRandom = createSplitMix64PRNG(seed);
-  const candidatesCopy = [...ALL_CANDIDATES];
+  const candidatesCopy = [...poolToShuffle];
 
   // Cryptographically strong Fisher-Yates shuffle with zero bias
   for (let i = candidatesCopy.length - 1; i > 0; i--) {

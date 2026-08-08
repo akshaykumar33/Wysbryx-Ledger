@@ -30,6 +30,8 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+import { TourProvider } from "@/components/tour/TourProvider";
+
 export const metadata: Metadata = {
   title: "Wysbryx Intel | Engineering Performance Intelligence Platform",
   description:
@@ -57,12 +59,14 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col font-sans bg-neutral-50/60 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 selection:bg-primary selection:text-primary-foreground dark:selection:bg-primary dark:selection:text-primary-foreground pb-24 antialiased overflow-x-hidden w-full max-w-full">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <ThemeAccentProvider>
-            <Navbar />
-            <main className="flex-1 w-full">{children}</main>
-            <Footer />
-            <FloatingDock />
-            <CmdKMenu />
-            <Toaster position="bottom-right" theme="system" richColors closeButton />
+            <TourProvider>
+              <Navbar />
+              <main className="flex-1 w-full">{children}</main>
+              <Footer />
+              <FloatingDock />
+              <CmdKMenu />
+              <Toaster position="bottom-right" theme="system" richColors closeButton />
+            </TourProvider>
           </ThemeAccentProvider>
         </ThemeProvider>
       </body>

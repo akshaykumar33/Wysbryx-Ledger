@@ -39,7 +39,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Brand Theme Accent Selector Section */}
-      <div className="p-8 rounded-3xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl shadow-sm space-y-6">
+      <div data-tour="settings-theme-selector" className="p-8 rounded-3xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl shadow-sm space-y-6">
         <div className="flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-800 pb-4">
           <Palette className="w-5 h-5 text-primary" />
           <h2 className="text-lg font-bold text-neutral-900 dark:text-white">Dynamic Brand Theme Accent</h2>

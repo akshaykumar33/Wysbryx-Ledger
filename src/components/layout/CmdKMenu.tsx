@@ -3,12 +3,14 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
-import { Search, BarChart3, Users, ClipboardCheck, Layers, Activity, BookOpen, Settings, PlusCircle, ShieldCheck } from "lucide-react";
+import { Search, BarChart3, Users, ClipboardCheck, Layers, Activity, BookOpen, Settings, PlusCircle, ShieldCheck, Compass } from "lucide-react";
 import { useAppStore } from "@/lib/store";
+import { useTourStore } from "@/lib/tour/store";
 
 export function CmdKMenu() {
   const router = useRouter();
   const { cmdOpen, setCmdOpen } = useAppStore();
+  const { restartTour } = useTourStore();
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -26,6 +28,11 @@ export function CmdKMenu() {
   const handleSelect = (href: string) => {
     setCmdOpen(false);
     router.push(href);
+  };
+
+  const handleRestartTour = () => {
+    setCmdOpen(false);
+    restartTour();
   };
 
   return (
@@ -99,6 +106,13 @@ export function CmdKMenu() {
             </Command.Group>
 
             <Command.Group heading="Quick Actions" className="text-[10px] font-mono font-bold uppercase text-neutral-400 px-3 py-1 pt-2">
+              <Command.Item
+                onSelect={handleRestartTour}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-amber-500 hover:bg-amber-500/10 cursor-pointer"
+              >
+                <Compass className="w-4 h-4 text-amber-500" />
+                <span>Start Interactive Guided Tour</span>
+              </Command.Item>
               <Command.Item
                 onSelect={() => handleSelect("/evaluations/new")}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-primary hover:bg-primary/10 cursor-pointer"

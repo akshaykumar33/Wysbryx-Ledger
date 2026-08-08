@@ -220,14 +220,16 @@ export default function DashboardPage() {
       </div>
 
       {/* Top Metric Cards */}
-      <OverviewCards
-        totalEngineers={totalEngineers}
-        completedEvaluations={completedEvals}
-        avgScore={avgScore}
-        topPerformer={topPerformer}
-        lowestPerformer={lowestPerformer}
-        pendingReviews={2}
-      />
+      <div data-tour="dashboard-overview">
+        <OverviewCards
+          totalEngineers={totalEngineers}
+          completedEvaluations={completedEvals}
+          avgScore={avgScore}
+          topPerformer={topPerformer}
+          lowestPerformer={lowestPerformer}
+          pendingReviews={2}
+        />
+      </div>
 
       {/* Primary Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
