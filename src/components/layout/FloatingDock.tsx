@@ -19,6 +19,8 @@ import {
 import { Tooltip } from "@/components/ui/Tooltip";
 import { useAppStore } from "@/lib/store";
 
+import { TourTriggerButton } from "@/components/tour/TourTriggerButton";
+
 export function FloatingDock() {
   const pathname = usePathname();
   const { setCmdOpen } = useAppStore();
@@ -41,6 +43,7 @@ export function FloatingDock() {
   return (
     <div className="fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 print:hidden max-w-[95vw]">
       <motion.div
+        data-tour="floating-dock"
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
@@ -86,6 +89,9 @@ export function FloatingDock() {
             <Search className="w-4 h-4" />
           </button>
         </Tooltip>
+
+        {/* Guided Tour Trigger */}
+        <TourTriggerButton variant="icon" />
 
         {/* Switch to World 1 Button */}
         <Tooltip content="Switch to World 1 (AI Evaluation Engine)">

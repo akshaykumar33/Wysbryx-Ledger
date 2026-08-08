@@ -10,6 +10,8 @@ import { WysbryxLogo } from "@/components/ui/WysbryxLogo";
 import { useAppStore } from "@/lib/store";
 import { usePathname } from "next/navigation";
 
+import { TourTriggerButton } from "@/components/tour/TourTriggerButton";
+
 export function Navbar() {
   const pathname = usePathname();
   const { setCmdOpen, selectedQuarter, selectedYear, setSelectedCycle } = useAppStore();
@@ -70,6 +72,7 @@ export function Navbar() {
           {/* Switch to World 1 Action Button */}
           <Link
             href="/ai-eval"
+            data-tour="world-switch-btn"
             className="flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 text-xs font-mono font-bold transition-all shadow-xs"
             title="Switch to World 1: AI Evaluation Engine"
           >
@@ -77,6 +80,7 @@ export function Navbar() {
             <span className="hidden sm:inline">Switch to World 1</span>
           </Link>
 
+          <TourTriggerButton variant="icon" />
           <ThemeToggle />
         </div>
       </div>
