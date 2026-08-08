@@ -231,7 +231,7 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                 value={status} onChange={(v) => setStatus(v as any)} showAppleIcon={true}
               />
             </div>
-            <button onClick={handleSave} className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all ${
+            <button onClick={handleSave} data-tour="save-scorecard-btn" className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition-all ${
               isSaved ? "bg-emerald-500 text-black" : "bg-orange-500 text-black hover:bg-orange-400"
             }`}>
               {isSaved ? <CheckCircle2 className="w-4 h-4" /> : <Save className="w-4 h-4" />}
@@ -304,7 +304,7 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
           EVALUATION EDITOR TAB
          ═══════════════════════════════════════════════════ */}
       {activeTab === "topic_editor" && (
-        <div className="space-y-4">
+        <div className="space-y-4" data-tour="rubric-marks-section">
           {/* Synthesis */}
           <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/60 p-5 space-y-3">
             <label className="text-[11px] font-mono font-semibold text-orange-400 uppercase flex items-center gap-1.5">

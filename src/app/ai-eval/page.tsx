@@ -245,6 +245,7 @@ export default function AIEvalMainPage() {
                 <div className="relative">
                   <input
                     type="text"
+                    data-tour="evaluator-name-input"
                     value={inputName}
                     onChange={(e) => setInputName(e.target.value)}
                     placeholder="e.g. Akshay, Ayush, Anam, Praveen, Krishna..."
@@ -275,6 +276,7 @@ export default function AIEvalMainPage() {
 
               <button
                 type="submit"
+                data-tour="continue-to-roll-btn"
                 className="w-full py-4 rounded-2xl bg-orange-500 text-black font-extrabold text-sm hover:bg-orange-400 transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2"
               >
                 <span>Continue to Roll</span>
@@ -341,6 +343,7 @@ export default function AIEvalMainPage() {
 
             <button
               onClick={triggerRollExperience}
+              data-tour="roll-pool-btn"
               disabled={isRolling}
               className="w-full py-5 rounded-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-black font-extrabold text-base hover:opacity-90 transition-all shadow-xl shadow-orange-500/20 flex items-center justify-center gap-3 disabled:opacity-50"
             >
@@ -461,7 +464,7 @@ export default function AIEvalMainPage() {
                       </td>
                     </tr>
                   ) : (
-                    paginatedCandidates.map((candidate) => {
+                    paginatedCandidates.map((candidate, candidateIndex) => {
                       const evalRecord = getEvaluation(candidate.id);
                       const score = evalRecord?.overallScore || 0;
                       const grade = evalRecord?.grade || "Pending";
@@ -548,6 +551,7 @@ export default function AIEvalMainPage() {
                           <td className="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
                             <Link
                               href={`/ai-eval/employee/${candidate.id}`}
+                              data-tour={candidateIndex === 0 ? "first-candidate-audit-btn" : undefined}
                               className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-orange-500/10 text-orange-400 hover:bg-orange-500 hover:text-black border border-orange-500/30 transition-all font-mono text-xs font-bold whitespace-nowrap shrink-0 shadow-xs"
                             >
                               <span>AI Audit</span>
