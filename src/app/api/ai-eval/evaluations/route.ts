@@ -4,6 +4,8 @@ import { aiEvaluations, aiEvaluationScores, aiEvaluators } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/ai-eval/evaluations?evaluatorName=xxx
 // Returns all evaluations for a given evaluator, with their per-topic scores
 export async function GET(request: NextRequest) {

@@ -3,6 +3,8 @@ import { db } from "@/db";
 import { aiEvaluations, aiEvaluationScores, aiEvaluators } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/ai-eval/evaluations/[employeeId]?evaluatorName=xxx
 export async function GET(
   request: NextRequest,
@@ -66,6 +68,6 @@ export async function GET(
     });
   } catch (error: any) {
     console.error("[AI-EVAL] GET single evaluation error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
   }
 }

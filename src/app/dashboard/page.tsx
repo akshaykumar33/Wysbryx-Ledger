@@ -196,15 +196,15 @@ export default function DashboardPage() {
       </div>
 
       {/* World 1 AI Evaluation Switcher Banner */}
-      <div className="p-5 rounded-3xl border border-cyan-500/30 bg-gradient-to-r from-cyan-950/40 via-neutral-900/80 to-purple-950/40 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-5 rounded-3xl border border-orange-500/30 bg-gradient-to-r from-orange-950/40 via-neutral-900/80 to-amber-950/40 backdrop-blur-xl shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-400 shrink-0">
             <Bot className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">WORLD 1 ENGINE</span>
-              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">AI Candidates Evaluation</span>
+              <span className="text-xs font-mono font-bold text-orange-400 uppercase tracking-wider">WORLD 1 ENGINE</span>
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-orange-500/20 text-orange-300 border border-orange-500/30">AI Candidates Evaluation</span>
             </div>
             <h3 className="text-sm font-bold text-white mt-0.5">Wysbryx AI Candidate Evaluation Workspace</h3>
             <p className="text-xs text-neutral-400 font-sans mt-0.5">Assess AI prompting, code verification, debugging speed, and agentic workflows with live rubric scorecards.</p>
@@ -212,10 +212,10 @@ export default function DashboardPage() {
         </div>
         <Link
           href="/ai-eval"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 text-black font-extrabold text-xs hover:bg-cyan-400 transition-all shadow-lg shadow-cyan-500/20 shrink-0"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-500 text-black font-extrabold text-xs hover:bg-orange-400 transition-all shadow-lg shadow-orange-500/20 shrink-0"
         >
-          <span>Switch to World 1</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          <span>Enter World 1</span>
+          <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
 

@@ -54,7 +54,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geist.variable} ${inter.variable} ${geistMono.variable}`}
     >
-      <body className="min-h-screen flex flex-col font-sans bg-neutral-50/60 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 selection:bg-primary selection:text-primary-foreground dark:selection:bg-primary dark:selection:text-primary-foreground pb-24 antialiased">
+      <body className="min-h-screen flex flex-col font-sans bg-neutral-50/60 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 selection:bg-primary selection:text-primary-foreground dark:selection:bg-primary dark:selection:text-primary-foreground pb-24 antialiased overflow-x-hidden w-full max-w-full">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <ThemeAccentProvider>
             <Navbar />
