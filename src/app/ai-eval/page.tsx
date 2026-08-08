@@ -154,7 +154,7 @@ export default function AIEvalMainPage() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-xl p-8 rounded-3xl bg-neutral-900 border border-amber-500/40 shadow-2xl shadow-amber-500/20 overflow-hidden text-left space-y-6"
+              className="relative w-full max-w-xl max-h-[85vh] overflow-y-auto p-5 sm:p-8 rounded-3xl bg-neutral-900 border border-amber-500/40 shadow-2xl shadow-amber-500/20 text-left space-y-4 sm:space-y-6 scrollbar-none"
             >
               {/* Background Ambient Glow */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />

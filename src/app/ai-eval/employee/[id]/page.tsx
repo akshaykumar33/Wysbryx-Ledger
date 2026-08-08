@@ -241,10 +241,10 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
         </div>
 
         {/* Score Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-5 pt-5 border-t border-white/[0.06]">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mt-5 pt-5 border-t border-white/[0.06]">
           {/* Circular Score */}
           <div className="col-span-2 sm:col-span-1 flex items-center gap-3">
-            <div className="relative w-14 h-14 shrink-0">
+            <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0">
               <svg viewBox="0 0 56 56" className="w-full h-full -rotate-90">
                 <circle cx="28" cy="28" r="23" fill="none" stroke="currentColor" className="text-neutral-800" strokeWidth="4" />
                 <circle cx="28" cy="28" r="23" fill="none"
@@ -255,7 +255,7 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className={`text-sm font-extrabold font-mono ${hasAnyGrades ? "text-white" : "text-neutral-700"}`}>{pct}</span>
+                <span className={`text-xs sm:text-sm font-extrabold font-mono ${hasAnyGrades ? "text-white" : "text-neutral-700"}`}>{pct}</span>
               </div>
             </div>
             <div>
@@ -271,11 +271,11 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
             { label: "Strengths", value: `${strengthsList.length}`, icon: Zap, color: "text-emerald-400" },
             { label: "Risks", value: `${risksCount}`, icon: AlertTriangle, color: risksCount > 0 ? "text-rose-400" : "text-neutral-600" },
           ].map((s) => (
-            <div key={s.label} className="flex items-center gap-2.5">
-              <s.icon className={`w-4 h-4 ${s.color} shrink-0`} />
-              <div>
-                <div className="text-[10px] font-mono text-neutral-500 uppercase">{s.label}</div>
-                <div className={`text-xs font-bold font-mono truncate max-w-[120px] ${hasAnyGrades ? "text-neutral-200" : "text-neutral-600"}`}>{s.value}</div>
+            <div key={s.label} className="flex items-center gap-2">
+              <s.icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${s.color} shrink-0`} />
+              <div className="min-w-0">
+                <div className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase truncate">{s.label}</div>
+                <div className={`text-xs font-bold font-mono truncate ${hasAnyGrades ? "text-neutral-200" : "text-neutral-600"}`}>{s.value}</div>
               </div>
             </div>
           ))}
@@ -283,18 +283,18 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
       </div>
 
       {/* ═══ TABS ═══ */}
-      <div className="flex items-center gap-1 p-1 rounded-xl bg-neutral-900 border border-white/[0.06] w-fit">
+      <div className="flex items-center gap-1 p-1 rounded-xl bg-neutral-900 border border-white/[0.06] w-full sm:w-fit overflow-x-auto scrollbar-none">
         {[
           { key: "topic_editor" as const, label: "Evaluation Editor", icon: Edit3 },
           { key: "audit_report" as const, label: "Graphical Analysis", icon: BarChart3 },
         ].map((t) => (
-          <button key={t.key} onClick={() => setActiveTab(t.key)} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+          <button key={t.key} onClick={() => setActiveTab(t.key)} className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 ${
             activeTab === t.key ? "bg-orange-500/10 text-orange-400 border border-orange-500/25" : "text-neutral-500 hover:text-neutral-300 border border-transparent"
           }`}>
-            <t.icon className="w-3.5 h-3.5" />
-            {t.label}
+            <t.icon className="w-3.5 h-3.5 shrink-0" />
+            <span>{t.label}</span>
             {t.key === "topic_editor" && !allGraded && (
-              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/20">{gradedCount}/{totalQuestions}</span>
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/20 shrink-0">{gradedCount}/{totalQuestions}</span>
             )}
           </button>
         ))}
