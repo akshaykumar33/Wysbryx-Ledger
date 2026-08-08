@@ -102,9 +102,9 @@ export default function CompleteEvalLandingPage() {
           </Link>
           <Link
             href="/ai-eval"
-            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 font-semibold text-sm hover:bg-cyan-500/20 transition-all font-mono shadow-lg shadow-cyan-500/10"
+            className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-orange-500/30 bg-orange-500/10 text-orange-400 font-semibold text-sm hover:bg-orange-500/20 transition-all font-mono shadow-lg shadow-orange-500/10"
           >
-            <Bot className="w-4 h-4 text-cyan-400" />
+            <Bot className="w-4 h-4 text-orange-400" />
             <span>Switch to World 1</span>
           </Link>
         </motion.div>

@@ -72,10 +72,10 @@ export function Navbar() {
           {/* Switch to World 1 Action Button */}
           <Link
             href="/ai-eval"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 text-xs font-mono font-bold transition-all shadow-xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-orange-500/30 bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 text-xs font-mono font-bold transition-all shadow-xs"
             title="Switch to World 1: AI Evaluation Engine"
           >
-            <Bot className="w-3.5 h-3.5 text-cyan-400" />
+            <Bot className="w-3.5 h-3.5 text-orange-400" />
             <span className="hidden sm:inline">Switch to World 1</span>
           </Link>
 

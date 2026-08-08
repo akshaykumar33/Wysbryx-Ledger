@@ -90,9 +90,9 @@ export function FloatingDock() {
         <Tooltip content="Switch to World 1 (AI Evaluation Engine)">
           <Link
             href="/ai-eval"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500/20 font-mono font-bold text-xs shadow-xs transition-transform hover:scale-105"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/30 hover:bg-orange-500/20 font-mono font-bold text-xs shadow-xs transition-transform hover:scale-105"
           >
-            <Bot className="w-4 h-4 text-cyan-400" />
+            <Bot className="w-4 h-4 text-orange-400" />
             <span className="hidden lg:inline">World 1</span>
           </Link>
         </Tooltip>
