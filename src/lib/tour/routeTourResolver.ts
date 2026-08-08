@@ -20,6 +20,14 @@ export function getElementRect(element: HTMLElement): ElementRect {
   };
 }
 
+export function findVisibleElement(selector: string): HTMLElement | null {
+  if (typeof window === "undefined" || !selector || selector === "center") {
+    return null;
+  }
+  const elements = Array.from(document.querySelectorAll(selector)) as HTMLElement[];
+  return elements.find((el) => isElementVisible(el)) || null;
+}
+
 export async function waitForTargetElement(
   selector: string,
   timeoutMs: number = 2500
@@ -28,16 +36,16 @@ export async function waitForTargetElement(
     return null;
   }
 
-  const existing = document.querySelector(selector) as HTMLElement | null;
-  if (existing && isElementVisible(existing)) {
+  const existing = findVisibleElement(selector);
+  if (existing) {
     return existing;
   }
 
   return new Promise((resolve) => {
     const startTime = Date.now();
     const interval = setInterval(() => {
-      const el = document.querySelector(selector) as HTMLElement | null;
-      if (el && isElementVisible(el)) {
+      const el = findVisibleElement(selector);
+      if (el) {
         clearInterval(interval);
         resolve(el);
       } else if (Date.now() - startTime >= timeoutMs) {
