@@ -445,12 +445,12 @@ export default function AIEvalMainPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b border-white/[0.06] bg-neutral-950/80 text-[11px] font-mono text-neutral-400 uppercase tracking-wider">
-                    <th className="py-4 px-6">Candidate</th>
-                    <th className="py-4 px-6">Department</th>
-                    <th className="py-4 px-6">Role</th>
-                    <th className="py-4 px-6">Status</th>
-                    <th className="py-4 px-6">AI Evaluation Marks</th>
-                    <th className="py-4 px-6 text-right">Action</th>
+                    <th className="py-3.5 px-4 sm:px-6 whitespace-nowrap">Candidate</th>
+                    <th className="py-3.5 px-4 sm:px-6 whitespace-nowrap">Department</th>
+                    <th className="py-3.5 px-4 sm:px-6 whitespace-nowrap">Role</th>
+                    <th className="py-3.5 px-4 sm:px-6 whitespace-nowrap">Status</th>
+                    <th className="py-3.5 px-4 sm:px-6 whitespace-nowrap">AI Evaluation Marks</th>
+                    <th className="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/[0.04] text-xs">
@@ -472,12 +472,12 @@ export default function AIEvalMainPage() {
                           className="hover:bg-neutral-800/40 transition-colors group"
                         >
                           {/* Avatar & Candidate Name */}
-                          <td className="py-4 px-6">
+                          <td className="py-3.5 px-4 sm:px-6 whitespace-nowrap">
                             <div className="flex items-center gap-3">
                               <img
                                 src={candidate.avatarSeed}
                                 alt={candidate.name}
-                                className="w-9 h-9 rounded-xl bg-neutral-800 border border-white/[0.06] p-0.5 object-cover"
+                                className="w-9 h-9 rounded-xl bg-neutral-800 border border-white/[0.06] p-0.5 object-cover shrink-0"
                               />
                               <div>
                                 <div className="font-bold text-white group-hover:text-orange-400 transition-colors">
@@ -491,19 +491,19 @@ export default function AIEvalMainPage() {
                           </td>
 
                           {/* Department */}
-                          <td className="py-4 px-6 font-mono text-neutral-300">
+                          <td className="py-3.5 px-4 sm:px-6 font-mono text-neutral-300 whitespace-nowrap">
                             {candidate.department}
                           </td>
 
                           {/* Role */}
-                          <td className="py-4 px-6 text-neutral-400 font-sans">
+                          <td className="py-3.5 px-4 sm:px-6 text-neutral-400 font-sans whitespace-nowrap">
                             {candidate.role}
                           </td>
 
                           {/* Status */}
-                          <td className="py-4 px-6">
+                          <td className="py-3.5 px-4 sm:px-6 whitespace-nowrap">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold ${
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold whitespace-nowrap ${
                                 candidate.status === "Completed"
                                   ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                                   : candidate.status === "In Review"
@@ -512,7 +512,7 @@ export default function AIEvalMainPage() {
                               }`}
                             >
                               <span
-                                className={`w-1.5 h-1.5 rounded-full ${
+                                className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                                   candidate.status === "Completed"
                                     ? "bg-emerald-400"
                                     : candidate.status === "In Review"
@@ -525,14 +525,14 @@ export default function AIEvalMainPage() {
                           </td>
 
                           {/* AI Evaluation Progress & Marks */}
-                          <td className="py-4 px-6 font-mono">
+                          <td className="py-3.5 px-4 sm:px-6 font-mono whitespace-nowrap">
                             {evalRecord ? (
                               <div className="space-y-1">
-                                <div className="flex items-center justify-between text-[11px]">
+                                <div className="flex items-center justify-between text-[11px] gap-2">
                                   <span className="text-orange-400 font-bold">{score} / 100 Marks</span>
                                   <span className="text-amber-300 text-[10px] font-bold">{grade}</span>
                                 </div>
-                                <div className="w-32 h-1.5 rounded-full bg-neutral-950 overflow-hidden border border-white/[0.06]">
+                                <div className="w-28 sm:w-32 h-1.5 rounded-full bg-neutral-950 overflow-hidden border border-white/[0.06]">
                                   <div
                                     className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"
                                     style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
@@ -545,13 +545,13 @@ export default function AIEvalMainPage() {
                           </td>
 
                           {/* Action Button */}
-                          <td className="py-4 px-6 text-right">
+                          <td className="py-3.5 px-4 sm:px-6 text-right whitespace-nowrap">
                             <Link
                               href={`/ai-eval/employee/${candidate.id}`}
-                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500/10 text-orange-400 hover:bg-orange-500 hover:text-black border border-orange-500/30 transition-all font-mono text-xs font-semibold"
+                              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-orange-500/10 text-orange-400 hover:bg-orange-500 hover:text-black border border-orange-500/30 transition-all font-mono text-xs font-bold whitespace-nowrap shrink-0 shadow-xs"
                             >
                               <span>AI Audit</span>
-                              <ExternalLink className="w-3.5 h-3.5" />
+                              <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                             </Link>
                           </td>
                         </tr>
