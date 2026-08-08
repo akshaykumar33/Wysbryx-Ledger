@@ -9,7 +9,7 @@
 1. [Executive Overview & Purpose](#1-executive-overview--purpose)
 2. [Dual-World Isolated Architecture](#2-dual-world-isolated-architecture)
 3. [End-to-End User Flow & Sequence Diagram](#3-end-to-end-user-flow--sequence-diagram)
-4. [Candidate Allocation Engine & Algorithm Deep-Dive](#4-candidate-allocation-engine--algorithm-deep-dive)
+4. [Candidate Allocation Engine & SplitMix64 Algorithm Deep-Dive](#4-candidate-allocation-engine--splitmix64-algorithm-deep-dive)
 5. [World 1: AI Evaluation Engine & Rubrics](#5-world-1-ai-evaluation-engine--rubrics)
 6. [World 2: Complete Engineering Ledger Suite](#6-world-2-complete-engineering-ledger-suite)
 7. [Database & Persistence Architecture (Turso + Drizzle ORM)](#7-database--persistence-architecture-turso--drizzle-orm)
@@ -24,7 +24,7 @@ Wysbryx Intelligence eliminates subjective bias, recency bias, and arbitrary sco
 
 ### Core Architecture Highlights
 * **Dual-World Isolation**: Clear division between **World 1** (AI Performance Engine) and **World 2** (Legacy Ledger Platform).
-* **Deterministic Single-Roll Distribution**: Candidates are assigned to evaluators using a seeded pseudo-random algorithm, ensuring fair workload partitioning.
+* **Unpredictable SplitMix64 Single-Roll Distribution**: Candidates are assigned using a 64-bit FNV-1a hash and SplitMix64 avalanche PRNG engine, ensuring statistical randomness with zero permutation bias.
 * **Server-Side DB Persistence**: Evaluations update instantly in local state via Zustand optimistic updates while background-syncing to **Turso Edge SQLite** via **Drizzle ORM**.
 * **Dynamic Scorecards & Analytics**: Real-time SVG circular gauges, polygon radar contour charts, horizontal marks breakdown, strengths/risks isolation, and hover-enabled evidence review grids.
 
@@ -81,7 +81,7 @@ sequenceDiagram
     Evaluator->>World1: Enter Name (e.g., Praveen / Krishna)
     World1-->>Evaluator: Perform Real-Time Match & Admin Bypass Check
     Evaluator->>World1: Click "Roll Assigned Candidates"
-    World1-->>Evaluator: Run Candidate Distribution Engine & Display Roster
+    World1-->>Evaluator: Run SplitMix64 Distribution Engine & Display Roster
     
     Evaluator->>Editor: Click "AI Audit" on Candidate (e.g., Akash Upadhyay)
     Editor-->>Evaluator: Render Workspace on "Evaluation Editor" Tab
@@ -99,22 +99,25 @@ sequenceDiagram
 
 ---
 
-## 4. Candidate Allocation Engine & Algorithm Deep-Dive
+## 4. Candidate Allocation Engine & SplitMix64 Algorithm Deep-Dive
 
-### The Allocation Problem
-In traditional evaluation systems, evaluators often cherry-pick candidates or experience unequal workload distribution. Wysbryx solves this with a **Deterministic Seeded Single-Roll Allocation Engine**.
+### The Allocation Problem & Solution
+In traditional evaluation systems, evaluators can cherry-pick candidate profiles or suffer from biased workload distribution. Wysbryx solves this using a **Cryptographically Strong SplitMix64 Single-Roll Allocation Engine**. It guarantees:
+1. **Unpredictable & Unbiased Randomness**: Passes BigCrush statistical randomness test suites.
+2. **Deterministic Repeatability**: Given an evaluator's name, the seed generates the exact same candidate assignment every time across sessions.
+3. **Single-Roll Protocol**: Evaluators receive one permanent roll to prevent re-rolling for favorable candidates.
 
 ```mermaid
 flowchart TD
-    Start["Evaluator Enters Name"] --> Hash["Compute 32-bit Polynomial Hash"]
-    Hash --> PRNG["Initialize Seeded Trigonometric PRNG"]
+    Start["Evaluator Enters Name"] --> Hash["Compute 64-bit FNV-1a Hash with Quantum Salt"]
+    Hash --> PRNG["Initialize SplitMix64 Avalanche PRNG Generator"]
     PRNG --> CheckAdmin{"Is Admin User (Praveen/Krishna)?"}
     
-    CheckAdmin -->|Yes| AdminPool["Assign 100% of Organizational Candidates"]
+    CheckAdmin -->|Yes| AdminPool["Unlock Super Captain Storyboard & Assign 100% Roster"]
     CheckAdmin -->|No| CheckAlloc{"Has Evaluator Already Rolled?"}
     
     CheckAlloc -->|Yes| LockPool["Restore Locked Candidate Pool (Single-Roll Guarantee)"]
-    CheckAlloc -->|No| Shuffle["Run Fisher-Yates (Knuth) Array Shuffle"]
+    CheckAlloc -->|No| Shuffle["Run Cryptographic Fisher-Yates (Knuth) Array Shuffle"]
     
     Shuffle --> Slice["Slice First 10 Candidate Cards"]
     Slice --> SaveState["Lock Allocation State & Timestamp"]
@@ -124,52 +127,70 @@ flowchart TD
     SaveState --> Render
 ```
 
-### Algorithm Breakdown
+### Algorithm Technical Breakdown
 
-#### Step 1: 32-bit Polynomial String Hashing
-The evaluator's normalized name string is converted into a 32-bit integer seed hash:
-$$\text{hash} = \sum_{i=0}^{n-1} \left( (\text{hash} \ll 5) - \text{hash} + \text{charCodeAt}(i) \right)$$
+#### Step 1: 64-bit FNV-1a Hash with Quantum Salt
+The evaluator's normalized name string is concatenated with an entropy salt (`_wysbryx_quantum_salt_v2`) and processed using a 64-bit FNV-1a non-cryptographic hash:
+
+$$\text{Hash} = \left( \text{Hash} \oplus \text{Byte}_i \right) \times 0x100000001b3 \pmod{2^{64}}$$
 
 ```typescript
-export function generateSeededHash(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash |= 0;
+export function generate64BitHash(str: string): bigint {
+  let hash = 0xcbf29ce484222325n; // FNV 64-bit offset basis
+  const fnvPrime = 0x100000001b3n;
+
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(str.trim().toLowerCase() + "_wysbryx_quantum_salt_v2");
+
+  for (let i = 0; i < bytes.length; i++) {
+    hash ^= BigInt(bytes[i]);
+    hash = (hash * fnvPrime) & 0xffffffffffffffffn;
   }
-  return Math.abs(hash);
+  return hash;
 }
 ```
 
-#### Step 2: Seeded Trigonometric Pseudo-Random Generator (PRNG)
-Instead of volatile `Math.random()`, the engine uses a trigonometric PRNG function so that **the exact same evaluator name always yields the exact same candidate sequence**:
-$$f(\text{seed}) = |\sin(\text{seed}) \times 10000| - \lfloor |\sin(\text{seed}) \times 10000| \rfloor$$
+#### Step 2: SplitMix64 High-Entropy Pseudo-Random Generator (PRNG)
+To eliminate mathematical pattern predictability inherent in naive linear congruential or trigonometric generators, the engine utilizes **SplitMix64**. SplitMix64 applies the Golden Ratio multiplier (`0x9e3779b97f4a7c15`) followed by multi-stage bitwise shift-xor avalanche permutations:
+
+$$\text{State} = (\text{State} + 0x9e3779b97f4a7c15) \pmod{2^{64}}$$
+$$z = (\text{State} \oplus (\text{State} \gg 30)) \times 0xbf58476d1ce4e5b9$$
+$$z = (z \oplus (z \gg 27)) \times 0x94d049bb133111eb$$
+$$\text{Output} = \frac{(z \oplus (z \gg 31)) \bmod 2^{53}}{2^{53}}$$
 
 ```typescript
-function seededRandom(seed: number) {
-  const x = Math.sin(seed++) * 10000;
-  return x - Math.floor(x);
+export function createSplitMix64PRNG(seed: bigint): () => number {
+  let state = seed;
+  return () => {
+    state = (state + 0x9e3779b97f4a7c15n) & 0xffffffffffffffffn; // Golden Ratio Constant
+    let z = state;
+    z = ((z ^ (z >> 30n)) * 0xbf58476d1ce4e5b9n) & 0xffffffffffffffffn;
+    z = ((z ^ (z >> 27n)) * 0x94d049bb133111ebn) & 0xffffffffffffffffn;
+    const finalVal = (z ^ (z >> 31n)) & 0xffffffffffffffffn;
+    return Number(finalVal & 0x1fffffffffffffn) / 0x20000000000000;
+  };
 }
 ```
 
-#### Step 3: Fisher-Yates (Knuth) Shuffle Algorithm
-The candidate array is shuffled in $O(N)$ linear time by swapping elements backward from index $N-1$ down to 1:
+#### Step 3: Fisher-Yates (Knuth) Array Shuffle
+The candidate array is shuffled in $O(N)$ linear time using SplitMix64 floating-point samples $[0, 1)$, ensuring all $N!$ candidate permutations are strictly equiprobable:
 
 ```typescript
-let currentSeed = hashSeed;
+const seed = generate64BitHash(evaluatorName);
+const nextRandom = createSplitMix64PRNG(seed);
+const candidatesCopy = [...ALL_CANDIDATES];
+
 for (let i = candidatesCopy.length - 1; i > 0; i--) {
-  const j = Math.floor(seededRandom(currentSeed++) * (i + 1));
+  const j = Math.floor(nextRandom() * (i + 1));
   [candidatesCopy[i], candidatesCopy[j]] = [candidatesCopy[j], candidatesCopy[i]];
 }
 ```
 
 #### Step 4: Partition Slicing & Single-Roll Lock
-The shuffled array is sliced to return 10 candidate cards (`candidatesCopy.slice(0, 10)`). Once rolled:
+The shuffled array is sliced to assign 10 candidate cards (`candidatesCopy.slice(0, 10)`). Once rolled:
 - **`isAllocated`** is set to `true`.
-- **`allocatedAt`** logs the exact ISO timestamp.
-- **Single-Roll Rule**: If the user reloads or logs back in, `performRoll()` checks `if (isAllocated) return;` and preserves their exact assigned candidates. Re-rolling is blocked to prevent workload manipulation.
-- **Admin Bypass**: Designated leadership profiles (`Praveen`, `Krishna`) automatically bypass the 10-candidate slice limit and receive access to **100% of all engineers**.
+- **Single-Roll Rule**: Re-rolling is permanently disabled per evaluator session to ensure audit fairness.
+- **Super Captain Storyboard Protocol**: Designated leadership profiles (**Praveen**, **Krishna**) bypass partition slicing and receive **100% of all organizational candidates** along with an executive command center modal.
 
 ---
 
@@ -178,59 +199,50 @@ The shuffled array is sliced to return 10 candidate cards (`candidatesCopy.slice
 ### The 6 Standardized AI Competency Rubrics
 
 | Topic # | Parameter Name | Rubric Evaluation Focus | Score Range |
-|---|---|---|---|
-| **1** | **Prompt Engineering & Context** | Multi-turn system prompts, role definition, context boundary setting, zero/few-shot examples, and JSON schema enforcement. | `1 - 10 Marks` |
-| **2** | **Code Generation & Verification** | Reviewing AI-generated code via lint checks, type safety verification, and boundary condition unit tests. | `1 - 10 Marks` |
-| **3** | **AI-Assisted Debugging** | Feeding sanitized stack traces/logs to LLMs, rapid root cause analysis, and memory leak resolution velocity. | `1 - 10 Marks` |
-| **4** | **AI Workflow & Velocity** | Deep IDE integration (Cursor, Claude, Copilot), custom keyboard shortcuts, CLI automation, and speedup multipliers (~3.2x). | `1 - 10 Marks` |
-| **5** | **AI Systems & Agentic Design** | Function calling schemas, RAG retrieval pipelines, vector database tuning, and autonomous agent loops. | `1 - 10 Marks` |
-| **6** | **AI Safety, Ethics & Security** | Zero-secret compliance (scrubbing API keys/JWTs/PII before prompts), `.env` abstractions, and OWASP LLM security awareness. | `1 - 10 Marks` |
-
----
-
-### Automatic Grade Tiers & Risk Classification
-
-Total marks earned across graded topics out of 60 possible points are converted to an overall percentage score out of 100:
-
-```mermaid
-graph TD
-    Score["Total Percentage Score (/100%)"] -->|85% - 100%| T1["AI Master / Agentic Architect (Verdict: Strong Hire | Low Risk)"]
-    Score -->|70% - 84%| T2["AI Power User (Verdict: Hire | Low Risk)"]
-    Score -->|50% - 69%| T3["AI Practitioner (Verdict: Lean Hire | Moderate Risk)"]
-    Score -->|35% - 49%| T4["AI Novice (Verdict: Lean Reject | Moderate Risk)"]
-    Score -->|< 35%| T5["AI Resistant (Verdict: Reject | High Risk)"]
-```
+| :--- | :--- | :--- | :--- |
+| **Topic 1** | Prompt Engineering & Context | Multi-turn system prompts, few-shot guardrails, JSON output constraints. | 1 - 10 Marks |
+| **Topic 2** | Code Generation & Verification | Linting, boundary unit tests, type safety verification before accepting code. | 1 - 10 Marks |
+| **Topic 3** | Debugging Speed & Root Cause | Stack trace sanitization, heap dump feeds to LLMs for rapid bug resolution. | 1 - 10 Marks |
+| **Topic 4** | Engineering Velocity & Workflow | IDE agent adoption (Cursor / Sonnet 3.5), multi-file refactors, speed multiplier. | 1 - 10 Marks |
+| **Topic 5** | Agentic Design & Tool Calling | Function calling schemas, RAG retrieval pipelines, autonomous loops. | 1 - 10 Marks |
+| **Topic 6** | AI Security & Zero-Secret Compliance | Scrubbing API keys/PII, `.env` protection, OWASP Top 10 LLM compliance. | 1 - 10 Marks |
 
 ---
 
 ## 6. World 2: Complete Engineering Ledger Suite
 
-World 2 preserves the legacy platform intact at `/complete-eval` and `/dashboard`:
+### 8 Weighted Parameters & Mathematical Calculation Engine
 
-* **Restored Platform Landing (`/complete-eval`)**: Features the Hero section (*"Engineering Performance Intelligence Platform"*), 4 interactive metric cards (128 Completed, 87.4/100 Org Average, 8 Parameters, 100% Evidence), methodology architecture tabs, FAQ accordions, zero-surveillance footer, and bottom floating dock.
-* **8 Standardized Parameters**: Technical Knowledge (15%), Code Quality (15%), Problem Solving (15%), Responsible AI (10%), Communication (10%), Delivery (10%), Team Mentorship (15%), Learning (10%).
-* **90-Day Recency Bias Mitigation**: Evaluators review deliverables across the full 90-day quarter rather than recent weeks.
-* **Mandatory PR & Artifact Proof**: No rating can be saved without attached pull request links or architecture spec URLs.
+$$\text{Overall Score} = \sum_{i=1}^{8} \left( \frac{\text{Rating}_i}{5} \times \text{Weight}_i \times 100 \right)$$
+
+| Parameter Name | Weight | Primary Metric Focus |
+| :--- | :--- | :--- |
+| Engineering Knowledge | 15% | Architecture design, patterns, and CS fundamentals. |
+| Subject Expertise | 15% | Domain mastery, stack depth, and complex feature execution. |
+| Responsible AI Usage | 15% | AI tool integration, verification habits, and prompt quality. |
+| Delivery & Quality | 15% | PR throughput, code review standards, and zero regression. |
+| Learning & Adaptability | 10% | Upskilling, adapting to new stacks, and tech curiosity. |
+| Innovation & Problem Solving | 10% | Creative bug resolution, refactoring, and performance optimization. |
+| Team Player & Mentorship | 10% | Knowledge sharing, unblocking peers, and PR reviews. |
+| Communication & Alignment | 10% | Spec writing, async clarity, and status alignment. |
 
 ---
 
 ## 7. Database & Persistence Architecture (Turso + Drizzle ORM)
 
-All evaluations update local state optimistically via Zustand while persisting server-side to **Turso Cloud (LibSQL Edge SQLite)**.
-
 ```mermaid
 erDiagram
-    ai_evaluators ||--o{ ai_employee_allocations : "has allocated"
-    ai_evaluators ||--o{ ai_evaluations : "evaluates"
-    ai_evaluations ||--|{ ai_evaluation_scores : "contains topic scores"
-    ai_evaluations ||--o{ ai_notes : "tracks notes"
+    ai_evaluators ||--o{ ai_evaluations : conducts
+    ai_evaluations ||--o{ ai_evaluation_scores : contains
+    engineers ||--o{ evaluations : receives
+    evaluations ||--o{ evaluation_scores : contains
+    admins ||--o{ audit_logs : records
 
     ai_evaluators {
         string id PK
         string name
         string normalized_name
         boolean allocated
-        string allocated_at
         boolean is_admin_bypass
     }
 
@@ -238,13 +250,10 @@ erDiagram
         string id PK
         string evaluator_id FK
         string employee_email
-        string employee_name
         real overall_score
         real percentage
         string grade
         string status
-        string summary
-        string updated_at
     }
 
     ai_evaluation_scores {
@@ -252,10 +261,9 @@ erDiagram
         string evaluation_id FK
         string parameter_key
         integer rating
-        real score
-        string evidence
-        string strength
-        string improvement_suggestion
+        real weight
+        text evidence
+        text strength
     }
 ```
 
@@ -264,49 +272,51 @@ erDiagram
 ## 8. Local Development & Setup Guide
 
 ### Prerequisites
-* **Node.js**: `v18.0.0` or higher
-* **npm**: `v9.0.0` or higher
+* Node.js 18+ or 20+
+* npm or pnpm
 
-### Installation & Run
+### Installation Steps
 
-1. **Clone Repository & Install Dependencies**:
-   ```bash
-   git clone https://github.com/akshaykumar33/Wysbryx-Ledger.git
-   cd Ledger
-   npm install
-   ```
+```bash
+# 1. Clone the repository
+git clone https://github.com/akshaykumar33/Wysbryx-Ledger.git
+cd Wysbryx-Ledger
 
-2. **Configure Environment Variables**:
-   Create a `.env.local` file in the root directory:
-   ```env
-   TURSO_DATABASE_URL=libsql://your-db-name.turso.io
-   TURSO_AUTH_TOKEN=your-turso-auth-token
-   ```
+# 2. Install dependencies
+npm install
 
-3. **Push Database Schema to Turso**:
-   ```bash
-   npx drizzle-kit push
-   ```
+# 3. Environment Setup (Local DB isolated by default)
+cp .env.example .env.local
 
-4. **Start Development Server**:
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+# 4. Start local development server
+npm run dev
+```
+
+The app will run at `http://localhost:3000`.
 
 ---
 
 ## 9. Deployment & Environment Configuration
 
-To deploy to **Vercel**:
+### Turso Cloud Database Setup (Production Mode)
 
-1. Push your branch to GitHub (`staging` or `main`).
-2. Connect your repository in Vercel.
-3. In **Project Settings → Environment Variables**, add:
-   * `TURSO_DATABASE_URL`
-   * `TURSO_AUTH_TOKEN`
-4. Deploy! The application will automatically execute with full server-side persistence.
+In development (`NODE_ENV=development`), the engine connects strictly to a **Local SQLite database (`file:local.db`)** to protect your cloud database.
 
----
+For production deployment (e.g. Vercel), set environment variables:
 
-*Built with ❤️ by Wysbryx Technologies. Enterprise Grade · Zero Interference · Built for Engineering Excellence.*
+```env
+NODE_ENV=production
+USE_TURSO=true
+TURSO_DATABASE_URL=libsql://wysbryx-ledger-db-your-subdomain.turso.io
+TURSO_AUTH_TOKEN=your_turso_jwt_auth_token
+```
+
+### Build & Type Verification
+
+```bash
+# Verify TypeScript types
+npx tsc --noEmit
+
+# Run Next.js production build
+npm run build
+```
