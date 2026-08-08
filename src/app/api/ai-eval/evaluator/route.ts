@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { aiEvaluators } from "@/db/schema";
 import { eq } from "drizzle-orm";
+
+export const dynamic = "force-dynamic";
 import { randomUUID } from "crypto";
 
 // POST /api/ai-eval/evaluator — Register or login evaluator
