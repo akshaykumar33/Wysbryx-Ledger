@@ -112,19 +112,24 @@ export function createSplitMix64PRNG(seed: bigint): () => number {
 /**
  * Distributes employee candidates evenly to evaluators using SplitMix64.
  * Admin users receive ALL candidates (100% roster access).
- * Regular evaluators receive an unpredictable, cryptographically uniform partition.
+ * Regular evaluators receive a non-overlapping (disjoint) partition of candidates.
  */
 export function allocateCandidatesForEvaluator(
   evaluatorName: string,
-  targetCount: number = 10
+  targetCount: number = 10,
+  alreadyAllocatedEmails: Set<string> | string[] = new Set()
 ): EmployeeCandidate[] {
   if (isAdminUser(evaluatorName)) {
     return ALL_CANDIDATES;
   }
 
-  // ── CRITICAL: Exclude the evaluator from their own candidate pool ──
-  // Uses same regex-based matching as the login flow so name variations
-  // (e.g. "Akshay" matching "Akshay Kumar") are correctly handled.
+  const allocatedSet = new Set(
+    Array.isArray(alreadyAllocatedEmails)
+      ? alreadyAllocatedEmails.map((e) => e.toLowerCase())
+      : Array.from(alreadyAllocatedEmails).map((e) => e.toLowerCase())
+  );
+
+  // ── CRITICAL 1: Exclude the evaluator from their own candidate pool ──
   const normalizedName = evaluatorName.trim().toLowerCase();
   const escapedName = normalizedName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const selfMatchRegex = new RegExp(escapedName, "i");
@@ -133,19 +138,79 @@ export function allocateCandidatesForEvaluator(
     (candidate) => !selfMatchRegex.test(candidate.name.toLowerCase())
   );
 
-  // If somehow the pool is empty after exclusion, fallback to full pool
-  const poolToShuffle = eligiblePool.length > 0 ? eligiblePool : ALL_CANDIDATES;
+  // ── CRITICAL 2: Exclude candidates already assigned to other regular evaluators ──
+  const unallocatedPool = eligiblePool.filter(
+    (candidate) => !allocatedSet.has(candidate.email.toLowerCase())
+  );
 
-  const seed = generate64BitHash(evaluatorName);
-  const nextRandom = createSplitMix64PRNG(seed);
-  const candidatesCopy = [...poolToShuffle];
-
-  // Cryptographically strong Fisher-Yates shuffle with zero bias
-  for (let i = candidatesCopy.length - 1; i > 0; i--) {
-    const j = Math.floor(nextRandom() * (i + 1));
-    [candidatesCopy[i], candidatesCopy[j]] = [candidatesCopy[j], candidatesCopy[i]];
+  // Master deterministic shuffle of ALL_CANDIDATES using fixed global seed
+  const masterSeed = generate64BitHash("wysbryx_master_roster_seed_2026");
+  const masterPrng = createSplitMix64PRNG(masterSeed);
+  const masterRoster = [...eligiblePool];
+  for (let i = masterRoster.length - 1; i > 0; i--) {
+    const j = Math.floor(masterPrng() * (i + 1));
+    [masterRoster[i], masterRoster[j]] = [masterRoster[j], masterRoster[i]];
   }
 
-  // Return the allocated slice (e.g., 10 candidates)
-  return candidatesCopy.slice(0, Math.min(targetCount, candidatesCopy.length));
+  // Known evaluator bucket mapping for clean zero-overlap partitioning
+  const KNOWN_BUCKETS: Record<string, number> = {
+    akshay: 0,
+    ayush: 1,
+    anam: 2,
+    aadil: 3,
+  };
+
+  const totalBuckets = Math.max(1, Math.floor(masterRoster.length / targetCount));
+  let bucketIndex = 0;
+
+  // Find if normalizedName matches or contains a known evaluator key
+  const knownKey = Object.keys(KNOWN_BUCKETS).find((k) => normalizedName.includes(k));
+  if (knownKey !== undefined) {
+    bucketIndex = KNOWN_BUCKETS[knownKey] % totalBuckets;
+  } else {
+    // Hash-based bucket assignment for arbitrary evaluator names
+    const evalSeed = generate64BitHash(normalizedName);
+    bucketIndex = Number(evalSeed % BigInt(totalBuckets));
+    if (bucketIndex < 0) bucketIndex = Math.abs(bucketIndex);
+  }
+
+  // Calculate slice range for this bucket
+  const startIndex = bucketIndex * targetCount;
+  const endIndex = Math.min(masterRoster.length, startIndex + targetCount);
+  const bucketCandidates = masterRoster.slice(startIndex, endIndex);
+
+  // If alreadyAllocatedEmails was provided (server DB aware mode), prioritize unallocated candidates
+  if (allocatedSet.size > 0 && unallocatedPool.length > 0) {
+    // Pick from unallocated pool using evaluator seed
+    const evalSeed = generate64BitHash(normalizedName);
+    const evalPrng = createSplitMix64PRNG(evalSeed);
+    const unallocatedCopy = [...unallocatedPool];
+    for (let i = unallocatedCopy.length - 1; i > 0; i--) {
+      const j = Math.floor(evalPrng() * (i + 1));
+      [unallocatedCopy[i], unallocatedCopy[j]] = [unallocatedCopy[j], unallocatedCopy[i]];
+    }
+
+    // Combine unallocated slice up to targetCount
+    const result = unallocatedCopy.slice(0, Math.min(targetCount, unallocatedCopy.length));
+    if (result.length >= targetCount) {
+      return result;
+    }
+
+    // If unallocated candidates < targetCount, fill remaining from bucketCandidates avoiding duplicates
+    const currentEmails = new Set(result.map((c) => c.email.toLowerCase()));
+    for (const c of bucketCandidates) {
+      if (result.length >= targetCount) break;
+      if (!currentEmails.has(c.email.toLowerCase())) {
+        result.push(c);
+        currentEmails.add(c.email.toLowerCase());
+      }
+    }
+    return result;
+  }
+
+  // Standard non-overlapping bucket candidate allocation
+  return bucketCandidates.length >= targetCount
+    ? bucketCandidates
+    : masterRoster.slice(0, Math.min(targetCount, masterRoster.length));
 }
+

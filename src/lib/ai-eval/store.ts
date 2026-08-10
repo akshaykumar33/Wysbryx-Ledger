@@ -215,7 +215,7 @@ export const useAIEvalStore = create<AIEvalState>()(
         return result;
       },
 
-      performRoll: () => {
+      performRoll: async () => {
         const { evaluatorName, isAllocated, isAdmin } = get();
         if (!evaluatorName) return;
 
@@ -232,12 +232,34 @@ export const useAIEvalStore = create<AIEvalState>()(
           return;
         }
 
-        const allocated = allocateCandidatesForEvaluator(evaluatorName, 10);
+        // Local fallback calculation
+        const fallbackAllocated = allocateCandidatesForEvaluator(evaluatorName, 10);
         set({
           isAllocated: true,
           allocatedAt: new Date().toISOString(),
-          assignedCandidates: allocated,
+          assignedCandidates: fallbackAllocated,
         });
+
+        // Server API Roll & Persist
+        try {
+          const res = await fetch("/api/ai-eval/allocation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ evaluatorName }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.assignedCandidates && data.assignedCandidates.length > 0) {
+              set({
+                isAllocated: true,
+                allocatedAt: data.allocatedAt || new Date().toISOString(),
+                assignedCandidates: data.assignedCandidates,
+              });
+            }
+          }
+        } catch (err) {
+          console.error("Failed to persist allocation to server:", err);
+        }
       },
 
       logoutEvaluator: () => {
@@ -344,7 +366,19 @@ export const useAIEvalStore = create<AIEvalState>()(
       },
 
       getEvaluation: (employeeId) => {
-        return get().evaluations[employeeId];
+        const evals = get().evaluations;
+        if (evals[employeeId]) return evals[employeeId];
+
+        const cand = ALL_CANDIDATES.find(
+          (c) => c.id === employeeId || c.email.toLowerCase() === employeeId.toLowerCase()
+        );
+
+        if (cand) {
+          if (evals[cand.id]) return evals[cand.id];
+          if (evals[cand.email.toLowerCase()]) return evals[cand.email.toLowerCase()];
+        }
+
+        return undefined;
       },
 
       loadEvaluationsFromServer: async () => {
@@ -353,6 +387,21 @@ export const useAIEvalStore = create<AIEvalState>()(
 
         try {
           set({ isSyncing: true });
+
+          // 1. Fetch persistent allocation from server
+          const allocRes = await fetch(`/api/ai-eval/allocation?evaluatorName=${encodeURIComponent(evaluatorName)}`);
+          if (allocRes.ok) {
+            const allocData = await allocRes.json();
+            if (allocData.allocated && allocData.assignedCandidates && allocData.assignedCandidates.length > 0) {
+              set({
+                isAllocated: true,
+                allocatedAt: allocData.allocatedAt || get().allocatedAt,
+                assignedCandidates: allocData.assignedCandidates,
+              });
+            }
+          }
+
+          // 2. Fetch persistent evaluations from server
           const res = await fetch(`/api/ai-eval/evaluations?evaluatorName=${encodeURIComponent(evaluatorName)}`);
           if (res.ok) {
             const data = await res.json();

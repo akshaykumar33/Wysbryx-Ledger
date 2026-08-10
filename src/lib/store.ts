@@ -48,6 +48,9 @@ interface AppState {
   updateEvaluation: (evaluation: Evaluation) => void;
   deleteEvaluation: (id: string) => void;
 
+  // Server Data Sync
+  loadDataFromServer: () => Promise<void>;
+
   // Actions - Audit Logs
   deleteAuditLog: (id: string) => void;
   clearAuditLogs: () => void;
@@ -100,7 +103,7 @@ export const useAppStore = create<AppState>()(
       filterCaptain: "ALL",
       setFilterCaptain: (captainId) => set({ filterCaptain: captainId }),
 
-      addEngineer: (eng) => {
+      addEngineer: async (eng) => {
         set((state) => ({ engineers: [eng, ...state.engineers] }));
         const log = recordAuditEvent({
           adminId: get().currentUser.id,
@@ -111,9 +114,24 @@ export const useAppStore = create<AppState>()(
           newValues: JSON.stringify(eng),
         });
         set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
+
+        try {
+          await fetch("/api/engineers", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(eng),
+          });
+          await fetch("/api/audit-logs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(log),
+          });
+        } catch (err) {
+          console.error("Failed to sync new engineer to server:", err);
+        }
       },
 
-      updateEngineer: (eng) => {
+      updateEngineer: async (eng) => {
         set((state) => ({
           engineers: state.engineers.map((e) => (e.id === eng.id ? eng : e)),
         }));
@@ -126,6 +144,16 @@ export const useAppStore = create<AppState>()(
           newValues: JSON.stringify(eng),
         });
         set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
+
+        try {
+          await fetch("/api/engineers", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(eng),
+          });
+        } catch (err) {
+          console.error("Failed to sync updated engineer to server:", err);
+        }
       },
 
       softDeleteEngineer: (id) => {
@@ -181,7 +209,7 @@ export const useAppStore = create<AppState>()(
         set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
       },
 
-      addEvaluation: (evalItem) => {
+      addEvaluation: async (evalItem) => {
         set((state) => ({ evaluations: [evalItem, ...state.evaluations] }));
         const log = recordAuditEvent({
           adminId: get().currentUser.id,
@@ -192,9 +220,19 @@ export const useAppStore = create<AppState>()(
           newValues: JSON.stringify(evalItem),
         });
         set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
+
+        try {
+          await fetch("/api/evaluations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(evalItem),
+          });
+        } catch (err) {
+          console.error("Failed to sync evaluation to server:", err);
+        }
       },
 
-      updateEvaluation: (evalItem) => {
+      updateEvaluation: async (evalItem) => {
         set((state) => ({
           evaluations: state.evaluations.map((ev) =>
             ev.id === evalItem.id ? evalItem : ev
@@ -209,6 +247,16 @@ export const useAppStore = create<AppState>()(
           newValues: JSON.stringify(evalItem),
         });
         set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
+
+        try {
+          await fetch("/api/evaluations", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(evalItem),
+          });
+        } catch (err) {
+          console.error("Failed to sync updated evaluation to server:", err);
+        }
       },
 
       deleteEvaluation: (id) => {
@@ -249,6 +297,39 @@ export const useAppStore = create<AppState>()(
           newValues: JSON.stringify(newSettings),
         });
         set((state) => ({ auditLogs: [log, ...state.auditLogs] }));
+      },
+
+      loadDataFromServer: async () => {
+        try {
+          // Fetch Engineers
+          const engRes = await fetch("/api/engineers");
+          if (engRes.ok) {
+            const data = await engRes.json();
+            if (data.engineers && data.engineers.length > 0) {
+              set({ engineers: data.engineers });
+            }
+          }
+
+          // Fetch Evaluations
+          const evalRes = await fetch("/api/evaluations");
+          if (evalRes.ok) {
+            const data = await evalRes.json();
+            if (data.evaluations && data.evaluations.length > 0) {
+              set({ evaluations: data.evaluations });
+            }
+          }
+
+          // Fetch Audit Logs
+          const logRes = await fetch("/api/audit-logs");
+          if (logRes.ok) {
+            const data = await logRes.json();
+            if (data.auditLogs && data.auditLogs.length > 0) {
+              set({ auditLogs: data.auditLogs });
+            }
+          }
+        } catch (err) {
+          console.error("Failed to load server data:", err);
+        }
       },
 
       cmdOpen: false,
