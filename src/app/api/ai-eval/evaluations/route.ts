@@ -26,11 +26,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ evaluations: {} });
     }
 
-    // Get all evaluations by this evaluator
-    const evals = await db
-      .select()
-      .from(aiEvaluations)
-      .where(eq(aiEvaluations.evaluatorId, evaluator.id));
+    // Fetch all evaluations so scorecards are globally viewable across admins and evaluators
+    const evals = await db.select().from(aiEvaluations);
 
     // Get all scores for these evaluations
     const scoresByEvalId: Record<string, any[]> = {};
@@ -42,8 +39,10 @@ export async function GET(request: NextRequest) {
       scoresByEvalId[ev.id] = scores;
     }
 
-    // Transform into the shape the Zustand store expects: { [employeeEmail]: EvalRecord }
+    // Transform into the shape the Zustand store expects: { [employeeId]: EvalRecord }
+    const { ALL_CANDIDATES } = await import("@/lib/ai-eval/allocation");
     const evaluationsMap: Record<string, any> = {};
+
     for (const ev of evals) {
       const scores = scoresByEvalId[ev.id] || [];
       const scoresRecord: Record<string, any> = {};
@@ -58,9 +57,18 @@ export async function GET(request: NextRequest) {
         };
       }
 
-      // Key by a stable employee identifier
-      const empKey = ev.employeeEmail;
-      evaluationsMap[empKey] = {
+      // Match candidate by email or ID
+      const cand = ALL_CANDIDATES.find(
+        (c) => c.email.toLowerCase() === ev.employeeEmail.toLowerCase() || c.id === ev.employeeEmail
+      );
+      const candId = cand ? cand.id : ev.employeeEmail;
+
+      const evalObj = {
+        id: ev.id,
+        evaluatorName: evaluator.name,
+        employeeId: candId,
+        employeeName: cand?.name || ev.employeeName,
+        employeeEmail: ev.employeeEmail,
         status: ev.status as "Draft" | "Completed" | "In Review",
         decisionResult: ev.grade || "Lean Hire",
         overallScore: ev.overallScore || 0,
@@ -68,9 +76,12 @@ export async function GET(request: NextRequest) {
         grade: ev.grade || "Not Evaluated",
         executiveSynthesis: ev.summary || "",
         scores: scoresRecord,
-        feedback: ev.feedback || "",
-        serverEvalId: ev.id,
+        feedbackMarkdown: ev.feedback || "",
+        updatedAt: ev.updatedAt,
       };
+
+      evaluationsMap[candId] = evalObj;
+      evaluationsMap[ev.employeeEmail.toLowerCase()] = evalObj;
     }
 
     return NextResponse.json({ evaluations: evaluationsMap });
