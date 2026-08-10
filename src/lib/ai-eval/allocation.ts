@@ -37,44 +37,36 @@ export const ALL_CANDIDATES: EmployeeCandidate[] = EMPLOYEES_RAW.map((emp: any, 
   };
 });
 
-// Admin Bypass Users
-export const ADMIN_USERS = ["praveen", "krishna"];
+// Authorized Evaluators List
+export const ALLOWED_EVALUATORS = [
+  { name: "Akshay", normalized: "akshay", isAdmin: false },
+  { name: "Anam", normalized: "anam", isAdmin: false },
+  { name: "Ayush", normalized: "ayush", isAdmin: false },
+  { name: "Krishna", normalized: "krishna", isAdmin: true },
+  { name: "Praveen", normalized: "praveen", isAdmin: true },
+];
 
-export function isAdminUser(nameInput: string): boolean {
-  const normalized = nameInput.trim().toLowerCase();
-  return ADMIN_USERS.some((admin) => normalized.includes(admin));
-}
-
-// Regex Name Validation
-// Accepts input and tests against candidate/evaluator name list
 export function validateEvaluatorName(nameInput: string): { isValid: boolean; matchedName: string; isAdmin: boolean } {
-  const trimmed = nameInput.trim();
-  if (!trimmed || trimmed.length < 2) {
+  const trimmed = nameInput.trim().toLowerCase();
+  if (!trimmed) {
     return { isValid: false, matchedName: "", isAdmin: false };
   }
 
-  // Check admin first
-  if (isAdminUser(trimmed)) {
-    const adminCapitalized = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
-    return { isValid: true, matchedName: adminCapitalized, isAdmin: true };
-  }
+  // Strictly match against authorized evaluators
+  const found = ALLOWED_EVALUATORS.find(
+    (e) => e.normalized === trimmed || trimmed.includes(e.normalized) || e.normalized.includes(trimmed)
+  );
 
-  // Build regex for intelligent matching
-  const escapedInput = trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const regex = new RegExp(escapedInput, "i");
-
-  // Check against candidate employees or common evaluator names
-  const match = ALL_CANDIDATES.find((c) => regex.test(c.name));
-  if (match) {
-    return { isValid: true, matchedName: match.name, isAdmin: false };
-  }
-
-  // Allow custom evaluator names if user enters a valid non-empty name (at least 3 chars)
-  if (trimmed.length >= 3) {
-    return { isValid: true, matchedName: trimmed, isAdmin: false };
+  if (found) {
+    return { isValid: true, matchedName: found.name, isAdmin: found.isAdmin };
   }
 
   return { isValid: false, matchedName: "", isAdmin: false };
+}
+
+export function isAdminUser(nameInput: string): boolean {
+  const res = validateEvaluatorName(nameInput);
+  return res.isValid && res.isAdmin;
 }
 
 // ── Cryptographically Strong SplitMix64 PRNG Engine ────────────────────────

@@ -78,7 +78,7 @@ export default function AIEvalMainPage() {
 
     const res = loginEvaluator(inputName);
     if (!res.isValid) {
-      setErrorMsg("Name must be at least 2 characters");
+      setErrorMsg("Access Denied: Only authorized evaluators (Akshay, Anam, Ayush, Krishna, Praveen) are permitted.");
       return;
     }
     setErrorMsg("");
