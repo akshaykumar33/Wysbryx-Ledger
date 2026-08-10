@@ -103,6 +103,10 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
   const candidate = ALL_CANDIDATES.find((c) => c.id === employeeId);
   const existingEval = getEvaluation(employeeId);
 
+  const [candidateRole, setCandidateRole] = useState(candidate?.role || "Software Engineer");
+  const [candidateDept, setCandidateDept] = useState(candidate?.department || "Engineering");
+  const [isEditingPosition, setIsEditingPosition] = useState(false);
+
   const [activeTab, setActiveTab] = useState<"audit_report" | "topic_editor">("topic_editor");
   const [status, setStatus] = useState<"Draft" | "Completed" | "In Review">(existingEval?.status || "Draft");
   const [perQuestionScores, setPerQuestionScores] = useState<Record<string, PerQuestionScore>>({});
@@ -219,7 +223,43 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                   }`}>{autoGrade}</span>
                 )}
               </div>
-              <p className="text-xs font-mono text-neutral-500 mt-0.5">{candidate.role} · {candidate.department}</p>
+              <div className="flex items-center gap-2 mt-0.5">
+                {isEditingPosition ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={candidateRole}
+                      onChange={(e) => setCandidateRole(e.target.value)}
+                      className="px-2 py-0.5 bg-neutral-900 border border-orange-500/50 rounded text-xs text-white font-mono"
+                      placeholder="Role / Designation"
+                    />
+                    <input
+                      type="text"
+                      value={candidateDept}
+                      onChange={(e) => setCandidateDept(e.target.value)}
+                      className="px-2 py-0.5 bg-neutral-900 border border-orange-500/50 rounded text-xs text-white font-mono"
+                      placeholder="Department"
+                    />
+                    <button
+                      onClick={() => setIsEditingPosition(false)}
+                      className="px-2 py-0.5 bg-orange-500 text-black text-[10px] font-bold rounded hover:bg-orange-400"
+                    >
+                      Save Position
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-mono text-neutral-400">{candidateRole} · {candidateDept}</p>
+                    <button
+                      onClick={() => setIsEditingPosition(true)}
+                      className="p-1 rounded text-neutral-500 hover:text-orange-400 hover:bg-white/[0.05] transition-colors"
+                      title="Edit Employee Position & Department"
+                    >
+                      <Edit3 className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
