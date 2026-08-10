@@ -212,6 +212,9 @@ export const useAIEvalStore = create<AIEvalState>()(
           isAdmin: false,
         });
 
+        // Immediately fetch allocation and evaluations from Turso DB for this evaluator
+        get().loadEvaluationsFromServer();
+
         return result;
       },
 

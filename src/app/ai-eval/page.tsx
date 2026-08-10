@@ -43,8 +43,10 @@ export default function AIEvalMainPage() {
   } = useAIEvalStore();
 
   useEffect(() => {
-    loadEvaluationsFromServer();
-  }, [loadEvaluationsFromServer]);
+    if (evaluatorName) {
+      loadEvaluationsFromServer();
+    }
+  }, [evaluatorName, loadEvaluationsFromServer]);
 
   const [inputName, setInputName] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
