@@ -21,7 +21,11 @@ import {
 } from "lucide-react";
 
 export default function EngineersDirectoryPage() {
-  const { engineers, softDeleteEngineer, restoreEngineer, bulkDeleteEngineers } = useAppStore();
+  const { engineers, softDeleteEngineer, restoreEngineer, bulkDeleteEngineers, loadDataFromServer } = useAppStore();
+
+  React.useEffect(() => {
+    loadDataFromServer();
+  }, [loadDataFromServer]);
   const [search, setSearch] = React.useState("");
   const [deptFilter, setDeptFilter] = React.useState("ALL");
   const [showArchived, setShowArchived] = React.useState(false);

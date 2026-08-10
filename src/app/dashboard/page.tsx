@@ -25,7 +25,12 @@ export default function DashboardPage() {
     filterDepartment,
     setFilterDepartment,
     filterCaptain,
+    loadDataFromServer,
   } = useAppStore();
+
+  React.useEffect(() => {
+    loadDataFromServer();
+  }, [loadDataFromServer]);
 
   const deptOptions = [
     { value: "ALL", label: "All Departments" },
