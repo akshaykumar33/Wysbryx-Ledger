@@ -69,19 +69,24 @@ export default function AIEvalMainPage() {
     return validateEvaluatorName(inputName);
   }, [inputName]);
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputName.trim()) {
       setErrorMsg("Please enter your name to proceed");
       return;
     }
 
-    const res = loginEvaluator(inputName);
-    if (!res.isValid) {
+    const valRes = validateEvaluatorName(inputName);
+    if (!valRes.isValid) {
       setErrorMsg("Access Denied: Only authorized evaluators (Akshay, Anam, Ayush, Krishna, Praveen) are permitted.");
       return;
     }
     setErrorMsg("");
+
+    const res = loginEvaluator(inputName);
+
+    // Fetch existing allocations from Turso server before finishing login
+    await loadEvaluationsFromServer();
 
     // If admin, immediately trigger roll to get all candidates and show storyboard modal
     if (res.isAdmin) {

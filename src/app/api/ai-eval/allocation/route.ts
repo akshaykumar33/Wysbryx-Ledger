@@ -67,7 +67,6 @@ export async function GET(request: NextRequest) {
       .where(eq(aiEmployeeAllocations.evaluatorId, evaluator.id));
 
     if (existingRows.length > 0) {
-      // Map stored emails back to candidate objects
       const assignedEmails = new Set(existingRows.map((r) => r.employeeEmail.toLowerCase()));
       const candidates = ALL_CANDIDATES.filter((c) => assignedEmails.has(c.email.toLowerCase()));
 
@@ -80,12 +79,22 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Return unallocated state if performRoll has not been triggered yet
+    if (evaluator.allocated) {
+      const candidates = allocateCandidatesForEvaluator(evaluatorName, 10);
+      return NextResponse.json({
+        evaluatorName: evaluator.name,
+        isAdmin: false,
+        allocated: true,
+        allocatedAt: evaluator.allocatedAt || now,
+        assignedCandidates: candidates,
+      });
+    }
+
     return NextResponse.json({
       evaluatorName: evaluator.name,
       isAdmin: false,
-      allocated: evaluator.allocated,
-      allocatedAt: evaluator.allocatedAt,
+      allocated: false,
+      allocatedAt: null,
       assignedCandidates: [],
     });
   } catch (error: any) {
