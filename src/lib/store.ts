@@ -4,8 +4,55 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Engineer, Evaluation, AdminUser, SystemSettings, AuditLog } from "./types";
 import { MOCK_ENGINEERS, MOCK_EVALUATIONS } from "./mockData";
-import { DEFAULT_SETTINGS } from "./constants";
+import { DEFAULT_SETTINGS, DEPARTMENTS, TEAMS, EVALUATION_PARAMETERS } from "./constants";
 import { recordAuditEvent, INITIAL_AUDIT_LOGS, setAuditLogs } from "./audit";
+
+// The API returns raw database rows; screens expect display fields
+// (department and team names, skills as arrays, engineer and parameter names).
+const toList = (v: unknown): string[] => {
+  if (Array.isArray(v)) return v as string[];
+  if (typeof v === "string" && v.trim()) {
+    try {
+      const parsed = JSON.parse(v);
+      return Array.isArray(parsed) ? parsed : [String(parsed)];
+    } catch {
+      return v.split(",").map((x) => x.trim()).filter(Boolean);
+    }
+  }
+  return [];
+};
+
+function normalizeEngineer(e: any): Engineer {
+  const team = TEAMS.find((t) => t.id === e.teamId);
+  return {
+    ...e,
+    departmentName: e.departmentName || DEPARTMENTS.find((d) => d.id === e.departmentId)?.name || "",
+    teamName: e.teamName || team?.name || "",
+    captainName: e.captainName || team?.captainName || e.managerName || "",
+    designation: e.designation || e.designationTitle || e.designationId || "",
+    primarySkills: toList(e.primarySkills),
+    secondarySkills: toList(e.secondarySkills),
+  };
+}
+
+function normalizeEvaluation(ev: any, engineers: Engineer[]): Evaluation {
+  const eng = engineers.find((x) => x.id === ev.engineerId);
+  return {
+    ...ev,
+    engineerName: ev.engineerName || eng?.fullName || "",
+    engineerEmail: ev.engineerEmail || eng?.email || "",
+    engineerDesignation: ev.engineerDesignation || eng?.designation || "",
+    engineerDepartment: ev.engineerDepartment || eng?.departmentName || "",
+    engineerPhoto: ev.engineerPhoto || eng?.photoUrl || "",
+    reviewerName: ev.reviewerName || ev.adminName || "",
+    reviewerEmail: ev.reviewerEmail || ev.adminEmail || "",
+    reviewerRole: ev.reviewerRole || "Administrator",
+    parameterScores: (ev.parameterScores || []).map((p: any) => ({
+      ...p,
+      parameterName: p.parameterName || EVALUATION_PARAMETERS.find((x) => x.key === p.parameterKey)?.name || p.parameterKey,
+    })),
+  };
+}
 
 export type ThemeAccent = "wysbryx" | "violet" | "emerald" | "cyan" | "rose";
 
@@ -306,7 +353,7 @@ export const useAppStore = create<AppState>()(
           if (engRes.ok) {
             const data = await engRes.json();
             if (data.engineers && data.engineers.length > 0) {
-              set({ engineers: data.engineers });
+              set({ engineers: data.engineers.map(normalizeEngineer) });
             }
           }
 
@@ -315,7 +362,7 @@ export const useAppStore = create<AppState>()(
           if (evalRes.ok) {
             const data = await evalRes.json();
             if (data.evaluations && data.evaluations.length > 0) {
-              set({ evaluations: data.evaluations });
+              set({ evaluations: data.evaluations.map((ev: any) => normalizeEvaluation(ev, get().engineers)) });
             }
           }
 
@@ -346,6 +393,13 @@ export const useAppStore = create<AppState>()(
         selectedQuarter: state.selectedQuarter,
         selectedYear: state.selectedYear,
       }),
+      // Data saved before normalisation existed may hold raw rows.
+      merge: (persisted, current) => {
+        const p = (persisted || {}) as Partial<AppState>;
+        const engineers = (p.engineers || current.engineers).map(normalizeEngineer);
+        const evaluations = (p.evaluations || current.evaluations).map((ev) => normalizeEvaluation(ev, engineers));
+        return { ...current, ...p, engineers, evaluations };
+      },
     }
   )
 );
