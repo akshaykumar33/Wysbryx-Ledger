@@ -7,7 +7,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CmdKMenu } from "@/components/layout/CmdKMenu";
 import { FloatingDock } from "@/components/layout/FloatingDock";
-import { Toaster } from "sonner";
+import { ThemedToaster } from "@/components/layout/ThemedToaster";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -65,7 +65,7 @@ export default function RootLayout({
               <Footer />
               <FloatingDock />
               <CmdKMenu />
-              <Toaster position="bottom-right" theme="system" richColors closeButton />
+              <ThemedToaster />
             </TourProvider>
           </ThemeAccentProvider>
         </ThemeProvider>
