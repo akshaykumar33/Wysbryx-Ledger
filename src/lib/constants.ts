@@ -2,7 +2,7 @@ import { EvaluationParameter, SystemSettings } from "./types";
 
 export const DEFAULT_SETTINGS: SystemSettings = {
   companyName: "Wysbryx Technologies",
-  logoUrl: "https://www.wysbryx.com/wysbryx_v.png",
+  logoUrl: "/wysbryx-mark.png",
   maxScore: 100,
   minScore: 0,
   ratingScale: 5,
