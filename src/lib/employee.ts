@@ -14,6 +14,7 @@ const EMPLOYEES = [
   { name: "Chinmaya Ranjan Mishra,", email: "chinmaya@wysbryx.com", dob: "1996-01-11", startDate: "2025-02-01" },
   { name: "Deepak Rajat", email: "deepak@wysbryx.com", dob: "2004-03-15", startDate: "2025-07-01" },
   { name: "Devesh sawarkar", email: "devesh@wysbryx.com", dob: "2001-10-03", startDate: "2025-09-08" },
+  { name: "Dhaval", email: "dhaval@wysbryx.com", dob: "2001-01-15", startDate: "2025-01-15" },
   { name: "DHRITIMAN NATH", email: "Dhritiman@wysbryx.com", dob: "2001-11-18", startDate: "2025-10-15" },
    { name: "Dinesh Kumar JV", email: "dinesh@wysbryx.com", dob: "2004-01-26", startDate: "2025-10-27" },
   

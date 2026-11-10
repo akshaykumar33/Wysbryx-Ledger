@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAIEvalStore } from "@/lib/ai-eval/store";
 import { validateEvaluatorName, ALL_CANDIDATES } from "@/lib/ai-eval/allocation";
+import { getTeamNotesProfileForCandidate, TEAM_NOTES_PROFILES } from "@/lib/ai-eval/teamNotesData";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import {
   Sparkles,
@@ -22,6 +23,9 @@ import {
   ShieldAlert,
   Zap,
   X,
+  FileText,
+  Target,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function AIEvalMainPage() {
@@ -54,6 +58,7 @@ export default function AIEvalMainPage() {
   const [rollStep, setRollStep] = useState<string>("Ready");
   const [currentPage, setCurrentPage] = useState(1);
   const [showAdminModal, setShowAdminModal] = useState(false);
+  const [showTeamNotesModal, setShowTeamNotesModal] = useState(false);
   const pageSize = 8;
 
   // Trigger admin storyboard modal when an admin logs in
@@ -216,6 +221,108 @@ export default function AIEvalMainPage() {
                 <span>Unleash All Wysbros & Enter Command Center</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ==========================================================
+          TEAM AI NOTES & FOLLOW-UPS REPORT MODAL (team_ai_notes_report.pdf)
+         ========================================================== */}
+      <AnimatePresence>
+        {showTeamNotesModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 sm:p-8 rounded-3xl bg-neutral-900 border border-white/10 shadow-2xl text-left space-y-6 scrollbar-thin scrollbar-thumb-orange-500/20"
+            >
+              {/* Top Bar */}
+              <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-400 text-xs font-mono font-bold uppercase tracking-wider mb-1">
+                    <FileText className="w-3.5 h-3.5 text-orange-400" />
+                    <span>TEAM AI NOTES &amp; FOLLOW-UPS</span>
+                  </div>
+                  <h2 className="text-2xl font-extrabold text-white tracking-tight">
+                    Team AI Usage &amp; 1:1 Catch-up Report
+                  </h2>
+                  <p className="text-xs text-neutral-400 font-sans mt-0.5">
+                    Quick observations from our 1:1 catch-ups on what is working, common habits, and small adjustments.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowTeamNotesModal(false)}
+                  className="p-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Profiles List */}
+              <div className="space-y-4">
+                {Object.entries(TEAM_NOTES_PROFILES)
+                  .filter(([_, prof]) => !prof.isBlank)
+                  .map(([key, prof]) => (
+                    <div
+                      key={key}
+                      className="p-5 rounded-2xl bg-neutral-950/70 border border-white/[0.08] space-y-3"
+                    >
+                      <div className="flex items-center justify-between flex-wrap gap-2 border-b border-white/[0.06] pb-2">
+                        <div className="flex items-center gap-2.5">
+                          <h3 className="text-base font-bold text-white">{prof.candidateName}</h3>
+                          <span className="text-xs font-mono text-neutral-400">· {prof.role} ({prof.department})</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-orange-500/15 text-orange-400 border border-orange-500/25">
+                            {prof.grade} · {prof.overallScore}/100
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                        {/* WHAT'S CLICKING */}
+                        <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-emerald-500/20 space-y-1.5">
+                          <div className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                            <span>WHAT&apos;S CLICKING</span>
+                          </div>
+                          <p className="text-xs text-neutral-300 leading-relaxed font-sans">
+                            {prof.notes.whatsClicking}
+                          </p>
+                        </div>
+
+                        {/* THE RELATABLE TRAP */}
+                        <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-amber-500/20 space-y-1.5">
+                          <div className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <AlertTriangle className="w-3 h-3 text-amber-400" />
+                            <span>THE RELATABLE TRAP</span>
+                          </div>
+                          <p className="text-xs text-neutral-300 leading-relaxed font-sans">
+                            {prof.notes.relatableTrap}
+                          </p>
+                        </div>
+
+                        {/* NEXT MOVE */}
+                        <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-cyan-500/20 space-y-1.5">
+                          <div className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <Target className="w-3 h-3 text-cyan-400" />
+                            <span>NEXT MOVE</span>
+                          </div>
+                          <ul className="text-xs text-neutral-300 leading-relaxed space-y-1 font-sans">
+                            {prof.notes.nextMove.map((m, idx) => (
+                              <li key={idx} className="flex items-start gap-1">
+                                <span className="text-cyan-400 font-bold">•</span>
+                                <span>{m}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </motion.div>
           </div>
         )}
@@ -388,7 +495,14 @@ export default function AIEvalMainPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
+              <button
+                onClick={() => setShowTeamNotesModal(true)}
+                className="px-4 py-2 rounded-2xl bg-gradient-to-r from-orange-500/15 via-amber-500/15 to-yellow-500/15 hover:from-orange-500/25 hover:to-amber-500/25 border border-orange-500/30 text-orange-300 font-mono text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/5 cursor-pointer"
+              >
+                <FileText className="w-3.5 h-3.5 text-orange-400" />
+                <span>Team 1:1 AI Notes Report</span>
+              </button>
               <div className="px-4 py-2 rounded-2xl bg-neutral-950 border border-white/[0.06] text-left font-mono">
                 <div className="text-[10px] text-neutral-500 font-semibold">CANDIDATE POOL</div>
                 <div className="text-sm font-bold text-orange-400">{assignedCandidates.length} Assigned</div>
@@ -473,8 +587,12 @@ export default function AIEvalMainPage() {
                   ) : (
                     paginatedCandidates.map((candidate, candidateIndex) => {
                       const evalRecord = getEvaluation(candidate.id);
-                      const score = evalRecord?.overallScore || 0;
-                      const grade = evalRecord?.grade || "Pending";
+                      const teamProfile = getTeamNotesProfileForCandidate(candidate.name);
+                      const isBlank = teamProfile?.isBlank;
+                      const hasEvaluation = !!evalRecord || (!isBlank && !!teamProfile);
+                      const score = evalRecord?.overallScore ?? (!isBlank && teamProfile ? teamProfile.overallScore : 0);
+                      const grade = evalRecord?.grade ?? (!isBlank && teamProfile ? teamProfile.grade : "Not Evaluated");
+                      const displayStatus = evalRecord?.status ?? (!isBlank && teamProfile ? teamProfile.status : candidate.status);
 
                       return (
                         <tr
@@ -490,8 +608,13 @@ export default function AIEvalMainPage() {
                                 className="w-9 h-9 rounded-xl bg-neutral-800 border border-white/[0.06] p-0.5 object-cover shrink-0"
                               />
                               <div>
-                                <div className="font-bold text-white group-hover:text-orange-400 transition-colors">
-                                  {candidate.name}
+                                <div className="font-bold text-white group-hover:text-orange-400 transition-colors flex items-center gap-2">
+                                  <span>{candidate.name}</span>
+                                  {isBlank && (
+                                    <span className="px-1.5 py-0.5 rounded text-[9px] font-mono text-neutral-400 bg-neutral-800 border border-white/10">
+                                      BLANK
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="text-[11px] font-mono text-slate-500">
                                   {candidate.email}
@@ -514,29 +637,29 @@ export default function AIEvalMainPage() {
                           <td className="py-3.5 px-4 sm:px-6 whitespace-nowrap">
                             <span
                               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold whitespace-nowrap ${
-                                candidate.status === "Completed"
+                                displayStatus === "Completed"
                                   ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                  : candidate.status === "In Review"
+                                  : displayStatus === "In Review"
                                   ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
                                   : "bg-orange-500/10 text-orange-400 border border-orange-500/20"
                               }`}
                             >
                               <span
                                 className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                                  candidate.status === "Completed"
+                                  displayStatus === "Completed"
                                     ? "bg-emerald-400"
-                                    : candidate.status === "In Review"
+                                    : displayStatus === "In Review"
                                     ? "bg-amber-400 animate-pulse"
                                     : "bg-orange-400"
                                 }`}
                               />
-                              {candidate.status}
+                              {displayStatus}
                             </span>
                           </td>
 
                           {/* AI Evaluation Progress & Marks */}
                           <td className="py-3.5 px-4 sm:px-6 font-mono whitespace-nowrap">
-                            {evalRecord ? (
+                            {hasEvaluation && !isBlank ? (
                               <div className="space-y-1">
                                 <div className="flex items-center justify-between text-[11px] gap-2">
                                   <span className="text-orange-400 font-bold">{score} / 100 Marks</span>
