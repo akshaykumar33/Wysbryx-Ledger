@@ -9,6 +9,7 @@ import {
   PerQuestionScore,
 } from "@/lib/ai-eval/store";
 import { ALL_CANDIDATES } from "@/lib/ai-eval/allocation";
+import { getTeamNotesProfileForCandidate } from "@/lib/ai-eval/teamNotesData";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import {
   ArrowLeft,
@@ -33,6 +34,7 @@ import {
   Flame,
   Star,
   Zap,
+  Crown,
 } from "lucide-react";
 import {
   Radar,
@@ -114,6 +116,8 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
   const [customDecision, setCustomDecision] = useState("");
   const [isSaved, setIsSaved] = useState(false);
 
+  const teamProfile = candidate ? getTeamNotesProfileForCandidate(candidate.name) : null;
+
   useEffect(() => {
     loadEvaluationsFromServer();
   }, [loadEvaluationsFromServer]);
@@ -127,8 +131,24 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
     } else if (candidate?.name === "Akash Upadhyay") {
       setPerQuestionScores(AKASH_SAMPLE_DATA);
       setStatus("Completed");
+    } else if (teamProfile) {
+      if (teamProfile.isBlank) {
+        // V Bharath Jinda - explicitly kept blank as requested
+        setPerQuestionScores({});
+        setCustomSynthesis("");
+        setCustomDecision("Lean Hire");
+        setStatus("Draft");
+      } else {
+        // Auto-fill from 1:1 notes and team profile
+        setPerQuestionScores(teamProfile.scores);
+        setCustomSynthesis(teamProfile.executiveSynthesis);
+        setCustomDecision(teamProfile.decisionResult);
+        setStatus(teamProfile.status);
+        if (teamProfile.role) setCandidateRole(teamProfile.role);
+        if (teamProfile.department) setCandidateDept(teamProfile.department);
+      }
     }
-  }, [existingEval, candidate]);
+  }, [existingEval, candidate, teamProfile]);
 
   if (!candidate) {
     return (
@@ -223,6 +243,11 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
             <div>
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="text-lg font-bold text-white tracking-tight">{candidate.name}</h1>
+                {teamProfile?.isBlank && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-neutral-800 text-neutral-400 border border-white/10">
+                    <span>KEPT BLANK</span>
+                  </span>
+                )}
                 {hasAnyGrades && (
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border shadow-sm ${
                     overallScore >= 70
@@ -336,6 +361,89 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
           ))}
         </div>
       </div>
+
+      {/* ═══ 1:1 CATCH-UP NOTES & FOLLOW-UPS CARD (REFERENCED FROM team_ai_notes_report.pdf) ═══ */}
+      {teamProfile?.notes && !teamProfile.isBlank && (
+        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/90 backdrop-blur-2xl p-6 shadow-xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                  1:1 CATCH-UP REPORT
+                </span>
+                <span className="text-xs font-mono text-neutral-400">Team AI Notes &amp; Follow-ups</span>
+              </div>
+              <h3 className="text-base font-bold text-white mt-1">
+                {candidate.name} · Observation &amp; Follow-ups
+              </h3>
+            </div>
+            <button
+              onClick={() => {
+                setPerQuestionScores(teamProfile.scores);
+                setCustomSynthesis(teamProfile.executiveSynthesis);
+                setCustomDecision(teamProfile.decisionResult);
+                setStatus(teamProfile.status);
+                handleSave();
+              }}
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-500/20 to-amber-500/20 hover:from-orange-500/30 hover:to-amber-500/30 border border-orange-500/30 text-orange-300 text-xs font-mono font-semibold transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+              <span>Auto-Fill / Sync Scorecard</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* WHAT'S CLICKING */}
+            <div className="p-4 rounded-xl bg-neutral-950/70 border border-emerald-500/20 space-y-2">
+              <div className="text-[11px] font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>WHAT&apos;S CLICKING</span>
+              </div>
+              <p className="text-xs text-neutral-300 leading-relaxed font-sans">
+                {teamProfile.notes.whatsClicking}
+              </p>
+            </div>
+
+            {/* THE RELATABLE TRAP */}
+            <div className="p-4 rounded-xl bg-neutral-950/70 border border-amber-500/20 space-y-2">
+              <div className="text-[11px] font-mono font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                <span>THE RELATABLE TRAP</span>
+              </div>
+              <p className="text-xs text-neutral-300 leading-relaxed font-sans">
+                {teamProfile.notes.relatableTrap}
+              </p>
+            </div>
+
+            {/* NEXT MOVE */}
+            <div className="p-4 rounded-xl bg-neutral-950/70 border border-cyan-500/20 space-y-2">
+              <div className="text-[11px] font-mono font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Target className="w-3.5 h-3.5 text-cyan-400" />
+                <span>NEXT MOVE</span>
+              </div>
+              <ul className="text-xs text-neutral-300 leading-relaxed font-sans space-y-1.5">
+                {teamProfile.notes.nextMove.map((move, idx) => (
+                  <li key={idx} className="flex items-start gap-1.5">
+                    <span className="text-cyan-400 font-bold">•</span>
+                    <span>{move}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {teamProfile?.isBlank && (
+        <div className="rounded-2xl border border-white/10 bg-neutral-900/60 p-6 text-center space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-800 text-neutral-400 text-xs font-mono">
+            <span>EXPLICITLY KEPT BLANK</span>
+          </div>
+          <p className="text-xs text-neutral-400 max-w-md mx-auto">
+            No evaluation notes entered for {candidate.name}. Profile and scorecard are kept clean and un-evaluated as requested.
+          </p>
+        </div>
+      )}
 
       {/* ═══ TABS ═══ */}
       <div className="flex items-center gap-1 p-1 rounded-xl bg-neutral-900 border border-white/[0.06] w-full sm:w-fit overflow-x-auto scrollbar-none">

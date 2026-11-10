@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Team AI Notes & Follow-ups (Comprehensive Report)</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 16mm 14mm 16mm 14mm;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #f8fafc;
+      padding: 16px;
+      line-height: 1.45;
+    }
+    .container {
+      max-width: 850px;
+      margin: 0 auto;
+    }
+    .header {
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+    .header p {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      page-break-inside: avoid;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 14px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 8px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .card-meta {
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: #ea580c;
+      font-weight: 600;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-top: 12px;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .label-clicking {
+      color: #16a34a;
+    }
+    .label-trap {
+      color: #d97706;
+    }
+    .label-next {
+      color: #0284c7;
+    }
+    .section-text {
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.55;
+    }
+    ul.section-bullets {
+      list-style-type: disc;
+      padding-left: 20px;
+      font-size: 13px;
+      color: #334155;
+      margin-top: 4px;
+    }
+    ul.section-bullets li {
+      margin-bottom: 4px;
+      line-height: 1.5;
+    }
+    .blank-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #f1f5f9;
+      color: #64748b;
+      font-size: 11px;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+    .footer {
+      margin-top: 32px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #94a3b8;
+      font-family: monospace;
+    }
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+      .card {
+        box-shadow: none;
+        border: 1px solid #cbd5e1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Team AI Notes & Follow-ups</h1>
+      <p>Quick observations from our 1:1 catch-ups on what is working, common habits, and small adjustments.</p>
+    </div>
+
+    <!-- 1. Adil (Aadil Raza) -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Adil (Aadil Raza)</div>
+        <div class="card-meta">AI Master · 85/100 · 3.5x speed boost</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You use Antigravity really well and give it all the background info it needs upfront. You don't ask vague questions—you set clear rules and get clean code back on the first try.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        Because the tool is so fast and capable, it's easy to skim generated code and assume everything works without double-checking tricky edge cases or looking out for broken types.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li><strong>Check edge cases before approving:</strong> Ask: "Point out any edge cases or things that might break in this diff."</li>
+        <li><strong>Share your setup:</strong> Show the team your daily prompt setup and workflow tips so others can learn.</li>
+        <li><strong>Have the tool write tests:</strong> Ask the tool to write unit tests for every new file it generates instead of checking everything by hand.</li>
+      </ul>
+    </div>
+
+    <!-- 2. Rohit Jacob -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Rohit Jacob</div>
+        <div class="card-meta">AI Novice · 33/100 · 1.1x speed boost</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You're curious and you reach for AI every day to ask quick syntax questions, understand confusing error messages, and get past initial blockers.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        Using only the free ChatGPT website in a browser tab is slowing you down. Because it can't see your project files, you have to keep copying and pasting back and forth, and the AI keeps guessing the wrong versions.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li><strong>Switch to an in-editor tool:</strong> Move to an in-editor tool (like Antigravity or Cursor) so the AI can see your project files directly.</li>
+        <li><strong>Give clear context:</strong> Tell the AI what framework version you're on and what you want back before asking it to write code.</li>
+        <li><strong>Protect private data:</strong> Never paste real passwords, API keys, or customer data into free web chats.</li>
+      </ul>
+    </div>
+
+    <!-- 3. Sunil P -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Sunil P</div>
+        <div class="card-meta">AI Resistant · 25/100 · 1.0x (No AI)</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You care deeply about data safety. Checking every SQL script by hand before running it makes sure nothing gets accidentally wiped or broken.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        You aren't using any AI tools. Spending hours hand-crafting routine SQL scripts, checking syntax, and scanning result rows by eye takes a lot of time and gets tiring fast.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li><strong>Use AI for query tuning:</strong> Paste a slow query and ask for better index suggestions.</li>
+        <li><strong>Generate test datasets:</strong> Let the AI build fake test data so you don't have to build test datasets by hand.</li>
+        <li><strong>Draft safe migration scripts:</strong> Have AI draft safe migration scripts that roll back cleanly if anything fails.</li>
+      </ul>
+    </div>
+
+    <!-- 4. Dhaval -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Dhaval</div>
+        <div class="card-meta">AI Master · 85/100 · 3.2x speed boost</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You give the AI super clear context every time. You explain the setup, the rules, and the edge cases upfront, so you get solid code back right away without endless back-and-forth.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        Because you know so much detail, you sometimes write huge, multi-paragraph prompts explaining everything manually. That takes more time than letting the tool inspect your files directly.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li><strong>Let the tool read repo files:</strong> Let the tool read your repo files instead of typing out every detail by hand in every prompt.</li>
+        <li><strong>Delegate multi-step tasks:</strong> Try giving the AI bigger tasks to work on in steps with automated checks.</li>
+        <li><strong>Share prompt tips:</strong> Show teammates how you structure clear context without over-complicating it.</li>
+      </ul>
+    </div>
+
+    <!-- 5. Sigireddy Viswesh (Vishwesh) -->
+    <div class="card" style="border-style: dashed; background: #fafafa;">
+      <div class="card-header">
+        <div class="card-title">Sigireddy Viswesh (Vishwesh)</div>
+        <div class="card-meta"><span class="blank-badge">EXPLICITLY KEPT BLANK</span></div>
+      </div>
+      <p class="section-text" style="color: #94a3b8; font-style: italic;">
+        No 1:1 notes or scorecards recorded. Roster profile and evaluation are kept clean and blank as per user instruction.
+      </p>
+    </div>
+
+    <!-- 6. V Bharath Jinda (Bharath) -->
+    <div class="card" style="border-style: dashed; background: #fafafa;">
+      <div class="card-header">
+        <div class="card-title">V Bharath Jinda (Bharath)</div>
+        <div class="card-meta"><span class="blank-badge">EXPLICITLY KEPT BLANK</span></div>
+      </div>
+      <p class="section-text" style="color: #94a3b8; font-style: italic;">
+        No 1:1 notes or scorecards recorded. Roster profile and evaluation are kept clean and blank as per user instruction.
+      </p>
+    </div>
+
+    <!-- 7. Bhavnesh Chamare -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Bhavnesh Chamare</div>
+        <div class="card-meta">AI Power User · 78/100</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You have a solid intuition for how to frame problems so the AI gets what you need on the first pass. You use it well as a sounding board to talk through edge cases and check your own work before submitting it.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        Standard in-editor chat prompts work so reliably for you that it's easy to stay in that comfort zone. You hold back a bit on exploring multi-step agent scripts or CLI automations simply because everyday prompting already delivers steady results.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li>Share a couple of your everyday sanity-check prompts with the team.</li>
+        <li>Try setting up a few basic automation scripts without stressing about making them perfect on the first run.</li>
+      </ul>
+    </div>
+
+    <!-- 8. Surendra Patel -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Surendra Patel</div>
+        <div class="card-meta">AI Power User · 72/100</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You get right down to business and use AI well to knock out boilerplate, clear up simple syntax issues, and keep momentum going when starting a task. You're also very receptive to picking up new workflow habits.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        Prompts lean heavily toward the happy path. When code looks clean on top, it's easy to assume the edge cases are covered, leaving verification to be handled manually later. It's also easy to fall back to manual print statements when pasting the actual error log into the model would resolve it much faster.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li><strong>Have the model test the logic:</strong> Before wrapping up, ask: "Give me 3 realistic edge cases where this logic will break."</li>
+        <li><strong>Keep secrets safe:</strong> Make sure local ignore rules are set up so staging credentials and environment configs stay off external servers.</li>
+        <li><strong>Feed stack traces:</strong> When something fails, drop the actual runtime trace into chat instead of tracing it solely with logs.</li>
+      </ul>
+    </div>
+
+    <!-- 9. Deepak Rajput -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Deepak Rajput (Deepak Rajat)</div>
+        <div class="card-meta">AI Practitioner · 50/100 · 1.2x speed boost</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        Your coding fundamentals are very solid. You know what clean, well-built code looks like and you catch messy logic right away.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        Having such a high standard is actually holding your speed back right now. Because you know exactly how the code should look, you feel like you have to read, edit, and control every single character the AI outputs. Checking every line by hand slows you down to roughly 50% of the team's typical AI speed.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li><strong>Let the tool test itself:</strong> Instead of checking every line by hand, tell the model to write unit tests to prove the code works.</li>
+        <li><strong>Practice accepting small blocks:</strong> Trust the AI with smaller utility functions and run automated tests rather than rewriting them manually.</li>
+      </ul>
+    </div>
+
+    <!-- 10. Prem Manchina -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Prem Manchina</div>
+        <div class="card-meta">AI Power User · 74/100</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You're fast at knocking out boilerplate, wiring up connections, and getting services talking to each other without overthinking it.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        When you're focused on unblocking a tricky flow quickly, it's tempting to paste real sample payloads right into prompts. The model also tends to sound confident about simple asynchronous tasks while completely ignoring retries or silent network timeouts.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li><strong>Scrub mock data before prompting:</strong> Always sanitize real payloads and IDs before pasting into chat.</li>
+        <li><strong>Ask the model specifically:</strong> "How does this logic behave if the downstream connection hangs or times out?"</li>
+      </ul>
+    </div>
+
+    <!-- 11. Umesh Prasad -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Umesh Prasad</div>
+        <div class="card-meta">AI Power User · 79/100</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You have an instinct for spotting inconsistencies and use AI well to unpack messy bug reports and get to the core problem fast.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        AI defaults to happy-path test scenarios, missing the messy, unpredictable ways real users actually interact with a product unless you push it out of that comfort zone.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li><strong>Flip the prompt perspective:</strong> "Act like a user actively trying to break this feature or bypass rules—what edge cases would you hit?" Use those directly to build automated test suites.</li>
+      </ul>
+    </div>
+
+    <!-- 12. Jeremiah Sunny -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Jeremiah Sunny</div>
+        <div class="card-meta">AI Power User · 76/100</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You turn prototypes around quickly, iterate fast, and love seeing work take shape on screen without hesitation.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        Because generating new screens feels effortless, pull requests can quietly grow into massive diffs before you notice. It's also easy to lose time when the model invents props or methods that sound real but don't exist in the library.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li>Keep PRs intentionally small and focused.</li>
+        <li>Use the assistant to refactor complex component logic into clean helper utilities rather than generating entire massive views in one pass.</li>
+      </ul>
+    </div>
+
+    <!-- 13. Himanshu Verma -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Himanshu Verma</div>
+        <div class="card-meta">AI Power User · 75/100</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You appreciate clean structure and use AI effectively to bypass repetitive boilerplate and initial setup work.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        The model routinely suggests outdated methods or deprecated packages that break modern SDKs. It also tends to nest hierarchies much deeper than necessary if left unchecked.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li>Mention your exact platform and SDK versions in your prompts.</li>
+        <li>Focus the model on writing unit tests for core logic rather than letting it decide structural layout.</li>
+      </ul>
+    </div>
+
+    <!-- 14. Parameswar R -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Parameswar R</div>
+        <div class="card-meta">AI Power User · 77/100</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You like pragmatic automations that remove repetitive manual work and can put together scripts and task runners quickly from scratch.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        Automation scripts written by AI are notorious for omitting proper cleanup on unexpected errors, leaving background processes lingering. They also lean on brittle selectors that break whenever a target page shifts slightly.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li>Ask the model to provide resilient fallback selectors.</li>
+        <li>Always make it verify that teardown logic executes cleanly even during unexpected failures.</li>
+      </ul>
+    </div>
+
+    <!-- 15. Harsh Raj -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Harsh Raj</div>
+        <div class="card-meta">AI Power User · 78/100</div>
+      </div>
+      <span class="section-label label-clicking">WHAT'S CLICKING</span>
+      <p class="section-text">
+        You're a versatile troubleshooter who moves across different problems easily and uses the assistant to clear routine obstacles without getting stuck.
+      </p>
+      <span class="section-label label-trap">THE RELATABLE TRAP</span>
+      <p class="section-text">
+        Moving fast makes it easy to slip into autocomplete mode—trusting generated code because it looks plausible rather than asking the model to poke holes in it. Fast local debugging can also lead to accidentally sharing sensitive config keys in the chat.
+      </p>
+      <span class="section-label label-next">NEXT MOVE</span>
+      <ul class="section-bullets">
+        <li>Ensure local ignore rules are active so configs stay local.</li>
+        <li>Before committing, ask the tool: "Point out any potential unhandled exceptions, race conditions, or null errors in this diff."</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      <span>Team Notes • Internal AI Usage</span>
+      <span>Ledger Platform · Wysbryx AI</span>
+    </div>
+  </div>
+</body>
+</html>
+
