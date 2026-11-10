@@ -9,6 +9,7 @@ import {
   PerQuestionScore,
 } from "@/lib/ai-eval/store";
 import { ALL_CANDIDATES } from "@/lib/ai-eval/allocation";
+import { useHydrated } from "@/lib/useHydrated";
 import { getTeamNotesProfileForCandidate } from "@/lib/ai-eval/teamNotesData";
 import { CustomSelect } from "@/components/ui/CustomSelect";
 import {
@@ -99,6 +100,7 @@ const AKASH_SAMPLE_DATA: Record<string, PerQuestionScore> = {
 };
 
 export default function EmployeeEvaluationWorkspace({ params }: { params: Promise<{ id: string }> }) {
+  const hydrated = useHydrated();
   const resolvedParams = use(params);
   const employeeId = resolvedParams.id;
   const { evaluatorName, getEvaluation, saveEvaluation, evaluations, loadEvaluationsFromServer } = useAIEvalStore();
@@ -221,6 +223,12 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
   const barFill = (m: number) => m >= 8 ? "#34d399" : m >= 6 ? "#f97316" : m >= 4 ? "#fbbf24" : "#f87171";
   const markLabel = (m: number) => m >= 9 ? "Exceptional" : m >= 7 ? "Strong" : m >= 5 ? "Developing" : m >= 3 ? "Weak" : "Critical";
   const pct = overallScore;
+
+  // Scores come from browser storage; render only after mount so the server
+  // and client output match.
+  if (!hydrated) {
+    return <div className="flex items-center justify-center py-24 text-sm text-neutral-500 dark:text-neutral-400">Loading…</div>;
+  }
 
   return (
     <div className="space-y-6">

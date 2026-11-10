@@ -2,11 +2,13 @@
 
 import * as React from "react";
 import { useAppStore } from "@/lib/store";
+import { useHydrated } from "@/lib/useHydrated";
 import { ShieldCheck, Search, Filter, Clock, User, Activity, FileText, Trash2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { INITIAL_AUDIT_LOGS } from "@/lib/audit";
 
 export default function AuditLogsPage() {
+  const hydrated = useHydrated();
   const { auditLogs, deleteAuditLog, clearAuditLogs } = useAppStore();
   const [search, setSearch] = React.useState("");
 
@@ -50,6 +52,12 @@ export default function AuditLogsPage() {
         return "bg-amber-500/10 text-amber-500 border-amber-500/20";
     }
   };
+
+  // Logs come from browser storage; render them only after mount so the
+  // server and client output match.
+  if (!hydrated) {
+    return <div className="flex items-center justify-center py-24 text-sm text-neutral-500 dark:text-neutral-400">Loading…</div>;
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
