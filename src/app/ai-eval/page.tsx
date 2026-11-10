@@ -52,6 +52,14 @@ export default function AIEvalMainPage() {
     }
   }, [evaluatorName, loadEvaluationsFromServer]);
 
+  // A saved session from before someone was made admin upgrades itself
+  // without needing to log out and back in.
+  useEffect(() => {
+    if (evaluatorName && !isAdmin && validateEvaluatorName(evaluatorName).isAdmin) {
+      loginEvaluator(evaluatorName);
+    }
+  }, [evaluatorName, isAdmin, loginEvaluator]);
+
   const [inputName, setInputName] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [isRolling, setIsRolling] = useState(false);

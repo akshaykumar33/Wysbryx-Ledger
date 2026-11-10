@@ -290,7 +290,7 @@ export default function PlatformDocsPage() {
                           </p>
                           <ul className="list-disc list-inside space-y-1 text-xs text-neutral-600 dark:text-neutral-400 font-mono pt-1">
                             <li><strong className="text-amber-600 dark:text-amber-400">Real-Time Validation:</strong> Shows live feedback as you type (e.g., <em>"✔ Valid Evaluator Match: Praveen"</em>).</li>
-                            <li><strong className="text-amber-500 dark:text-amber-300">Admin Bypass & Super Captain Storyboard:</strong> Evaluators identified as designated leadership (<em>Praveen</em>, <em>Krishna</em>) unlock an <strong>ADMIN SUPER CAPTAIN 👑</strong> badge and open an exclusive storyboard modal with 100% organization roster access.</li>
+                            <li><strong className="text-amber-500 dark:text-amber-300">Admin Bypass & Super Captain Storyboard:</strong> Evaluators identified as designated admins (<em>Akshay</em>, <em>Anam</em>, <em>Ayush</em>, <em>Krishna</em>, <em>Praveen</em>) unlock an <strong>ADMIN SUPER CAPTAIN 👑</strong> badge and open an exclusive storyboard modal with 100% organization roster access.</li>
                           </ul>
                         </div>
                       </div>
@@ -453,7 +453,7 @@ export default function PlatformDocsPage() {
 
                       <div className="p-4 rounded-2xl bg-amber-500/5 dark:bg-neutral-950/70 border border-amber-500/20 space-y-1">
                         <h3 className="text-xs font-bold text-neutral-900 dark:text-white">Q: How do Admin Super Captains access all candidates?</h3>
-                        <p className="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed">A: Leadership evaluators (Praveen, Krishna) automatically bypass single-roll partitioning to inspect 100% of candidates.</p>
+                        <p className="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed">A: Admin evaluators (Akshay, Anam, Ayush, Krishna, Praveen) automatically bypass single-roll partitioning to inspect 100% of candidates.</p>
                       </div>
                     </div>
                   </section>

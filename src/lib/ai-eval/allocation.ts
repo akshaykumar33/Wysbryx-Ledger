@@ -39,9 +39,9 @@ export const ALL_CANDIDATES: EmployeeCandidate[] = EMPLOYEES_RAW.map((emp: any, 
 
 // Authorized Evaluators List
 export const ALLOWED_EVALUATORS = [
-  { name: "Akshay", normalized: "akshay", isAdmin: false },
-  { name: "Anam", normalized: "anam", isAdmin: false },
-  { name: "Ayush", normalized: "ayush", isAdmin: false },
+  { name: "Akshay", normalized: "akshay", isAdmin: true },
+  { name: "Anam", normalized: "anam", isAdmin: true },
+  { name: "Ayush", normalized: "ayush", isAdmin: true },
   { name: "Krishna", normalized: "krishna", isAdmin: true },
   { name: "Praveen", normalized: "praveen", isAdmin: true },
 ];
