@@ -59,7 +59,7 @@ export default function AIEvalMainPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [showTeamNotesModal, setShowTeamNotesModal] = useState(false);
-  const pageSize = 8;
+  const pageSize = 10;
 
   // Trigger admin storyboard modal when an admin logs in
   useEffect(() => {
@@ -496,6 +496,14 @@ export default function AIEvalMainPage() {
             </div>
 
             <div className="flex items-center gap-3 flex-wrap">
+              {isAdmin && (
+                <Link
+                  href="/ai-eval/report"
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-white text-neutral-900 border border-neutral-300 hover:bg-neutral-200 transition-colors"
+                >
+                  Team report (PDF)
+                </Link>
+              )}
               <button
                 onClick={() => setShowTeamNotesModal(true)}
                 className="px-4 py-2 rounded-2xl bg-gradient-to-r from-orange-500/15 via-amber-500/15 to-yellow-500/15 hover:from-orange-500/25 hover:to-amber-500/25 border border-orange-500/30 text-orange-700 dark:text-orange-300 font-mono text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/5 cursor-pointer"
