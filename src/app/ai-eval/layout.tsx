@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useAIEvalStore } from "@/lib/ai-eval/store";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Bot, LogOut, ArrowLeft, Layers, UserCheck } from "lucide-react";
 
 export default function AIEvalLayout({ children }: { children: React.ReactNode }) {
@@ -99,6 +100,7 @@ export default function AIEvalLayout({ children }: { children: React.ReactNode }
             >
               <Layers className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" /> Switch to World 2
             </Link>
+            <ThemeToggle />
           </div>
 
         </div>
