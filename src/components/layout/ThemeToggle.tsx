@@ -6,7 +6,7 @@ import { Sun, Moon, Palette, Check } from "lucide-react";
 import { useAppStore, ThemeAccent } from "@/lib/store";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const { themeAccent, setThemeAccent } = useAppStore();
   const [mounted, setMounted] = React.useState(false);
   const [showAccentMenu, setShowAccentMenu] = React.useState(false);
@@ -41,11 +41,11 @@ export function ThemeToggle() {
 
       {/* Light / Dark Mode Toggle */}
       <button
-        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
         className="p-2 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-300 transition-all shadow-xs"
         title="Toggle Light / Dark Mode"
       >
-        {theme === "dark" ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-neutral-700" />}
+        {resolvedTheme === "dark" ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-neutral-700" />}
       </button>
 
       {/* Accent Popover Dropdown */}

@@ -153,8 +153,8 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
   if (!candidate) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-xl font-bold text-neutral-300">Candidate Not Found</h2>
-        <Link href="/ai-eval" className="mt-4 inline-block text-cyan-400 text-sm underline">Return to Roster</Link>
+        <h2 className="text-xl font-bold text-neutral-700 dark:text-neutral-300">Candidate Not Found</h2>
+        <Link href="/ai-eval" className="mt-4 inline-block text-cyan-600 dark:text-cyan-400 text-sm underline">Return to Roster</Link>
       </div>
     );
   }
@@ -216,7 +216,7 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
   };
 
   // Color helpers matching Wysbryx Orange & Grey theme
-  const mc = (m: number) => m >= 8 ? "text-emerald-400" : m >= 6 ? "text-orange-400" : m >= 4 ? "text-amber-400" : "text-rose-400";
+  const mc = (m: number) => m >= 8 ? "text-emerald-600 dark:text-emerald-400" : m >= 6 ? "text-orange-600 dark:text-orange-400" : m >= 4 ? "text-amber-600 dark:text-amber-400" : "text-rose-600 dark:text-rose-400";
   const mbg = (m: number) => m >= 8 ? "bg-emerald-500/10 border-emerald-500/20" : m >= 6 ? "bg-orange-500/10 border-orange-500/20" : m >= 4 ? "bg-amber-500/10 border-amber-500/20" : "bg-rose-500/10 border-rose-500/20";
   const barFill = (m: number) => m >= 8 ? "#34d399" : m >= 6 ? "#f97316" : m >= 4 ? "#fbbf24" : "#f87171";
   const markLabel = (m: number) => m >= 9 ? "Exceptional" : m >= 7 ? "Strong" : m >= 5 ? "Developing" : m >= 3 ? "Weak" : "Critical";
@@ -226,7 +226,7 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
     <div className="space-y-6">
 
       {/* ═══ CANDIDATE HEADER CARD ═══ */}
-      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/90 backdrop-blur-2xl p-6 shadow-2xl shadow-orange-500/5 hover:border-orange-500/30 transition-all duration-300">
+      <div className="relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-50/90 dark:bg-neutral-900/90 backdrop-blur-2xl p-6 shadow-2xl shadow-orange-500/5 hover:border-orange-500/30 transition-all duration-300">
         {/* Glow Aura Background */}
         <div className="absolute -top-24 -left-24 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -234,27 +234,27 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
         <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           {/* Left: Back + Candidate info */}
           <div className="flex items-center gap-4">
-            <Link href="/ai-eval" className="p-3 rounded-xl bg-neutral-950/80 border border-white/10 text-neutral-400 hover:text-white hover:border-orange-500/50 hover:bg-orange-500/10 transition-all group shrink-0 shadow-inner">
+            <Link href="/ai-eval" className="p-3 rounded-xl bg-white/80 dark:bg-neutral-950/80 border border-neutral-200 dark:border-white/10 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:border-orange-500/50 hover:bg-orange-500/10 transition-all group shrink-0 shadow-inner">
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
             </Link>
             <div className="p-0.5 rounded-2xl bg-gradient-to-br from-orange-500 via-amber-400 to-cyan-500 shadow-lg shadow-orange-500/20 shrink-0">
-              <img src={candidate.avatarSeed} alt="" className="w-12 h-12 rounded-[14px] bg-neutral-900 p-0.5 object-cover" />
+              <img src={candidate.avatarSeed} alt="" className="w-12 h-12 rounded-[14px] bg-neutral-50 dark:bg-neutral-900 p-0.5 object-cover" />
             </div>
             <div>
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-lg font-bold text-white tracking-tight">{candidate.name}</h1>
+                <h1 className="text-lg font-bold text-neutral-900 dark:text-white tracking-tight">{candidate.name}</h1>
                 {teamProfile?.isBlank && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-neutral-800 text-neutral-400 border border-white/10">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-white/10">
                     <span>KEPT BLANK</span>
                   </span>
                 )}
                 {hasAnyGrades && (
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border shadow-sm ${
                     overallScore >= 70
-                      ? "bg-orange-500/15 text-orange-400 border-orange-500/30 shadow-orange-500/10"
+                      ? "bg-orange-500/15 text-orange-600 dark:text-orange-400 border-orange-500/30 shadow-orange-500/10"
                       : overallScore >= 50
-                      ? "bg-amber-500/15 text-amber-300 border-amber-500/30 shadow-amber-500/10"
-                      : "bg-rose-500/15 text-rose-400 border-rose-500/30 shadow-rose-500/10"
+                      ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 shadow-amber-500/10"
+                      : "bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30 shadow-rose-500/10"
                   }`}>
                     <span className={`w-1.5 h-1.5 rounded-full animate-ping ${overallScore >= 70 ? "bg-orange-400" : overallScore >= 50 ? "bg-amber-400" : "bg-rose-400"}`} />
                     {autoGrade}
@@ -268,14 +268,14 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                       type="text"
                       value={candidateRole}
                       onChange={(e) => setCandidateRole(e.target.value)}
-                      className="px-2.5 py-1 bg-neutral-950 border border-orange-500/50 rounded-lg text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
+                      className="px-2.5 py-1 bg-white dark:bg-neutral-950 border border-orange-500/50 rounded-lg text-xs text-neutral-900 dark:text-white font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
                       placeholder="Role / Designation"
                     />
                     <input
                       type="text"
                       value={candidateDept}
                       onChange={(e) => setCandidateDept(e.target.value)}
-                      className="px-2.5 py-1 bg-neutral-950 border border-orange-500/50 rounded-lg text-xs text-white font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
+                      className="px-2.5 py-1 bg-white dark:bg-neutral-950 border border-orange-500/50 rounded-lg text-xs text-neutral-900 dark:text-white font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
                       placeholder="Department"
                     />
                     <button
@@ -287,10 +287,10 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <p className="text-xs font-mono text-neutral-400">{candidateRole} · <span className="text-orange-400/80">{candidateDept}</span></p>
+                    <p className="text-xs font-mono text-neutral-500 dark:text-neutral-400">{candidateRole} · <span className="text-orange-600/80 dark:text-orange-400/80">{candidateDept}</span></p>
                     <button
                       onClick={() => setIsEditingPosition(true)}
-                      className="p-1 rounded-lg text-neutral-500 hover:text-orange-400 hover:bg-orange-500/10 transition-colors"
+                      className="p-1 rounded-lg text-neutral-500 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-500/10 transition-colors"
                       title="Edit Employee Position & Department"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
@@ -321,12 +321,12 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
         </div>
 
         {/* Score Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mt-5 pt-5 border-t border-white/[0.06]">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mt-5 pt-5 border-t border-neutral-200 dark:border-white/[0.06]">
           {/* Circular Score */}
           <div className="col-span-2 sm:col-span-1 flex items-center gap-3">
             <div className="relative w-12 h-12 sm:w-14 sm:h-14 shrink-0">
               <svg viewBox="0 0 56 56" className="w-full h-full -rotate-90">
-                <circle cx="28" cy="28" r="23" fill="none" stroke="currentColor" className="text-neutral-800" strokeWidth="4" />
+                <circle cx="28" cy="28" r="23" fill="none" stroke="currentColor" className="text-neutral-200 dark:text-neutral-800" strokeWidth="4" />
                 <circle cx="28" cy="28" r="23" fill="none"
                   stroke={hasAnyGrades ? (pct >= 70 ? "#f97316" : pct >= 50 ? "#fbbf24" : "#f87171") : "transparent"}
                   strokeWidth="4" strokeLinecap="round"
@@ -335,27 +335,27 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className={`text-xs sm:text-sm font-extrabold font-mono ${hasAnyGrades ? "text-white" : "text-neutral-700"}`}>{pct}</span>
+                <span className={`text-xs sm:text-sm font-extrabold font-mono ${hasAnyGrades ? "text-neutral-900 dark:text-white" : "text-neutral-300 dark:text-neutral-700"}`}>{pct}</span>
               </div>
             </div>
             <div>
               <div className="text-[10px] font-mono text-neutral-500 uppercase">Score</div>
-              <div className="text-xs font-mono text-neutral-400">{totalSumMarks}/{maxPossibleMarks}</div>
+              <div className="text-xs font-mono text-neutral-500 dark:text-neutral-400">{totalSumMarks}/{maxPossibleMarks}</div>
             </div>
           </div>
 
           {/* Stat cards */}
           {[
-            { label: "Graded", value: `${gradedCount}/${totalQuestions}`, icon: FileText, color: "text-orange-400" },
-            { label: "Grade", value: autoGrade, icon: Award, color: "text-amber-400" },
-            { label: "Strengths", value: `${strengthsList.length}`, icon: Zap, color: "text-emerald-400" },
-            { label: "Risks", value: `${risksCount}`, icon: AlertTriangle, color: risksCount > 0 ? "text-rose-400" : "text-neutral-600" },
+            { label: "Graded", value: `${gradedCount}/${totalQuestions}`, icon: FileText, color: "text-orange-600 dark:text-orange-400" },
+            { label: "Grade", value: autoGrade, icon: Award, color: "text-amber-600 dark:text-amber-400" },
+            { label: "Strengths", value: `${strengthsList.length}`, icon: Zap, color: "text-emerald-600 dark:text-emerald-400" },
+            { label: "Risks", value: `${risksCount}`, icon: AlertTriangle, color: risksCount > 0 ? "text-rose-600 dark:text-rose-400" : "text-neutral-400 dark:text-neutral-600" },
           ].map((s) => (
             <div key={s.label} className="flex items-center gap-2">
               <s.icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${s.color} shrink-0`} />
               <div className="min-w-0">
                 <div className="text-[9px] sm:text-[10px] font-mono text-neutral-500 uppercase truncate">{s.label}</div>
-                <div className={`text-xs font-bold font-mono truncate ${hasAnyGrades ? "text-neutral-200" : "text-neutral-600"}`}>{s.value}</div>
+                <div className={`text-xs font-bold font-mono truncate ${hasAnyGrades ? "text-neutral-800 dark:text-neutral-200" : "text-neutral-400 dark:text-neutral-600"}`}>{s.value}</div>
               </div>
             </div>
           ))}
@@ -364,16 +364,16 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
 
       {/* ═══ 1:1 CATCH-UP NOTES & FOLLOW-UPS CARD (REFERENCED FROM team_ai_notes_report.pdf) ═══ */}
       {teamProfile?.notes && !teamProfile.isBlank && (
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-neutral-900/90 backdrop-blur-2xl p-6 shadow-xl space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+        <div className="relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-50/90 dark:bg-neutral-900/90 backdrop-blur-2xl p-6 shadow-xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200 dark:border-white/[0.08] pb-4">
             <div>
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                <span className="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
                   1:1 CATCH-UP REPORT
                 </span>
-                <span className="text-xs font-mono text-neutral-400">Team AI Notes &amp; Follow-ups</span>
+                <span className="text-xs font-mono text-neutral-500 dark:text-neutral-400">Team AI Notes &amp; Follow-ups</span>
               </div>
-              <h3 className="text-base font-bold text-white mt-1">
+              <h3 className="text-base font-bold text-neutral-900 dark:text-white mt-1">
                 {candidate.name} · Observation &amp; Follow-ups
               </h3>
             </div>
@@ -385,46 +385,46 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                 setStatus(teamProfile.status);
                 handleSave();
               }}
-              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-500/20 to-amber-500/20 hover:from-orange-500/30 hover:to-amber-500/30 border border-orange-500/30 text-orange-300 text-xs font-mono font-semibold transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-500/20 to-amber-500/20 hover:from-orange-500/30 hover:to-amber-500/30 border border-orange-500/30 text-orange-700 dark:text-orange-300 text-xs font-mono font-semibold transition-all flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+              <Sparkles className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />
               <span>Auto-Fill / Sync Scorecard</span>
             </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* WHAT'S CLICKING */}
-            <div className="p-4 rounded-xl bg-neutral-950/70 border border-emerald-500/20 space-y-2">
-              <div className="text-[11px] font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <div className="p-4 rounded-xl bg-white/70 dark:bg-neutral-950/70 border border-emerald-500/20 space-y-2">
+              <div className="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>WHAT&apos;S CLICKING</span>
               </div>
-              <p className="text-xs text-neutral-300 leading-relaxed font-sans">
+              <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-sans">
                 {teamProfile.notes.whatsClicking}
               </p>
             </div>
 
             {/* THE RELATABLE TRAP */}
-            <div className="p-4 rounded-xl bg-neutral-950/70 border border-amber-500/20 space-y-2">
-              <div className="text-[11px] font-mono font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+            <div className="p-4 rounded-xl bg-white/70 dark:bg-neutral-950/70 border border-amber-500/20 space-y-2">
+              <div className="text-[11px] font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                 <span>THE RELATABLE TRAP</span>
               </div>
-              <p className="text-xs text-neutral-300 leading-relaxed font-sans">
+              <p className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-sans">
                 {teamProfile.notes.relatableTrap}
               </p>
             </div>
 
             {/* NEXT MOVE */}
-            <div className="p-4 rounded-xl bg-neutral-950/70 border border-cyan-500/20 space-y-2">
-              <div className="text-[11px] font-mono font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Target className="w-3.5 h-3.5 text-cyan-400" />
+            <div className="p-4 rounded-xl bg-white/70 dark:bg-neutral-950/70 border border-cyan-500/20 space-y-2">
+              <div className="text-[11px] font-mono font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+                <Target className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
                 <span>NEXT MOVE</span>
               </div>
-              <ul className="text-xs text-neutral-300 leading-relaxed font-sans space-y-1.5">
+              <ul className="text-xs text-neutral-700 dark:text-neutral-300 leading-relaxed font-sans space-y-1.5">
                 {teamProfile.notes.nextMove.map((move, idx) => (
                   <li key={idx} className="flex items-start gap-1.5">
-                    <span className="text-cyan-400 font-bold">•</span>
+                    <span className="text-cyan-600 dark:text-cyan-400 font-bold">•</span>
                     <span>{move}</span>
                   </li>
                 ))}
@@ -435,29 +435,29 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
       )}
 
       {teamProfile?.isBlank && (
-        <div className="rounded-2xl border border-white/10 bg-neutral-900/60 p-6 text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-800 text-neutral-400 text-xs font-mono">
+        <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-neutral-50/60 dark:bg-neutral-900/60 p-6 text-center space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-xs font-mono">
             <span>EXPLICITLY KEPT BLANK</span>
           </div>
-          <p className="text-xs text-neutral-400 max-w-md mx-auto">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-md mx-auto">
             No evaluation notes entered for {candidate.name}. Profile and scorecard are kept clean and un-evaluated as requested.
           </p>
         </div>
       )}
 
       {/* ═══ TABS ═══ */}
-      <div className="flex items-center gap-1 p-1 rounded-xl bg-neutral-900 border border-white/[0.06] w-full sm:w-fit overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-1 p-1 rounded-xl bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-white/[0.06] w-full sm:w-fit overflow-x-auto scrollbar-none">
         {[
           { key: "topic_editor" as const, label: "Evaluation Editor", icon: Edit3 },
           { key: "audit_report" as const, label: "Graphical Analysis", icon: BarChart3 },
         ].map((t) => (
           <button key={t.key} onClick={() => setActiveTab(t.key)} className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all shrink-0 ${
-            activeTab === t.key ? "bg-orange-500/10 text-orange-400 border border-orange-500/25" : "text-neutral-500 hover:text-neutral-300 border border-transparent"
+            activeTab === t.key ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/25" : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 border border-transparent"
           }`}>
             <t.icon className="w-3.5 h-3.5 shrink-0" />
             <span>{t.label}</span>
             {t.key === "topic_editor" && !allGraded && (
-              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/20 shrink-0">{gradedCount}/{totalQuestions}</span>
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/20 shrink-0">{gradedCount}/{totalQuestions}</span>
             )}
           </button>
         ))}
@@ -469,15 +469,15 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
       {activeTab === "topic_editor" && (
         <div className="space-y-4" data-tour="rubric-marks-section">
           {/* Synthesis */}
-          <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/60 p-5 space-y-3">
-            <label className="text-[11px] font-mono font-semibold text-orange-400 uppercase flex items-center gap-1.5">
+          <div className="rounded-2xl border border-neutral-200 dark:border-white/[0.06] bg-neutral-50/60 dark:bg-neutral-900/60 p-5 space-y-3">
+            <label className="text-[11px] font-mono font-semibold text-orange-600 dark:text-orange-400 uppercase flex items-center gap-1.5">
               <MessageSquare className="w-3.5 h-3.5" /> Executive Synthesis
-              <span className="text-neutral-600 font-normal normal-case ml-1">· auto-generated or custom</span>
+              <span className="text-neutral-400 dark:text-neutral-600 font-normal normal-case ml-1">· auto-generated or custom</span>
             </label>
             <textarea
               value={synthesis} onChange={(e) => setCustomSynthesis(e.target.value)} rows={2}
               placeholder="Auto-populates from your marks and evidence below..."
-              className="w-full p-3.5 rounded-xl bg-neutral-950 border border-white/[0.06] text-xs text-neutral-200 font-mono focus:outline-none focus:border-orange-500/40 leading-relaxed placeholder:text-neutral-700 transition-colors resize-none"
+              className="w-full p-3.5 rounded-xl bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-white/[0.06] text-xs text-neutral-800 dark:text-neutral-200 font-mono focus:outline-none focus:border-orange-500/40 leading-relaxed placeholder:text-neutral-300 dark:placeholder:text-neutral-700 transition-colors resize-none"
             />
           </div>
 
@@ -489,22 +489,22 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
 
             return (
               <motion.div key={q.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.03, duration: 0.25 }}
-                className={`rounded-2xl border overflow-hidden transition-all ${graded ? "border-white/[0.08] bg-neutral-900/80" : "border-dashed border-white/[0.06] bg-neutral-900/40"}`}
+                className={`rounded-2xl border overflow-hidden transition-all ${graded ? "border-neutral-200 dark:border-white/[0.08] bg-neutral-50/80 dark:bg-neutral-900/80" : "border-dashed border-neutral-200 dark:border-white/[0.06] bg-neutral-50/40 dark:bg-neutral-900/40"}`}
               >
                 {/* Top accent bar */}
-                <div className={`h-0.5 ${graded ? (marks >= 8 ? "bg-emerald-500" : marks >= 6 ? "bg-orange-500" : marks >= 4 ? "bg-amber-500" : "bg-rose-500") : "bg-neutral-800"}`} />
+                <div className={`h-0.5 ${graded ? (marks >= 8 ? "bg-emerald-500" : marks >= 6 ? "bg-orange-500" : marks >= 4 ? "bg-amber-500" : "bg-rose-500") : "bg-neutral-100 dark:bg-neutral-800"}`} />
 
                 <div className="p-5">
                   {/* Header */}
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
                     <div className="flex items-start gap-3 flex-1 min-w-0">
                       <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-mono font-bold shrink-0 mt-0.5 border ${
-                        graded ? `${mbg(marks)} ${mc(marks)}` : "bg-neutral-800/50 text-neutral-600 border-white/[0.08]"
+                        graded ? `${mbg(marks)} ${mc(marks)}` : "bg-neutral-100/50 dark:bg-neutral-800/50 text-neutral-400 dark:text-neutral-600 border-neutral-200 dark:border-white/[0.08]"
                       }`}>{idx + 1}</div>
                       <div className="min-w-0">
-                        <h4 className="text-sm font-bold text-white flex items-center gap-2 flex-wrap">
+                        <h4 className="text-sm font-bold text-neutral-900 dark:text-white flex items-center gap-2 flex-wrap">
                           {q.parameter}
-                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono text-neutral-500 bg-neutral-800 border border-white/[0.08]">{q.category}</span>
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono text-neutral-500 bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-white/[0.08]">{q.category}</span>
                         </h4>
                         <p className="text-[11px] text-neutral-500 mt-1 leading-relaxed">{q.questionText}</p>
                       </div>
@@ -512,18 +512,18 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                     <div className="flex items-center gap-2 shrink-0">
                       <input type="number" min={1} max={10} value={graded ? marks : ""} placeholder="—"
                         onChange={(e) => { const v = e.target.value; if (v === "") return; handleScoreUpdate(q.id, "rating", Math.min(10, Math.max(1, Number(v)))); }}
-                        className={`w-14 h-9 rounded-lg bg-neutral-950 border text-center font-bold font-mono text-base focus:outline-none transition-colors ${
-                          graded ? `${mc(marks)} border-white/[0.08] focus:border-orange-500` : "text-neutral-700 border-white/[0.06]"
+                        className={`w-14 h-9 rounded-lg bg-white dark:bg-neutral-950 border text-center font-bold font-mono text-base focus:outline-none transition-colors ${
+                          graded ? `${mc(marks)} border-neutral-200 dark:border-white/[0.08] focus:border-orange-500` : "text-neutral-300 dark:text-neutral-700 border-neutral-200 dark:border-white/[0.06]"
                         }`}
                       />
-                      <span className="text-[11px] font-mono text-neutral-600">/10</span>
+                      <span className="text-[11px] font-mono text-neutral-400 dark:text-neutral-600">/10</span>
                       {graded && <span className={`px-2 py-0.5 rounded-md text-[9px] font-mono font-bold border ${mbg(marks)} ${mc(marks)}`}>{markLabel(marks)}</span>}
                     </div>
                   </div>
 
                   {/* Quick Rating Bar (1 to 10) */}
-                  <div className="flex items-center justify-between gap-2 flex-wrap mb-4 pb-3 border-b border-white/[0.04] bg-neutral-950/40 p-2.5 rounded-xl">
-                    <span className="text-[10px] font-mono font-semibold text-neutral-400 uppercase tracking-wider">Quick Grade:</span>
+                  <div className="flex items-center justify-between gap-2 flex-wrap mb-4 pb-3 border-b border-neutral-200 dark:border-white/[0.04] bg-white/40 dark:bg-neutral-950/40 p-2.5 rounded-xl">
+                    <span className="text-[10px] font-mono font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Quick Grade:</span>
                     <div className="flex items-center gap-1.5 flex-wrap">
                       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => {
                         const isActive = graded && marks === num;
@@ -541,7 +541,7 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                                   : num >= 4
                                   ? "bg-amber-500 text-black shadow-md shadow-amber-500/30 scale-110"
                                   : "bg-rose-500 text-white shadow-md shadow-rose-500/30 scale-110"
-                                : "bg-neutral-900 border border-white/[0.08] text-neutral-400 hover:text-white hover:border-orange-500/40 hover:bg-neutral-800"
+                                : "bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-white/[0.08] text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:border-orange-500/40 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                             }`}
                           >
                             {num}
@@ -554,23 +554,23 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                   {/* Fields */}
                   <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
                     <div className="lg:col-span-3 space-y-1.5">
-                      <label className="text-[10px] font-mono font-semibold text-orange-400/70 uppercase flex items-center gap-1"><Terminal className="w-3 h-3" /> Evidence & Comments</label>
+                      <label className="text-[10px] font-mono font-semibold text-orange-600/70 dark:text-orange-400/70 uppercase flex items-center gap-1"><Terminal className="w-3 h-3" /> Evidence & Comments</label>
                       <textarea value={s?.evidence ?? ""} onChange={(e) => handleScoreUpdate(q.id, "evidence", e.target.value)} rows={3}
                         placeholder={`How does ${candidate.name} demonstrate AI competency in ${q.parameter.toLowerCase()}?`}
-                        className="w-full p-3 rounded-lg bg-neutral-950 border border-white/[0.06] text-xs text-neutral-200 font-mono focus:outline-none focus:border-orange-500/40 leading-relaxed placeholder:text-neutral-700 resize-none"
+                        className="w-full p-3 rounded-lg bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-white/[0.06] text-xs text-neutral-800 dark:text-neutral-200 font-mono focus:outline-none focus:border-orange-500/40 leading-relaxed placeholder:text-neutral-300 dark:placeholder:text-neutral-700 resize-none"
                       />
                     </div>
                     <div className="lg:col-span-2 space-y-2.5">
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-mono font-semibold text-emerald-400/70 uppercase flex items-center gap-1"><Star className="w-3 h-3" /> Observed Strength</label>
+                        <label className="text-[10px] font-mono font-semibold text-emerald-600/70 dark:text-emerald-400/70 uppercase flex items-center gap-1"><Star className="w-3 h-3" /> Observed Strength</label>
                         <input type="text" value={s?.observedStrength ?? ""} onChange={(e) => handleScoreUpdate(q.id, "observedStrength", e.target.value)}
-                          placeholder={q.defaultStrength || "What stood out..."} className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/[0.06] text-xs text-neutral-200 font-mono focus:outline-none focus:border-emerald-500/40 placeholder:text-neutral-700"
+                          placeholder={q.defaultStrength || "What stood out..."} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-white/[0.06] text-xs text-neutral-800 dark:text-neutral-200 font-mono focus:outline-none focus:border-emerald-500/40 placeholder:text-neutral-300 dark:placeholder:text-neutral-700"
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-mono font-semibold text-violet-400/70 uppercase flex items-center gap-1"><Lightbulb className="w-3 h-3" /> Recommendation</label>
+                        <label className="text-[10px] font-mono font-semibold text-violet-600/70 dark:text-violet-400/70 uppercase flex items-center gap-1"><Lightbulb className="w-3 h-3" /> Recommendation</label>
                         <input type="text" value={s?.recommendation ?? ""} onChange={(e) => handleScoreUpdate(q.id, "recommendation", e.target.value)}
-                          placeholder={q.defaultRecommendation || "Growth suggestion..."} className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/[0.06] text-xs text-neutral-200 font-mono focus:outline-none focus:border-violet-500/40 placeholder:text-neutral-700"
+                          placeholder={q.defaultRecommendation || "Growth suggestion..."} className="w-full px-3 py-2 rounded-lg bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-white/[0.06] text-xs text-neutral-800 dark:text-neutral-200 font-mono focus:outline-none focus:border-violet-500/40 placeholder:text-neutral-300 dark:placeholder:text-neutral-700"
                         />
                       </div>
                     </div>
@@ -588,10 +588,10 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
       {activeTab === "audit_report" && (
         <div className="space-y-5">
           {!hasAnyGrades ? (
-            <div className="rounded-2xl border border-dashed border-white/[0.08] p-14 text-center space-y-4">
-              <BarChart3 className="w-10 h-10 text-neutral-700 mx-auto" />
-              <h3 className="text-base font-bold text-neutral-400">No Evaluation Data</h3>
-              <p className="text-xs text-neutral-600 max-w-sm mx-auto">Switch to the <strong className="text-orange-400">Evaluation Editor</strong> and grade each topic. Charts populate dynamically.</p>
+            <div className="rounded-2xl border border-dashed border-neutral-200 dark:border-white/[0.08] p-14 text-center space-y-4">
+              <BarChart3 className="w-10 h-10 text-neutral-300 dark:text-neutral-700 mx-auto" />
+              <h3 className="text-base font-bold text-neutral-500 dark:text-neutral-400">No Evaluation Data</h3>
+              <p className="text-xs text-neutral-400 dark:text-neutral-600 max-w-sm mx-auto">Switch to the <strong className="text-orange-600 dark:text-orange-400">Evaluation Editor</strong> and grade each topic. Charts populate dynamically.</p>
               <button onClick={() => setActiveTab("topic_editor")} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 text-black font-bold text-xs hover:bg-orange-400 transition-all">
                 <Edit3 className="w-3.5 h-3.5" /> Start Evaluating
               </button>
@@ -599,48 +599,48 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
           ) : (
             <>
               {/* Synthesis */}
-              <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/60 p-6 space-y-4">
-                <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-orange-400 uppercase tracking-wider"><Sparkles className="w-3.5 h-3.5" /> Executive Synthesis</div>
+              <div className="rounded-2xl border border-neutral-200 dark:border-white/[0.06] bg-neutral-50/60 dark:bg-neutral-900/60 p-6 space-y-4">
+                <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wider"><Sparkles className="w-3.5 h-3.5" /> Executive Synthesis</div>
                 
                 {/* Structured headline */}
                 <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                  <span className="text-xl font-bold text-white tracking-tight">{candidate.name}</span>
-                  <span className="text-sm text-neutral-400">scored</span>
-                  <span className={`text-xl font-extrabold font-mono ${overallScore >= 70 ? "text-orange-400" : overallScore >= 50 ? "text-amber-400" : "text-rose-400"}`}>{overallScore}/100</span>
-                  <span className="text-sm text-neutral-400">across</span>
-                  <span className="text-sm font-mono text-neutral-300">{gradedCount}/{totalQuestions} dimensions</span>
+                  <span className="text-xl font-bold text-neutral-900 dark:text-white tracking-tight">{candidate.name}</span>
+                  <span className="text-sm text-neutral-500 dark:text-neutral-400">scored</span>
+                  <span className={`text-xl font-extrabold font-mono ${overallScore >= 70 ? "text-orange-600 dark:text-orange-400" : overallScore >= 50 ? "text-amber-600 dark:text-amber-400" : "text-rose-600 dark:text-rose-400"}`}>{overallScore}/100</span>
+                  <span className="text-sm text-neutral-500 dark:text-neutral-400">across</span>
+                  <span className="text-sm font-mono text-neutral-700 dark:text-neutral-300">{gradedCount}/{totalQuestions} dimensions</span>
                   <span className="text-sm text-neutral-500">—</span>
-                  <span className={`text-sm font-bold ${overallScore >= 70 ? "text-orange-400" : overallScore >= 50 ? "text-amber-300" : "text-rose-400"}`}>{autoGrade}</span>
+                  <span className={`text-sm font-bold ${overallScore >= 70 ? "text-orange-600 dark:text-orange-400" : overallScore >= 50 ? "text-amber-700 dark:text-amber-300" : "text-rose-600 dark:text-rose-400"}`}>{autoGrade}</span>
                 </div>
 
                 {/* Strengths & Growth pills */}
                 <div className="flex flex-wrap gap-3">
                   {strengthsList.length > 0 && (
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[10px] font-mono font-semibold text-emerald-400 uppercase">Strengths:</span>
+                      <span className="text-[10px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 uppercase">Strengths:</span>
                       {strengthsList.map((q) => (
-                        <span key={q.id} className="px-2 py-0.5 rounded-md text-[11px] font-mono text-emerald-300 bg-emerald-500/8 border border-emerald-500/15">{q.parameter}</span>
+                        <span key={q.id} className="px-2 py-0.5 rounded-md text-[11px] font-mono text-emerald-700 dark:text-emerald-300 bg-emerald-500/8 border border-emerald-500/15">{q.parameter}</span>
                       ))}
                     </div>
                   )}
                   {risksList.length > 0 && (
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[10px] font-mono font-semibold text-amber-400 uppercase">Growth:</span>
+                      <span className="text-[10px] font-mono font-semibold text-amber-600 dark:text-amber-400 uppercase">Growth:</span>
                       {risksList.map((q) => (
-                        <span key={q.id} className="px-2 py-0.5 rounded-md text-[11px] font-mono text-amber-300 bg-amber-500/8 border border-amber-500/15">{q.parameter}</span>
+                        <span key={q.id} className="px-2 py-0.5 rounded-md text-[11px] font-mono text-amber-700 dark:text-amber-300 bg-amber-500/8 border border-amber-500/15">{q.parameter}</span>
                       ))}
                     </div>
                   )}
                 </div>
 
                 {/* Verdict */}
-                <div className="flex items-center gap-3 pt-2 border-t border-white/[0.04]">
+                <div className="flex items-center gap-3 pt-2 border-t border-neutral-200 dark:border-white/[0.04]">
                   <span className="text-[10px] font-mono font-semibold text-neutral-500 uppercase">Verdict</span>
                   <span className={`px-3 py-1 rounded-lg text-xs font-bold font-mono border ${
-                    activeDecision === "Strong Hire" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
-                    activeDecision === "Hire" ? "bg-orange-500/10 text-orange-400 border-orange-500/20" :
-                    activeDecision === "Lean Hire" ? "bg-amber-500/10 text-amber-300 border-amber-500/20" :
-                    "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                    activeDecision === "Strong Hire" ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" :
+                    activeDecision === "Hire" ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20" :
+                    activeDecision === "Lean Hire" ? "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20" :
+                    "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
                   }`}>{activeDecision}</span>
                 </div>
               </div>
@@ -648,10 +648,10 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
               {/* Charts */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 {/* Radar */}
-                <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/60 p-5">
+                <div className="rounded-2xl border border-neutral-200 dark:border-white/[0.06] bg-neutral-50/60 dark:bg-neutral-900/60 p-5">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-mono font-semibold text-neutral-400 uppercase">Competency Contour</span>
-                    <Bot className="w-4 h-4 text-orange-400/60" />
+                    <span className="text-[11px] font-mono font-semibold text-neutral-500 dark:text-neutral-400 uppercase">Competency Contour</span>
+                    <Bot className="w-4 h-4 text-orange-600/60 dark:text-orange-400/60" />
                   </div>
                   <div className="w-full h-64">
                     <ResponsiveContainer width="100%" height="100%">
@@ -674,10 +674,10 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                 </div>
 
                 {/* Bar */}
-                <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/60 p-5">
+                <div className="rounded-2xl border border-neutral-200 dark:border-white/[0.06] bg-neutral-50/60 dark:bg-neutral-900/60 p-5">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-mono font-semibold text-neutral-400 uppercase">Marks Per Topic</span>
-                    <span className="text-[10px] font-mono text-neutral-600">{gradedCount}/{totalQuestions}</span>
+                    <span className="text-[11px] font-mono font-semibold text-neutral-500 dark:text-neutral-400 uppercase">Marks Per Topic</span>
+                    <span className="text-[10px] font-mono text-neutral-400 dark:text-neutral-600">{gradedCount}/{totalQuestions}</span>
                   </div>
                   <div className="w-full h-64">
                     <ResponsiveContainer width="100%" height="100%">
@@ -697,8 +697,8 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
               </div>
 
               {/* Progress Bars */}
-              <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/60 p-5 space-y-4">
-                <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-orange-400 uppercase"><TrendingUp className="w-3.5 h-3.5" /> Marks Breakdown</div>
+              <div className="rounded-2xl border border-neutral-200 dark:border-white/[0.06] bg-neutral-50/60 dark:bg-neutral-900/60 p-5 space-y-4">
+                <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-orange-600 dark:text-orange-400 uppercase"><TrendingUp className="w-3.5 h-3.5" /> Marks Breakdown</div>
                 <div className="space-y-3 text-xs font-mono">
                   {AUDIT_TOPIC_QUESTIONS.map((q) => {
                     const graded = perQuestionScores[q.id] !== undefined;
@@ -707,14 +707,14 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                     return (
                       <div key={q.id} className="space-y-1">
                         <div className="flex justify-between items-center">
-                          <span className="text-neutral-300 font-medium flex items-center gap-2">
-                            <CircleDot className={`w-3 h-3 ${graded ? mc(m) : "text-neutral-800"}`} /> {q.parameter}
+                          <span className="text-neutral-700 dark:text-neutral-300 font-medium flex items-center gap-2">
+                            <CircleDot className={`w-3 h-3 ${graded ? mc(m) : "text-neutral-200 dark:text-neutral-800"}`} /> {q.parameter}
                           </span>
-                          <span className={graded ? mc(m) : "text-neutral-700"}>{graded ? `${m}/10 (${p}%)` : "—"}</span>
+                          <span className={graded ? mc(m) : "text-neutral-300 dark:text-neutral-700"}>{graded ? `${m}/10 (${p}%)` : "—"}</span>
                         </div>
-                        <div className="w-full h-1.5 rounded-full bg-neutral-800 overflow-hidden relative">
+                        <div className="w-full h-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden relative">
                           <div className="h-full rounded-full transition-all duration-700" style={{ width: `${p}%`, backgroundColor: graded ? barFill(m) : "transparent" }} />
-                          <div className="absolute top-0 bottom-0 left-[85%] w-px bg-neutral-700" />
+                          <div className="absolute top-0 bottom-0 left-[85%] w-px bg-neutral-200 dark:bg-neutral-700" />
                         </div>
                       </div>
                     );
@@ -724,32 +724,32 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
 
               {/* Strengths & Risks */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/60 p-5 space-y-3">
-                  <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-emerald-400 uppercase"><Flame className="w-3.5 h-3.5" /> Strengths (≥ 7)</div>
-                  {strengthsList.length === 0 ? <p className="text-xs text-neutral-600 font-mono italic">No topics ≥ 7 yet.</p> : (
+                <div className="rounded-2xl border border-neutral-200 dark:border-white/[0.06] bg-neutral-50/60 dark:bg-neutral-900/60 p-5 space-y-3">
+                  <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-emerald-600 dark:text-emerald-400 uppercase"><Flame className="w-3.5 h-3.5" /> Strengths (≥ 7)</div>
+                  {strengthsList.length === 0 ? <p className="text-xs text-neutral-400 dark:text-neutral-600 font-mono italic">No topics ≥ 7 yet.</p> : (
                     <div className="space-y-2">
                       {strengthsList.map((q) => { const s = perQuestionScores[q.id]; return (
                         <div key={q.id} className="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/15 space-y-1">
-                          <div className="text-xs font-bold font-mono text-emerald-400">{q.parameter} — {s?.rating}/10</div>
-                          {s?.evidence && <p className="text-[11px] text-neutral-400 font-mono leading-relaxed">• {s.evidence}</p>}
-                          {s?.observedStrength && <p className="text-[11px] text-emerald-300/70 font-mono">⚡ {s.observedStrength}</p>}
+                          <div className="text-xs font-bold font-mono text-emerald-600 dark:text-emerald-400">{q.parameter} — {s?.rating}/10</div>
+                          {s?.evidence && <p className="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono leading-relaxed">• {s.evidence}</p>}
+                          {s?.observedStrength && <p className="text-[11px] text-emerald-700/70 dark:text-emerald-300/70 font-mono">⚡ {s.observedStrength}</p>}
                         </div>
                       ); })}
                     </div>
                   )}
                 </div>
 
-                <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/60 p-5 space-y-3">
-                  <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-rose-400 uppercase"><ShieldAlert className="w-3.5 h-3.5" /> Risks (≤ 5)</div>
-                  {risksList.length === 0 ? <p className="text-xs text-emerald-400/70 font-mono italic">✔ All graded topics above 5.</p> : (
+                <div className="rounded-2xl border border-neutral-200 dark:border-white/[0.06] bg-neutral-50/60 dark:bg-neutral-900/60 p-5 space-y-3">
+                  <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-rose-600 dark:text-rose-400 uppercase"><ShieldAlert className="w-3.5 h-3.5" /> Risks (≤ 5)</div>
+                  {risksList.length === 0 ? <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70 font-mono italic">✔ All graded topics above 5.</p> : (
                     <div className="space-y-2">
                       {risksList.map((q) => { const s = perQuestionScores[q.id]; return (
                         <div key={q.id} className="p-3 rounded-xl bg-rose-500/5 border border-rose-500/15 flex items-start gap-2">
-                          <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                           <div className="space-y-1">
-                            <div className="text-xs font-bold font-mono text-rose-300">{q.parameter} — {s?.rating}/10</div>
-                            {s?.evidence && <p className="text-[11px] text-neutral-400 font-mono">• {s.evidence}</p>}
-                            {s?.recommendation && <p className="text-[11px] text-amber-300/70 font-mono">💡 {s.recommendation}</p>}
+                            <div className="text-xs font-bold font-mono text-rose-700 dark:text-rose-300">{q.parameter} — {s?.rating}/10</div>
+                            {s?.evidence && <p className="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">• {s.evidence}</p>}
+                            {s?.recommendation && <p className="text-[11px] text-amber-700/70 dark:text-amber-300/70 font-mono">💡 {s.recommendation}</p>}
                           </div>
                         </div>
                       ); })}
@@ -759,12 +759,12 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
               </div>
 
               {/* Evidence Table */}
-              <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/60 p-5 space-y-3">
-                <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-orange-400 uppercase"><Code2 className="w-3.5 h-3.5" /> Evidence & Marks Table</div>
+              <div className="rounded-2xl border border-neutral-200 dark:border-white/[0.06] bg-neutral-50/60 dark:bg-neutral-900/60 p-5 space-y-3">
+                <div className="flex items-center gap-2 text-[11px] font-mono font-semibold text-orange-600 dark:text-orange-400 uppercase"><Code2 className="w-3.5 h-3.5" /> Evidence & Marks Table</div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs font-mono">
                     <thead>
-                      <tr className="border-b border-white/[0.06] text-[10px] text-neutral-500 uppercase">
+                      <tr className="border-b border-neutral-200 dark:border-white/[0.06] text-[10px] text-neutral-500 uppercase">
                         <th className="py-2.5 px-3 w-8">#</th>
                         <th className="py-2.5 px-3">Topic</th>
                         <th className="py-2.5 px-3 w-16">Marks</th>
@@ -773,17 +773,17 @@ export default function EmployeeEvaluationWorkspace({ params }: { params: Promis
                         <th className="py-2.5 px-3">Rec.</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-neutral-800/60">
+                    <tbody className="divide-y divide-neutral-200/60 dark:divide-neutral-800/60">
                       {AUDIT_TOPIC_QUESTIONS.map((q, i) => {
                         const s = perQuestionScores[q.id]; const g = s !== undefined;
                         return (
-                          <tr key={q.id} className={g ? "hover:bg-neutral-800/30" : "opacity-30"}>
-                            <td className="py-2.5 px-3 text-neutral-600">{i + 1}</td>
-                            <td className="py-2.5 px-3 text-white font-semibold whitespace-nowrap">{q.parameter}</td>
-                            <td className="py-2.5 px-3">{g ? <span className={`font-bold ${mc(s.rating)}`}>{s.rating}/10</span> : <span className="text-neutral-700">—</span>}</td>
-                            <td className="py-2.5 px-3 text-neutral-400 max-w-[200px] truncate cursor-default" title={s?.evidence || ""}>{s?.evidence || "—"}</td>
-                            <td className="py-2.5 px-3 text-emerald-300/60 max-w-[120px] truncate cursor-default" title={s?.observedStrength || ""}>{s?.observedStrength || "—"}</td>
-                            <td className="py-2.5 px-3 text-violet-300/60 max-w-[120px] truncate cursor-default" title={s?.recommendation || ""}>{s?.recommendation || "—"}</td>
+                          <tr key={q.id} className={g ? "hover:bg-neutral-100/30 dark:hover:bg-neutral-800/30" : "opacity-30"}>
+                            <td className="py-2.5 px-3 text-neutral-400 dark:text-neutral-600">{i + 1}</td>
+                            <td className="py-2.5 px-3 text-neutral-900 dark:text-white font-semibold whitespace-nowrap">{q.parameter}</td>
+                            <td className="py-2.5 px-3">{g ? <span className={`font-bold ${mc(s.rating)}`}>{s.rating}/10</span> : <span className="text-neutral-300 dark:text-neutral-700">—</span>}</td>
+                            <td className="py-2.5 px-3 text-neutral-500 dark:text-neutral-400 max-w-[200px] truncate cursor-default" title={s?.evidence || ""}>{s?.evidence || "—"}</td>
+                            <td className="py-2.5 px-3 text-emerald-700/60 dark:text-emerald-300/60 max-w-[120px] truncate cursor-default" title={s?.observedStrength || ""}>{s?.observedStrength || "—"}</td>
+                            <td className="py-2.5 px-3 text-violet-700/60 dark:text-violet-300/60 max-w-[120px] truncate cursor-default" title={s?.recommendation || ""}>{s?.recommendation || "—"}</td>
                           </tr>
                         );
                       })}
