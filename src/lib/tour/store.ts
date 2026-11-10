@@ -45,12 +45,18 @@ export const useTourStore = create<TourStoreState>((set, get) => ({
     const activeStep = TOUR_STEPS[persisted.currentStepIndex] || TOUR_STEPS[0];
     const isFirstTime = persisted.status === "not_started";
     const isInProgress = persisted.status === "in_progress";
+    // Opening a direct link (e.g. a shared report) must not be hijacked by the
+    // tour: first-timers start it only from its first page, and it never runs
+    // over the print-only report.
+    const path = typeof window !== "undefined" ? window.location.pathname : "/";
+    const onFirstStepPage = !TOUR_STEPS[0].route || path === TOUR_STEPS[0].route;
+    const onReport = path.startsWith("/ai-eval/report");
 
     set({
       status: persisted.status,
       stepIndex: persisted.currentStepIndex,
       activeStep,
-      isActive: isFirstTime || isInProgress,
+      isActive: !onReport && ((isFirstTime && onFirstStepPage) || isInProgress),
     });
   },
 
