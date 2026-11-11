@@ -24,32 +24,27 @@ import {
 export default function EngineerProfilePage() {
   const params = useParams();
   const router = useRouter();
-  const { engineers, evaluations } = useAppStore();
+  const { engineers, evaluations, loadDataFromServer } = useAppStore();
+  const [loaded, setLoaded] = React.useState(false);
+
+  React.useEffect(() => {
+    loadDataFromServer().finally(() => setLoaded(true));
+  }, [loadDataFromServer]);
 
   const engId = params.id as string;
-  const engineer = (engineers || []).find((e) => e.id === engId) || engineers[0];
+  const engineer = (engineers || []).find((e) => e.id === engId);
 
-  if (!engineer) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-xl font-bold text-neutral-900 dark:text-white">Engineer Profile Not Found</h2>
-        <button onClick={() => router.push("/engineers")} className="mt-4 text-xs text-indigo-500 font-mono">
-          ← Return to Engineers Directory
-        </button>
-      </div>
-    );
-  }
-
-  const engineerEvals = (evaluations || []).filter((e) => e.engineerId === engineer.id);
-  const latestEval = engineerEvals[0] || evaluations[0];
-
-  const gradeInfo = getGradeInfo(engineer.avgScore || 0);
+  // This person's own reviews only, newest first.
+  const engineerEvals = (evaluations || [])
+    .filter((e) => e.engineerId === engId)
+    .sort((a, b) => (b.evaluationDate || "").localeCompare(a.evaluationDate || ""));
+  const latestEval = engineerEvals[0];
 
   // Parameter Radar Data for this specific engineer
   const radarData = React.useMemo(() => {
     return EVALUATION_PARAMETERS.map((p) => {
       const ps = latestEval?.parameterScores?.find((x) => x.parameterKey === p.key || x.parameterId === p.key);
-      const rating = ps ? ps.rating : 4;
+      const rating = ps ? ps.rating : 0;
       return {
         parameter: p.name.split(" ")[0],
         score: (rating / 5) * 100,
@@ -72,6 +67,25 @@ export default function EngineerProfilePage() {
       .sort((a, b) => a.rating - b.rating)
       .slice(0, 2);
   }, [latestEval]);
+
+  if (!engineer) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
+        {loaded ? (
+          <>
+            <h2 className="text-xl font-bold text-neutral-900 dark:text-white">Engineer Profile Not Found</h2>
+            <button onClick={() => router.push("/engineers")} className="mt-4 text-xs text-indigo-600 dark:text-indigo-400 font-mono">
+              ← Return to Engineers Directory
+            </button>
+          </>
+        ) : (
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">Loading profile…</p>
+        )}
+      </div>
+    );
+  }
+
+  const gradeInfo = getGradeInfo(engineer.avgScore || 0);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -108,7 +122,7 @@ export default function EngineerProfilePage() {
               {engineer.designation} • {engineer.departmentName}
             </p>
             <div className="flex flex-wrap items-center gap-3 pt-2 text-xs text-neutral-600 dark:text-neutral-400">
-              <span className="flex items-center gap-1"><UserCheck className="w-3.5 h-3.5 text-indigo-400" /> Manager: {engineer.managerName || (engineer as any).captainName || "Executive Administrator"}</span>
+              <span className="flex items-center gap-1"><UserCheck className="w-3.5 h-3.5 text-indigo-400" /> Manager: {engineer.managerName || (engineer as any).captainName || "Not set"}</span>
               <span>•</span>
               <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-purple-400" /> Joined {engineer.joiningDate}</span>
               <span>•</span>
@@ -135,7 +149,13 @@ export default function EngineerProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Radar Chart & Strengths / Weaknesses */}
         <div className="lg:col-span-7 space-y-6">
-          <ParameterRadarChart data={radarData} />
+          {latestEval ? (
+            <ParameterRadarChart data={radarData} />
+          ) : (
+            <div className="flex min-h-64 items-center justify-center rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 p-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
+              No World 2 review yet. The eight engineering areas appear here after their first review.
+            </div>
+          )}
 
           {/* Strengths & Weaknesses Analysis */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
