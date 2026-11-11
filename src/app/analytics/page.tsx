@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 import { useAppStore } from "@/lib/store";
 import { EVALUATION_PARAMETERS } from "@/lib/constants";
@@ -26,13 +27,14 @@ export default function AnalyticsPage() {
       return {
         name: p.name,
         shortName: p.name.split(" ")[0],
-        avgScore: count > 0 ? sum / count : 82,
+        avgScore: count > 0 ? sum / count : 0,
         weight: p.weight,
         category: p.category || (p as any).categoryId || "Technical",
       };
     }).sort((a, b) => b.avgScore - a.avgScore);
   }, [evaluations]);
 
+  const hasReviews = (evaluations || []).some((ev) => (ev.parameterScores || []).length > 0);
   const topStrengths = parameterAnalytics.slice(0, 3);
   const skillGaps = [...parameterAnalytics].reverse().slice(0, 3);
 
@@ -68,6 +70,8 @@ export default function AnalyticsPage() {
         </p>
       </div>
 
+      {hasReviews ? (
+      <>
       {/* Top Strengths vs Skill Gaps */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="p-8 rounded-3xl border border-primary/30 bg-primary/5 space-y-4">
@@ -146,6 +150,14 @@ export default function AnalyticsPage() {
           </ResponsiveContainer>
         </div>
       </div>
+      </>
+      ) : (
+        <div className="p-8 rounded-3xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 shadow-sm text-center space-y-3">
+          <h3 className="text-sm font-bold text-neutral-900 dark:text-white">Strengths, skill gaps and parameter scores</h3>
+          <p className="mx-auto max-w-md text-sm text-neutral-600 dark:text-neutral-400">No World 2 reviews yet. These appear once people are reviewed on the eight engineering areas.</p>
+          <Link href="/evaluations/new" className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200">Start a review</Link>
+        </div>
+      )}
 
       {/* Experience Tier Comparison */}
       <div className="p-8 rounded-3xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-900/80 shadow-sm space-y-4">
@@ -154,7 +166,7 @@ export default function AnalyticsPage() {
           {experienceAnalytics.map((item, idx) => (
             <div key={idx} className="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200/50 dark:border-neutral-700/50 space-y-2">
               <div className="text-xs font-semibold text-neutral-900 dark:text-white">{item.tier}</div>
-              <div className="text-3xl font-extrabold font-mono text-primary">{item.avgScore.toFixed(1)}</div>
+              <div className="text-3xl font-extrabold font-mono text-primary">{item.count > 0 ? item.avgScore.toFixed(1) : "—"}</div>
               <div className="text-[10px] text-neutral-400 font-mono">{item.count} Engineers in cohort</div>
             </div>
           ))}

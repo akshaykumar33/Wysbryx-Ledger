@@ -16,6 +16,28 @@ import { useAppStore } from "@/lib/store";
 import { Download, PlusCircle, Bot, ArrowRight } from "lucide-react";
 import { exportToCSV } from "@/lib/export";
 
+// Shown in place of a chart that needs World 2 reviews when none exist yet.
+function NoReviewsYet({ title }: { title: string }) {
+  return (
+    <div className="p-6 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-neutral-900 shadow-sm space-y-4">
+      <div className="border-b border-neutral-100 dark:border-neutral-800 pb-3">
+        <h3 className="text-sm font-bold text-neutral-900 dark:text-white">{title}</h3>
+      </div>
+      <div className="flex min-h-48 flex-col items-center justify-center gap-3 text-center">
+        <p className="max-w-sm text-sm text-neutral-600 dark:text-neutral-400">
+          No World 2 reviews yet. This fills in once people are reviewed on the eight engineering areas.
+        </p>
+        <Link
+          href="/evaluations/new"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+        >
+          Start a review <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const {
     engineers,
@@ -107,7 +129,7 @@ export default function DashboardPage() {
           count++;
         }
       });
-      const avg = count > 0 ? sum / count : 85;
+      const avg = count > 0 ? sum / count : 0;
       return {
         parameter: p.name.split(" ")[0],
         score: avg,
@@ -131,30 +153,48 @@ export default function DashboardPage() {
   }, [engineers]);
 
   // Quarter Trend Data
-  const quarterTrendData = [
-    { quarter: "Q3 2025", avgScore: 81.2, evaluationsCount: 18 },
-    { quarter: "Q4 2025", avgScore: 83.5, evaluationsCount: 22 },
-    { quarter: "Q1 2026", avgScore: 85.0, evaluationsCount: 24 },
-    { quarter: "Q2 2026", avgScore: 86.8, evaluationsCount: 28 },
-    { quarter: `${selectedQuarter} ${selectedYear}`, avgScore: avgScore || 87.4, evaluationsCount: completedEvals },
-  ];
+  // Past quarters come from saved World 2 reviews; the current quarter is the
+  // team's live average.
+  const quarterTrendData = React.useMemo(() => {
+    const current = `${selectedQuarter} ${selectedYear}`;
+    const byQuarter = new Map<string, { sum: number; count: number; order: number }>();
+    (evaluations || []).forEach((ev) => {
+      const key = `${ev.quarter} ${ev.year}`;
+      if (key === current) return;
+      const q = byQuarter.get(key) || { sum: 0, count: 0, order: ev.year * 10 + Number(String(ev.quarter).slice(1)) };
+      q.sum += ev.overallScore || 0;
+      q.count += 1;
+      byQuarter.set(key, q);
+    });
+    const past = [...byQuarter.entries()]
+      .sort((a, b) => a[1].order - b[1].order)
+      .map(([quarter, q]) => ({ quarter, avgScore: q.sum / q.count, evaluationsCount: q.count }));
+    return [...past, { quarter: current, avgScore, evaluationsCount: completedEvals }];
+  }, [evaluations, selectedQuarter, selectedYear, avgScore, completedEvals]);
+
+  const hasParameterReviews = (evaluations || []).some((ev) => (ev.parameterScores || []).length > 0);
 
   // Heatmap Data
   const heatmapData = React.useMemo(() => {
-    return TEAMS.map((t) => ({
-      teamName: t.name,
-      scores: {
-        ai_usage: 4.5,
-        engineering_knowledge: 4.8,
-        subject_expertise: 4.6,
-        communication: 4.2,
-        team_player: 4.7,
-        innovation: 4.3,
-        delivery: 4.6,
-        learning: 4.4,
-      },
-    }));
-  }, []);
+    // Average rating per parameter for each team, from saved reviews.
+    const teamOf = new Map((engineers || []).map((e) => [e.id, e.teamId]));
+    return TEAMS.map((t) => {
+      const totals: Record<string, { sum: number; count: number }> = {};
+      (evaluations || [])
+        .filter((ev) => teamOf.get(ev.engineerId) === t.id)
+        .forEach((ev) =>
+          (ev.parameterScores || []).forEach((ps) => {
+            const k = ps.parameterKey;
+            totals[k] = totals[k] || { sum: 0, count: 0 };
+            totals[k].sum += ps.rating;
+            totals[k].count += 1;
+          })
+        );
+      const scores: Record<string, number> = {};
+      for (const [k, v] of Object.entries(totals)) scores[k] = Math.round((v.sum / v.count) * 10) / 10;
+      return { teamName: t.name, scores };
+    }).filter((row) => Object.keys(row.scores).length > 0);
+  }, [engineers, evaluations]);
 
   return (
     <PageWrapper className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
@@ -232,14 +272,19 @@ export default function DashboardPage() {
           avgScore={avgScore}
           topPerformer={topPerformer}
           lowestPerformer={lowestPerformer}
-          pendingReviews={2}
+          pendingReviews={Math.max(0, totalEngineers - new Set((evaluations || []).map((ev) => ev.engineerId)).size)}
+          departmentCount={new Set(filteredEngineers.map((e) => e.departmentId)).size}
         />
       </div>
 
       {/* Primary Analytics Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <ScoreDistributionChart data={distributionData} />
-        <ParameterRadarChart data={parameterRadarData} />
+        {hasParameterReviews ? (
+          <ParameterRadarChart data={parameterRadarData} />
+        ) : (
+          <NoReviewsYet title="Parameter Radar Competency" />
+        )}
       </div>
 
       {/* Secondary Analytics Grid */}
@@ -249,7 +294,11 @@ export default function DashboardPage() {
       </div>
 
       {/* Heatmap Matrix */}
-      <HeatmapMatrix matrixData={heatmapData} />
+      {heatmapData.length > 0 ? (
+        <HeatmapMatrix matrixData={heatmapData} />
+      ) : (
+        <NoReviewsYet title="Team x Parameter Competency Heatmap" />
+      )}
 
       {/* Leaderboard Ranking Table */}
       <LeaderboardTable engineers={filteredEngineers} />
