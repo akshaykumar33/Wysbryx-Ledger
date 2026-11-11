@@ -1,4 +1,5 @@
 import EMPLOYEES_RAW from "@/lib/employee";
+import { DEPARTMENT_NAMES, ROLE_NAMES } from "@/lib/constants";
 
 export interface EmployeeCandidate {
   id: string;
@@ -18,9 +19,9 @@ export const ALL_CANDIDATES: EmployeeCandidate[] = EMPLOYEES_RAW.map((emp: any, 
   const id = `emp_${index + 1}_${cleanName.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
   
   // Deterministic department assignment based on index
-  const departments = ["Engineering", "AI R&D", "Platform", "Product", "Quality Assurance", "DevOps"];
-  const roles = ["Senior Software Engineer", "AI Research Engineer", "Frontend Specialist", "Backend Architect", "Fullstack Developer", "QA Automation Lead"];
-  
+  const departments = DEPARTMENT_NAMES;
+  const roles = ROLE_NAMES;
+
   const deptIndex = index % departments.length;
   const roleIndex = index % roles.length;
 

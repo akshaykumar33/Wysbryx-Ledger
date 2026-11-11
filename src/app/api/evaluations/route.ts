@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { evaluations, evaluationScores } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import { DEMO_ENGINEER_IDS } from "@/lib/world2/realTeam";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,8 @@ export async function GET(request: NextRequest) {
       scoresByEvalId[s.evaluationId].push(s);
     });
 
-    const enriched = allEvals.map((ev) => ({
+    // Reviews of the old demo engineers are not shown.
+    const enriched = allEvals.filter((ev) => !DEMO_ENGINEER_IDS.has(ev.engineerId)).map((ev) => ({
       ...ev,
       parameterScores: scoresByEvalId[ev.id] || [],
     }));
