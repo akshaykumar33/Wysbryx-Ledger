@@ -12,6 +12,7 @@ interface OverviewCardsProps {
   topPerformer: { name: string; score: number; designation: string; photo: string } | null;
   lowestPerformer: { name: string; score: number; designation: string; photo: string } | null;
   pendingReviews: number;
+  departmentCount: number;
 }
 
 export function OverviewCards({
@@ -21,6 +22,7 @@ export function OverviewCards({
   topPerformer,
   lowestPerformer,
   pendingReviews,
+  departmentCount,
 }: OverviewCardsProps) {
   const avgGrade = getGradeInfo(avgScore);
 
@@ -37,7 +39,7 @@ export function OverviewCards({
         <div className="text-3xl font-extrabold text-neutral-900 dark:text-white font-mono">
           <AnimatedCounter value={totalEngineers} />
         </div>
-        <p className="text-xs text-neutral-500 font-medium">Across 5 departments</p>
+        <p className="text-xs text-neutral-500 font-medium">Across {departmentCount} {departmentCount === 1 ? "department" : "departments"}</p>
       </div>
 
       {/* Evaluations Completed */}
@@ -52,7 +54,7 @@ export function OverviewCards({
           <AnimatedCounter value={completedEvaluations} />
         </div>
         <Badge variant="success" dot className="text-[10px]">
-          100% On Schedule
+          {totalEngineers > 0 ? Math.round((completedEvaluations / totalEngineers) * 100) : 0}% of team reviewed
         </Badge>
       </div>
 
@@ -128,7 +130,7 @@ export function OverviewCards({
         <div className="text-3xl font-extrabold text-neutral-900 dark:text-white font-mono">
           <AnimatedCounter value={pendingReviews} />
         </div>
-        <p className="text-xs text-neutral-500 font-medium">Awaiting Calibration</p>
+        <p className="text-xs text-neutral-500 font-medium">Not yet reviewed</p>
       </div>
     </div>
   );

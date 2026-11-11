@@ -145,26 +145,21 @@ export const EVALUATION_PARAMETERS: EvaluationParameter[] = [
   },
 ];
 
-export const DEPARTMENTS = [
-  { id: "dept_1", name: "Core Platform Engineering", code: "PLAT" },
-  { id: "dept_2", name: "Frontend Architecture & UX", code: "FE" },
-  { id: "dept_3", name: "Backend & Distributed Systems", code: "BE" },
-  { id: "dept_4", name: "AI & Machine Learning Infrastructure", code: "AIML" },
-  { id: "dept_5", name: "DevOps & Cloud Reliability", code: "SRE" },
-];
+// The real team's departments and roles, shared by World 1 and World 2.
+// People are assigned to them in rotation (see ai-eval/allocation.ts) until
+// real departments are recorded.
+export const DEPARTMENT_NAMES = ["Engineering", "AI R&D", "Platform", "Product", "Quality Assurance", "DevOps"];
+export const ROLE_NAMES = ["Senior Software Engineer", "AI Research Engineer", "Frontend Specialist", "Backend Architect", "Fullstack Developer", "QA Automation Lead"];
 
-export const TEAMS = [
-  { id: "team_1", name: "API Gateway & Microservices", departmentId: "dept_3", captainId: "user_cap_1", captainName: "Elena Rostova" },
-  { id: "team_2", name: "Design System & Web Apps", departmentId: "dept_2", captainId: "user_cap_2", captainName: "Marcus Vance" },
-  { id: "team_3", name: "LLM Pipeline & Inference", departmentId: "dept_4", captainId: "user_cap_3", captainName: "Dr. Sarah Chen" },
-  { id: "team_4", name: "Kubernetes & Infrastructure", departmentId: "dept_5", captainId: "user_cap_4", captainName: "David Miller" },
-  { id: "team_5", name: "Data Lake & Analytics Engine", departmentId: "dept_1", captainId: "user_cap_1", captainName: "Elena Rostova" },
-];
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+const DEPT_CODES: Record<string, string> = { Engineering: "ENG", "AI R&D": "AIRD", Platform: "PLAT", Product: "PROD", "Quality Assurance": "QA", DevOps: "OPS" };
 
-export const DESIGNATIONS = [
-  { id: "desig_1", title: "Junior Software Engineer", level: "IC1" },
-  { id: "desig_2", title: "Software Engineer", level: "IC2" },
-  { id: "desig_3", title: "Senior Software Engineer", level: "Senior" },
-  { id: "desig_4", title: "Staff Engineer / Architect", level: "Staff" },
-  { id: "desig_5", title: "Principal AI Researcher", level: "Principal" },
-];
+export const DEPARTMENTS = DEPARTMENT_NAMES.map((name) => ({ id: `dept_${slug(name)}`, name, code: DEPT_CODES[name] }));
+
+// One team per department until real teams exist.
+export const TEAMS = DEPARTMENTS.map((d) => ({ id: d.id.replace("dept_", "team_"), name: `${d.name} Team`, departmentId: d.id, captainId: "", captainName: "" }));
+
+export const DESIGNATIONS = ROLE_NAMES.map((title, i) => ({ id: `desig_${i + 1}`, title, level: "" }));
+
+export const departmentIdFor = (name: string) => `dept_${slug(name)}`;
+export const teamIdFor = (name: string) => `team_${slug(name)}`;

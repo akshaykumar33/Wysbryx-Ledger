@@ -3,6 +3,8 @@ import { db } from "@/db";
 import { engineers } from "@/db/schema";
 import { eq, isNull } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import { getRealEngineers } from "@/lib/world2/realTeam";
+import { DEPARTMENTS, TEAMS } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -10,11 +12,9 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   try {
     const showArchived = request.nextUrl.searchParams.get("showArchived") === "true";
-    const allEngineers = await db.select().from(engineers);
-
-    const filtered = showArchived ? allEngineers : allEngineers.filter((e) => !e.deletedAt);
-
-    return NextResponse.json({ engineers: filtered });
+    // The real team from World 1, plus anyone added in World 2.
+    const team = await getRealEngineers({ includeArchived: showArchived });
+    return NextResponse.json({ engineers: team });
   } catch (error: any) {
     console.error("[API] GET /api/engineers error:", error);
     return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
@@ -40,10 +40,10 @@ export async function POST(request: NextRequest) {
       fullName: fullName.trim(),
       employeeId: employeeId || `ENG-${Math.floor(100 + Math.random() * 900)}`,
       email: email.trim().toLowerCase(),
-      departmentId: departmentId || "dept_1",
-      teamId: teamId || "team_1",
+      departmentId: departmentId || DEPARTMENTS[0].id,
+      teamId: teamId || TEAMS[0].id,
       designationId: designationId || "Senior Engineer",
-      managerName: managerName || "Elena Rostova",
+      managerName: managerName || "",
       joiningDate: joiningDate || "2025-01-01",
       experienceYears: Number(experienceYears) || 3.0,
       primarySkills: typeof primarySkills === "string" ? primarySkills : JSON.stringify(primarySkills || []),

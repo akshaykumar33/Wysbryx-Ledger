@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Engineer, Evaluation, AdminUser, SystemSettings, AuditLog } from "./types";
-import { MOCK_ENGINEERS, MOCK_EVALUATIONS } from "./mockData";
 import { DEFAULT_SETTINGS, DEPARTMENTS, TEAMS, EVALUATION_PARAMETERS } from "./constants";
 import { recordAuditEvent, INITIAL_AUDIT_LOGS, setAuditLogs } from "./audit";
 
@@ -138,8 +137,9 @@ export const useAppStore = create<AppState>()(
       setSelectedCycle: (quarter, year) =>
         set({ selectedQuarter: quarter as any, selectedYear: year }),
 
-      engineers: MOCK_ENGINEERS,
-      evaluations: MOCK_EVALUATIONS,
+      // Filled from the server: the real team from World 1.
+      engineers: [],
+      evaluations: [],
       settings: DEFAULT_SETTINGS,
       auditLogs: INITIAL_AUDIT_LOGS,
 
@@ -352,7 +352,7 @@ export const useAppStore = create<AppState>()(
           const engRes = await fetch("/api/engineers");
           if (engRes.ok) {
             const data = await engRes.json();
-            if (data.engineers && data.engineers.length > 0) {
+            if (Array.isArray(data.engineers)) {
               set({ engineers: data.engineers.map(normalizeEngineer) });
             }
           }
@@ -361,7 +361,7 @@ export const useAppStore = create<AppState>()(
           const evalRes = await fetch("/api/evaluations");
           if (evalRes.ok) {
             const data = await evalRes.json();
-            if (data.evaluations && data.evaluations.length > 0) {
+            if (Array.isArray(data.evaluations)) {
               set({ evaluations: data.evaluations.map((ev: any) => normalizeEvaluation(ev, get().engineers)) });
             }
           }
@@ -383,7 +383,8 @@ export const useAppStore = create<AppState>()(
       setCmdOpen: (open) => set({ cmdOpen: open }),
     }),
     {
-      name: "wysbryx_intel_store_v3",
+      // v4: the demo team was replaced by the real one; older saved data is dropped.
+      name: "wysbryx_intel_store_v4",
       partialize: (state) => ({
         themeAccent: state.themeAccent,
         engineers: state.engineers,

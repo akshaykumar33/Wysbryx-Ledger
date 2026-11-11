@@ -115,7 +115,7 @@ export default function EvaluationsListPage() {
             {filteredEvals.length === 0 ? (
               <tr>
                 <td colSpan={7} className="py-12 text-center text-neutral-500 font-mono">
-                  No evaluation records found matching search query.
+                  {search || statusFilter !== "ALL" ? "No reviews match your search." : "No reviews yet. Use Start Evaluation to review someone."}
                 </td>
               </tr>
             ) : (

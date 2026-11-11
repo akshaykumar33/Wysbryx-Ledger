@@ -12,8 +12,20 @@ import {
 } from "lucide-react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/Accordion";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
+import * as React from "react";
+import { useAppStore } from "@/lib/store";
+import { calculateEvaluationGrade } from "@/lib/constants";
 
 export default function CompleteEvalLandingPage() {
+  const { engineers, evaluations, loadDataFromServer } = useAppStore();
+  React.useEffect(() => {
+    loadDataFromServer();
+  }, [loadDataFromServer]);
+  const active = (engineers || []).filter((e) => !e.deletedAt);
+  const scored = active.filter((e) => typeof e.avgScore === "number");
+  const orgAvg = scored.length ? scored.reduce((a, e) => a + (e.avgScore || 0), 0) / scored.length : 0;
+  const orgGrade = calculateEvaluationGrade(orgAvg);
+
   const faqs = [
     {
       q: "Is this platform intended for tracking daily keystrokes or activity?",
@@ -118,15 +130,15 @@ export default function CompleteEvalLandingPage() {
         >
           <div className="p-5 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/60 dark:border-neutral-800/60 space-y-1">
             <div className="text-[11px] font-mono text-neutral-400 font-semibold uppercase">TOTAL EVALUATIONS</div>
-            <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white">128 Completed</div>
+            <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white">{(evaluations || []).length} Completed</div>
             <div className="text-[11px] text-primary font-mono font-bold flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" /> +14% vs Q2
+              <TrendingUp className="w-3 h-3" /> {active.length} people on the team
             </div>
           </div>
           <div className="p-5 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/60 dark:border-neutral-800/60 space-y-1">
             <div className="text-[11px] font-mono text-neutral-400 font-semibold uppercase">ORG AVERAGE SCORE</div>
-            <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white">87.4 / 100</div>
-            <div className="text-[11px] text-primary font-mono font-bold">Grade: Very Good (B+)</div>
+            <div className="text-2xl font-bold font-mono text-neutral-900 dark:text-white">{orgAvg.toFixed(1)} / 100</div>
+            <div className="text-[11px] text-primary font-mono font-bold">Grade: {orgGrade.label} ({orgGrade.grade})</div>
           </div>
           <div className="p-5 rounded-2xl bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/60 dark:border-neutral-800/60 space-y-1">
             <div className="text-[11px] font-mono text-neutral-400 font-semibold uppercase">STANDARDIZED METRICS</div>
